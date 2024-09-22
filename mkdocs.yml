@@ -1,0 +1,131 @@
+docs_dir: docs/
+repo_name: 'tyson-swetnam/fractal-notebooks'
+repo_url: 'https://github.com/tyson-swetnam/fractal-notebooks'
+
+site_name: 'Fractal self-affinity'
+site_description: 'Self-affine fractal simulations using Python and Jupyter Notebooks'
+site_author: 'Tyson Swetnam'
+site_url: 'https://tyson-swetnam.github.io/fractal-notebooks'
+
+edit_uri: edit/mkdocs/docs
+
+# Copyright
+copyright: 'Copyright &copy; 2024 The University of Arizona'
+
+# Navigation Page
+
+nav:
+  - Home: 
+    - 'Home': index.md
+    - 'Installation': installation.md
+    - 'Glossary & Acronyms': glossary.md
+  - Jupyter Notebooks:
+    - 'Diffusion Limited Aggregation (DLA)': notebooks/dla.ipynb
+    - 'Barnsleys Ferns': notebooks/ferns.ipynb
+    - 'Self-similar Fractals': notebooks/fractals.ipynb
+    - 'Self-affine Fractals': notebooks/fractal_generators.ipynb
+    - 'Differential Box Counting': notebooks/dbc.ipynb
+    - 'Riemann Zeta Functions 2D': notebooks/zeta_space.ipynb
+    - 'Riemann Zeta Functions in 3D': notebooks/zeta_3d.ipynb
+  - 'Applications':
+    - '3D Tree with Roots': tree_roots.md
+
+# must also set Action to use `@nomaterial` branch instead of `@master` for material
+theme:
+  name: material
+# setting features for the navigation tab
+  features:
+    - navigation.instant
+      #- navigation.expand
+    - navigation.tracking
+    - navigation.sections
+    - navigation.indexes
+    - toc.follow
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: fractals
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  font:
+    text: Montserrat
+    code: Regular
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.top
+  favicon: assets/favicon.ico
+  icon:
+    logo: material/family-tree
+
+# Options
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ncems/
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/c/CyverseOrgProject
+
+extra_css:
+  - stylesheets/extra.css
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+    - search
+    - mkdocstrings
+    - git-revision-date
+    - mkdocs-jupyter:
+          include_source: True
+          ignore_h1_titles: True
