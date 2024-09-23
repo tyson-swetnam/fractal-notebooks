@@ -42,6 +42,11 @@ theme:
     - navigation.sections
     - navigation.indexes
     - toc.follow
+    - content.code.copy
+    - content.code.prettify
+    - content.code.download
+    - content.action.edit
+    - content.action.view
   # Default values, taken from mkdocs_theme.yml
   language: en
   palette:
