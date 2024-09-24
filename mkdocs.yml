@@ -18,9 +18,9 @@ nav:
   - Home: 
     - 'Home': index.md
     - 'Installation': installation.md
-    - 'Glossary & Acronyms': glossary.md
+    - 'Glossary & Maths': glossary.md
   - Jupyter Notebooks:
-    - 'Diffusion Limited Aggregation (DLA)': notebooks/old_dla.ipynb
+    - 'Diffusion Limited Aggregation (DLA)': notebooks/dla.ipynb
     - 'Barnsleys Ferns': notebooks/ferns.ipynb
     - 'Self-similar Fractals': notebooks/fractals.ipynb
     - 'Self-affine Fractals': notebooks/fractal_generators.ipynb
@@ -44,7 +44,6 @@ theme:
     - toc.follow
     - content.code.copy
     - content.code.prettify
-    - content.code.download
     - content.action.edit
     - content.action.view
   # Default values, taken from mkdocs_theme.yml
@@ -110,9 +109,6 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.keys

@@ -1,0 +1,12 @@
+name: streamlit-plotly
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.10
+  - streamlit
+  - matplotlib
+  - numpy
+  - numba
+  - plotly
+  - pip
