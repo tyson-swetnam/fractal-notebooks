@@ -17,17 +17,23 @@ copyright: 'Copyright &copy; 2024 The University of Arizona'
 nav:
   - Home: 
     - 'Home': index.md
+    - 'Introduction': introduction.md
+    - 'Methods': methods.md
+    - 'Results': results.md
+    - 'Discussion': discussion.md
+    - 'Conclusion': conclusion.md
+    - 'References': references.md
     - 'Installation': installation.md
     - 'Glossary & Maths': glossary.md
   - Jupyter Notebooks:
-    - 'Diffusion Limited Aggregation (DLA)': notebooks/dla.ipynb
+    - 'Diffusion Limited Aggregation (DLA)': notebooks/old_dla.ipynb
     - 'Barnsleys Ferns': notebooks/ferns.ipynb
     - 'Self-similar Fractals': notebooks/fractals.ipynb
     - 'Self-affine Fractals': notebooks/fractal_generators.ipynb
     - 'Differential Box Counting': notebooks/dbc.ipynb
     - 'Riemann Zeta Functions 2D': notebooks/zeta_space.ipynb
     - 'Riemann Zeta Functions in 3D': notebooks/zeta_3d.ipynb
-    - 'PyTorch test': notebooks/pytorch_test.ipynb
+    - 'PyTorch test': notebooks/torch_test.ipynb
   - 'Applications':
     - '3D Tree with Roots': tree_roots.md
 

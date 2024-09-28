@@ -9,4 +9,3 @@ dependencies:
   - numpy
   - numba
   - plotly
-  - pip
