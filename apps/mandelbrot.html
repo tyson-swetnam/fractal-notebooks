@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Mandelbrot Set Explorer (WebGL)</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #glcanvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="glcanvas"></canvas>
+    <script type="text/javascript">
+        // Get the canvas element and set its size
+        const canvas = document.getElementById('glcanvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+        if (!gl) {
+            alert('WebGL not supported, please use a modern browser.');
+        }
+
+        // Adjust canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            drawScene();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Vertex shader program
+        const vsSource = `
+            attribute vec2 aVertexPosition;
+            varying vec2 vPosition;
+            void main(void) {
+                vPosition = aVertexPosition;
+                gl_Position = vec4(aVertexPosition, 0.0, 1.0);
+            }
+        `;
+
+        // Fragment shader program
+        const fsSource = `
+            precision highp float;
+            varying vec2 vPosition;
+            uniform vec2 uResolution;
+            uniform float uZoom;
+            uniform vec2 uOffset;
+            uniform int uMaxIter;
+
+            void main(void) {
+                vec2 c = vec2(
+                    (vPosition.x * uResolution.x / uResolution.y) * uZoom + uOffset.x,
+                    vPosition.y * uZoom + uOffset.y
+                );
+                vec2 z = vec2(0.0, 0.0);
+                int i;
+                for (i = 0; i < uMaxIter; i++) {
+                    if (dot(z, z) > 4.0) break;
+                    z = vec2(
+                        z.x * z.x - z.y * z.y + c.x,
+                        2.0 * z.x * z.y + c.y
+                    );
+                }
+                float norm = float(i) / float(uMaxIter);
+                gl_FragColor = vec4(vec3(norm), 1.0);
+            }
+        `;
+
+        // Initialize shaders
+        function initShaderProgram(gl, vsSource, fsSource) {
+            const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+            const shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+                return null;
+            }
+
+            return shaderProgram;
+        }
+
+        function loadShader(gl, type, source) {
+            const shader = gl.createShader(type);
+
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+
+            return shader;
+        }
+
+        const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            },
+            uniformLocations: {
+                resolution: gl.getUniformLocation(shaderProgram, 'uResolution'),
+                zoom: gl.getUniformLocation(shaderProgram, 'uZoom'),
+                offset: gl.getUniformLocation(shaderProgram, 'uOffset'),
+                maxIter: gl.getUniformLocation(shaderProgram, 'uMaxIter'),
+            },
+        };
+
+        // Set up buffers
+        const buffers = initBuffers(gl);
+
+        function initBuffers(gl) {
+            // Create a buffer for the square's positions.
+            const positionBuffer = gl.createBuffer();
+
+            // Select the positionBuffer as the one to apply buffer
+            // operations to from here out.
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+            // Now create an array of positions for the square.
+            const positions = [
+                -1.0, -1.0,
+                1.0, -1.0,
+                -1.0,  1.0,
+                1.0,  1.0,
+            ];
+
+            // Now pass the list of positions into WebGL to build the shape.
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+            return {
+                position: positionBuffer,
+            };
+        }
+
+        // Initial parameters
+        let zoom = 1.0;
+        let offsetX = -0.5;
+        let offsetY = 0.0;
+        let maxIter = 500;
+
+        // Handle mouse events
+        let isDragging = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomAmount = e.deltaY * -0.001;
+            const mouseX = (e.clientX / canvas.width) * 2 - 1;
+            const mouseY = (e.clientY / canvas.height) * -2 + 1;
+            const aspect = canvas.width / canvas.height;
+
+            const x = (mouseX * zoom * aspect) + offsetX;
+            const y = (mouseY * zoom) + offsetY;
+
+            zoom *= 1 + zoomAmount;
+            offsetX = x - mouseX * zoom * aspect;
+            offsetY = y - mouseY * zoom;
+
+            drawScene();
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = (e.clientX - lastX) / canvas.width * zoom * 2;
+                const dy = (e.clientY - lastY) / canvas.height * zoom * 2;
+                offsetX -= dx * (canvas.width / canvas.height);
+                offsetY += dy;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                drawScene();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+
+        function drawScene() {
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Tell WebGL how to pull out the positions from the position buffer into the vertexPosition attribute
+            {
+                const numComponents = 2;  // pull out 2 values per iteration
+                const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+                const normalize = false;  // don't normalize
+                const stride = 0;         // how many bytes to get from one set of values to the next
+                const offset = 0;         // how many bytes inside the buffer to start from
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+                gl.vertexAttribPointer(
+                    programInfo.attribLocations.vertexPosition,
+                    numComponents,
+                    type,
+                    normalize,
+                    stride,
+                    offset);
+                gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+            }
+
+            // Use our shader program
+            gl.useProgram(programInfo.program);
+
+            // Set the shader uniforms
+            gl.uniform2f(programInfo.uniformLocations.resolution, canvas.width, canvas.height);
+            gl.uniform1f(programInfo.uniformLocations.zoom, zoom);
+            gl.uniform2f(programInfo.uniformLocations.offset, offsetX, offsetY);
+            gl.uniform1i(programInfo.uniformLocations.maxIter, maxIter);
+
+            {
+                const offset = 0;
+                const vertexCount = 4;
+                gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            }
+        }
+
+        drawScene();
+    </script>
+</body>
+</html>

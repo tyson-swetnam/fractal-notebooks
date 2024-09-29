@@ -4,6 +4,22 @@ This glossary covers essential terms and equations related to self-affine fracta
 
 ---
 
+## Allometry 
+
+**Definition:** Allometry refers to the study of how the size of one part of an organism changes in relation to the size of the entire organism, or another part of the organism, as it grows. It often explores the relationship between the shape, structure, and function of living organisms as they scale up or down in size.
+
+## Allometric 
+
+**Definition:** The term allometric is used to describe the relationship between different biological variables that change disproportionately relative to each other. For example, allometric scaling often refers to the way that physiological or morphological traits, such as metabolic rate or limb length, grow at different rates compared to the overall size of the organism.
+
+## Isometry 
+
+**Definition:** Isometry refers to a type of scaling where all parts of an object or organism grow at the same rate, maintaining the same proportions as size increases or decreases. In other words, the shape and relative proportions remain constant as the size changes.
+
+## Isometric 
+
+**Definition:** The term isometric describes a relationship where growth or scaling occurs equally in all dimensions, so the overall shape and proportions of the organism or object stay the same as its size changes. For example, if an organism grows isometrically, its limbs, body, and head would increase in size at the same rate, keeping the same shape throughout growth.
+
 ## Self-Affinity
 
 **Definition:** Self-affinity refers to a property of fractals where the fractal appears similar to a part of itself when scaled by different factors along different axes. Unlike self-similar fractals, which are scaled uniformly, self-affine fractals require anisotropic scaling.

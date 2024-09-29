@@ -35,6 +35,7 @@ nav:
     - 'Riemann Zeta Functions in 3D': notebooks/zeta_3d.ipynb
     - 'PyTorch test': notebooks/torch_test.ipynb
   - 'Applications':
+    - 'Setup': applications.md
     - '3D Tree with Roots': tree_roots.md
 
 # must also set Action to use `@nomaterial` branch instead of `@master` for material
@@ -43,15 +44,18 @@ theme:
 # setting features for the navigation tab
   features:
     - navigation.instant
-      #- navigation.expand
+    - navigation.expand
     - navigation.tracking
     - navigation.sections
     - navigation.indexes
+    - navigation.tabs
+    - navigation.tabs.sticky
     - toc.follow
     - content.code.copy
     - content.code.prettify
     - content.action.edit
     - content.action.view
+    - content.tooltips
   # Default values, taken from mkdocs_theme.yml
   language: en
   palette:
@@ -68,15 +72,8 @@ theme:
         icon: material/brightness-4
         name: Switch to system preference
   font:
-    text: Montserrat
-    code: Regular
-  features:
-    - navigation.instant
-    - navigation.tracking
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.indexes
-    - navigation.top
+    text: Garamond
+    code: Courier
   favicon: assets/favicon.ico
   icon:
     logo: material/family-tree
@@ -85,9 +82,9 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ncems/
+      link: https://github.com/tyson-swetnam/
     - icon: fontawesome/brands/youtube
-      link: https://www.youtube.com/c/CyverseOrgProject
+      link: https://www.youtube.com/@PrometheanGift
 
 extra_css:
   - stylesheets/extra.css
