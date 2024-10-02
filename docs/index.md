@@ -2,13 +2,12 @@
 
 ## Authors
 
-Tyson Lee Swetnam [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](http://orcid.org/0000-0002-6639-7181){target=_blank}
+[Tyson Lee Swetnam](https://tysonswetnam.com){target=_blank} [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](http://orcid.org/0000-0002-6639-7181){target=_blank}
  Institute for Computation and Data-enabled Insight, University of Arizona
 
-Jon D. Pelletier Department of Geosciences, University of Arizona
+ [Jon D Pelletier](http://jdpellet.github.io/){target=_blank} [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](http://orcid.org/0000-0002-0702-2646) Department of Geosciences, University of Arizona
 
-
-Brian J. Enquist Department of Ecology and Evolutionary Biology, University of Arizona
+Brian J. Enquist [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](http://orcid.org/0000-0002-6124-7096) Department of Ecology and Evolutionary Biology, University of Arizona
 
 # Abstract
 
@@ -32,12 +31,13 @@ These results may help reveal when communities of individuals have maximized the
 
 ## 1D, 2D, 3D, and 4D fractal-like patterns
 
-We provide a set of example [Jupyter Notebooks]() demonstrating dimensionality of fractal-like behavior in nature.
 
 # Applications
 
-We provide some example applications written in Python which simulate and generate fractal like structures, calculate fractal dimension, and run as stand-alone programs.
+We provide [example applications](tree_roots.md) written in Python which simulate and generate fractal like structures, calculate fractal dimension, and run as stand-alone programs.
 
 # Jupyter Notebooks
 
-For all of our equations and figures in the paper, we provide example notebooks which use publicly available data.
+We provide a set of example [Jupyter Notebooks](notebooks/fractal_generators.ipynb) demonstrating dimensionality of fractal-like behavior in nature.
+
+For all of our equations and figures, we provide example notebooks which use publicly available data and open source code .

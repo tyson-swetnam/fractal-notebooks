@@ -8,6 +8,8 @@ dependencies:
   - ipywidgets
   - streamlit
   - matplotlib
+  - nbformat
   - numpy
   - numba
   - plotly
+  - scipy
