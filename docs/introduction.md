@@ -61,26 +61,32 @@ Equation 2
 | **Mandelbrot 1986** | ✓ | ✓ | | | Multiple | Multiple | [DOI:10.1016/B978-0-444-86995-1.50004-4](https://doi.org/10.1016/B978-0-444-86995-1.50004-4){target=_blank}
 | **Frontier 1987** | ✓ | | ✓ | ✓  | Multiple | Length | [DOI:10.1007/978-3-642-70880-0_9](https://doi.org/10.1007/978-3-642-70880-0_9){target=_blank} |
 | **Tatsumi et al. 1989**  | | |  | | Roots  | Box Count | [URL](https://www.jstage.jst.go.jp/article/jsme1958/32/1/32_1_15/_pdf){target=_blank} |
-| **Obert et al. 1990** | ✓ | |  | | Microbial Colony | Box Count Mass | [DOI:10.1007/BF00309226](https://doi.org/10.1007/BF00309226){target=_blank} |
-| **Sugihara and May 1990** | ✓ | | ✓ | ✓  | Multiple | Multiple | [DOI:10.1126/science.2278542](https://doi.org/10.1126/science.2278542){target=_blank} |
-| **Zeide 1991** | ✓ | |  | | Canopy | Length | [DOI:10.1093/forestry/64.4.375](https://doi.org/10.1093/forestry/64.4.375) |
-| **Zeide and Gresham 1991** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x91-172](https://doi.org/10.1139/x91-172) |
-| **Zeide and Pfeifer 1991** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x91-167](https://doi.org/10.1139/x91-167) |
-| **Fitter and Strickland 1992**| | |  | | Roots  | Length | [DOI:10.1007/978-94-011-2151-0_4](https://doi.org/10.1007/978-94-011-2151-0_4) |
-| **Milne 1992** | ✓ | ✓ |  | ✓  | Multiple | Length | [DOI:10.2307/1940036](https://doi.org/10.2307/1940036) |
-| **Lorimer et al. 1994**  | ✓ | | ✓ | ✓  | Multiple | Length | [DOI:10.1139/x94-126](https://doi.org/10.1139/x94-126) |
-| **Solé and Manrubia 1995** | ✓ | |  | | Canopy | Box Count | [DOI:10.1111/j.1461-0248.1995.tb00303.x](https://doi.org/10.1111/j.1461-0248.1995.tb00303.x) |
-| **Tatsumi et al. 1995** | | | | | [DOI:10.1626/jcs.64.50](https://doi.org/10.1626/jcs.64.50)
-| **Loehle and Li 1996** | ✓ | ✓ |  | | Information |  | [DOI:10.1016/S0303-2647(96)00021-0](https://doi.org/10.1016/S0303-2647(96)00021-0) |
-| **Halley 1996**  | ✓ | |  | | 1/f noises  | Power Spectral | [DOI:10.1098/rspa.1996.0027](https://doi.org/10.1098/rspa.1996.0027) |
+| **Obert et al. 1990** | ✓ | |  | | Microbial Colony | Box Count Mass | [DOI:10.1128/jb.172.3.1180-1185.1990](https://doi.org/10.1128/jb.172.3.1180-1185.1990){target=_blank} |
+| **Sugihara and May 1990** | ✓ | | ✓ | ✓  | Multiple | Multiple | [DOI:10.1016/0169-5347(90)90235-6](https://doi.org/10.1016/0169-5347(90)90235-6){target=_blank} |
+| **Zeide 1991** | ✓ | |  | | Canopy | Length | [DOI:0378-1127(91)90230-S](https://doi.org/10.1016/0378-1127(91)90230-S) |
+| **Zeide and Gresham 1991** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x91-169](https://doi.org/10.1139/x91-169) |
+| **Zeide and Pfeifer 1991** | ✓ | |  | | Canopy | Length | [DOI:10.1093/forestscience/37.5.1253](https://doi.org/10.1093/forestscience/37.5.1253) |
+| **Fitter and Strickland 1992**| | |  | | Roots  | Length | [DOI:10.1111/j.1469-8137.1992.tb01110.x](https://doi.org/10.1111/j.1469-8137.1992.tb01110.x) |
+| **Milne 1992** | ✓ | ✓ |  | ✓  | Multiple | Length | [DOI:10.1086/285312](https://doi.org/10.1086/285312) |
+| **Milne et al. 1992** | | | | | | | [DOI:10.1016/0040-5809(92)90033-P](https://doi.org/10.1016/0040-5809(92)90033-P) |
+| **Plotnick et al. 1993** | | | | | | Lacunarity | | [DOI:10.1007/BF00125351](https://doi.org/10.1007/BF00125351) |
+| **Lorimer et al. 1994**  | ✓ | | ✓ | ✓  | Multiple | Length | [DOI:10.2737/NC-GTR-170](https://doi.org/10.2737/NC-GTR-170) |
+| **Solé and Manrubia 1995** | ✓ | | | Canopy | Box Count | [DOI:10.1006/jtbi.1995.0040](https://doi.org/10.1006/jtbi.1995.0040) |
+| **Tatsumi et al. 1995** | | | | | | [DOI:10.1626/jcs.64.50](https://doi.org/10.1626/jcs.64.50)
+| **Plotnick 1995** | | | | | | [DOI:10.2110/scn.95.36.0001](https://doi.org/10.2110/scn.95.36.0001) |
+| **Loehle and Li 1996** | ✓ | ✓ |  | | Information |  | [DOI:10.1016/0304-3800(94)00177-4](https://doi.org/10.1016/0304-3800(94)00177-4) |
+| **Halley 1996**  | ✓ | |  | | 1/f noises  | Power Spectral | [DOI:10.1016/0169-5347(96)81067-6](https://doi.org/10.1016/0169-5347(96)81067-6) |
 | **Plotnick et al. 1996** | | |  | | Canopy | Gliding Box (lacunarity) | [DOI:10.2307/2265712](https://doi.org/10.2307/2265712) |
 | **Weishampel et al. 1998** | ✓ | |  | | Canopy | Lacunarity  | [DOI:10.1016/S0303-2647(97)00092-8](https://doi.org/10.1016/S0303-2647(97)00092-8) |
 | **Zeide 1998** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x98-139](https://doi.org/10.1139/x98-139) |
+| **West et al. 1998** | | | | | | [DOI:xx](https://pdodds.w3.uvm.edu/files/papers/others/1998/west1998a.pdf) |
 | **West 1999** | ✓ | | ✓ | | Branching | Box Count | [DOI:10.1126/science.284.5420.1677](https://doi.org/10.1126/science.284.5420.1677) |
 | **West et al. 1999**  | ✓ | | ✓ | | Branching |  | [DOI:10.1126/science.276.5309.122](https://doi.org/10.1126/science.276.5309.122) |
 | **Brown et al. 2000** | ✓ | | ✓ | ✓  | Multiple |  | [DOI:10.1073/pnas.97.11.6242](https://doi.org/10.1073/pnas.97.11.6242) |
 | **Li 2000** | ✓ | ✓ |  | | Patch  | Information, Box Count | [DOI:10.1006/jtbi.2000.2070](https://doi.org/10.1006/jtbi.2000.2070) |
+| **Dale 2000** | | | | | Lacunarity | | [DOI:10.1023/A:1008176601940](https://doi.org/10.1023/A:1008176601940)
 | **Enquist et al. 2002**  | ✓ | |  | | Canopy, Roots  |  | [DOI:10.1038/nature01269](https://doi.org/10.1038/nature01269) |
+| **Fitter 2002** | | | | | | [DOI:xx](https://www.taylorfrancis.com/chapters/edit/10.1201/9780203909423-11/characteristics-functions-root-systems-alastair-fitter) |
 | **Halley et al. 2004** | | | ✓ | | |  | [DOI:10.1098/rspa.2004.1384](https://doi.org/10.1098/rspa.2004.1384) |
 | **Drake and Weishampel 2000** | ✓ | |  | | Canopy | Multifractals | [DOI:10.1007/s004420050009](https://doi.org/10.1007/s004420050009) |
 | **Eamus et al. 2002** | | |  | | Roots  | --  | [DOI:10.1071/FP02118](https://doi.org/10.1071/FP02118) |
@@ -89,6 +95,10 @@ Equation 2
 | **Enquist et al. 2010**  | ✓ | |  | | Canopy, Roots  | --  | [DOI:10.1098/rspb.2010.1080](https://doi.org/10.1098/rspb.2010.1080) |
 | **West et al. 2010**  | | |  | | |  | [DOI:10.1038/s41586-019-0976-6](https://doi.org/10.1038/s41586-019-0976-6) |
 | **Savage et al. 2010** | | |  | | |  | [DOI:10.1126/science.1071935](https://doi.org/10.1126/science.1071935) |
-| **Seuront 2011** | ✓ | ✓ | ✓ | ✓  | Multiple |
+| **Seuront 2011** | ✓ | ✓ | ✓ | ✓  | Multiple | | |
+| **Loke & Chisholm** | | | | | | | Box Counting | [DOI:10.1111/ele.14084 ](https://doi.org/10.1111/ele.14084) |
+| **Fischer & Jucker 2023** | | | | | | Box Counting | [DOI:10.1111/1365-2745.14244](https://doi.org/10.1111/1365-2745.14244) |
+| **Authors Year** ✓ | ✓ | ✓ | ✓ |  | [DOI:]() |
+| 
 ---
 
