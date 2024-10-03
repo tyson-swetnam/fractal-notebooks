@@ -55,12 +55,21 @@ Equation 2
 
 | **Author(s) by Date** | **Self-similarity** | **Self-affinity** | **Allometric** | **Review (meta-analysis)** | **Characteristic Measured** | **Fractal Dimension(s)** | **DOI/URL** |
 |-----------------------|---------------------|-------------------|----------------|----------------------------|----------------------------|--------------------------|-------------|
+| **Rubner 1883** | | | ✓ | | Ueber den Einfluss der Körpergröße auf Stoffwechsel  | | [DOI: ]() |
+| **Kleiber 1932** |  | | ✓ | | Body size and metabolism |  | [DOI: ]() |
+| **Hemmingsen 1960** |  | | ✓ | | Energy metabolism as related to body size and respiratory surface, and its evolution | | [DOI:XX](https://pdodds.w3.uvm.edu/research/papers/others/1960/hemmingsen1960a.pdf) |
+| **Ultsch 1974** | | | ✓ | | Metabolism and Skeleton size | | [DOI:10.2307/2424317](https://doi.org/10.2307/2424317) |
+| **Taylor et al. 1981** | | | | | Maximum aerobic capacity | | [DOI:10.1016/0034-5687(81)90075-X](https://doi.org/10.1016/0034-5687(81)90075-X) | 
 | **Mandelbrot 1982** | ✓ |  |  | ✓  | Multiple | Multiple | [DOI:10.7560/703544-005](https://doi.org/10.7560/703544-005){target=_blank} |
+| **Bradbury and Reichelt 1983** | ✓ | ✓ | | | | Dimensional analyses | Box-counting, Information Dimension | [DOI:10.1016/0304-3800(94)00177-4](https://doi.org/10.1016/0304-3800(94)00177-4) |
 | **Sernetz et al. 1985**  | ✓ | | ✓ | ✓  | Multiple | Length | [DOI:10.1016/S0022-5193(85)80218-6](https://doi.org/10.1016/S0022-5193(85)80218-6){target=_blank} |
 | **Morse et al. 1985** | ✓ | |  | | Canopy | Length | [DOI:10.1038/314731a0](https://doi.org/10.1038/314731a0){target=_blank} |
 | **Mandelbrot 1986** | ✓ | ✓ | | | Multiple | Multiple | [DOI:10.1016/B978-0-444-86995-1.50004-4](https://doi.org/10.1016/B978-0-444-86995-1.50004-4){target=_blank}
+| **Prothero 1986** | | | | | | [DOI:10.1016/0300-9629(86)90569-4](https://doi.org/10.1016/0300-9629(86)90569-4)
 | **Frontier 1987** | ✓ | | ✓ | ✓  | Multiple | Length | [DOI:10.1007/978-3-642-70880-0_9](https://doi.org/10.1007/978-3-642-70880-0_9){target=_blank} |
+| **Barnsley 1988** | | | | | | | [DOI:10.1007/978-1-4612-3784-6_1](htps://doi.org/10.1007/978-1-4612-3784-6_1)
 | **Tatsumi et al. 1989**  | | |  | | Roots  | Box Count | [URL](https://www.jstage.jst.go.jp/article/jsme1958/32/1/32_1_15/_pdf){target=_blank} |
+| **Loehle 1990** | | | | | | [DOI:10.1007/BF00153802](https://doi.org/10.1007/BF00153802)
 | **Obert et al. 1990** | ✓ | |  | | Microbial Colony | Box Count Mass | [DOI:10.1128/jb.172.3.1180-1185.1990](https://doi.org/10.1128/jb.172.3.1180-1185.1990){target=_blank} |
 | **Sugihara and May 1990** | ✓ | | ✓ | ✓  | Multiple | Multiple | [DOI:10.1016/0169-5347(90)90235-6](https://doi.org/10.1016/0169-5347(90)90235-6){target=_blank} |
 | **Zeide 1991** | ✓ | |  | | Canopy | Length | [DOI:0378-1127(91)90230-S](https://doi.org/10.1016/0378-1127(91)90230-S) |
@@ -74,17 +83,22 @@ Equation 2
 | **Solé and Manrubia 1995** | ✓ | | | Canopy | Box Count | [DOI:10.1006/jtbi.1995.0040](https://doi.org/10.1006/jtbi.1995.0040) |
 | **Tatsumi et al. 1995** | | | | | | [DOI:10.1626/jcs.64.50](https://doi.org/10.1626/jcs.64.50)
 | **Plotnick 1995** | | | | | | [DOI:10.2110/scn.95.36.0001](https://doi.org/10.2110/scn.95.36.0001) |
+| **Calder 1996** | | | | | Size and life history | [DOI:]() |
 | **Loehle and Li 1996** | ✓ | ✓ |  | | Information |  | [DOI:10.1016/0304-3800(94)00177-4](https://doi.org/10.1016/0304-3800(94)00177-4) |
 | **Halley 1996**  | ✓ | |  | | 1/f noises  | Power Spectral | [DOI:10.1016/0169-5347(96)81067-6](https://doi.org/10.1016/0169-5347(96)81067-6) |
 | **Plotnick et al. 1996** | | |  | | Canopy | Gliding Box (lacunarity) | [DOI:10.2307/2265712](https://doi.org/10.2307/2265712) |
 | **Weishampel et al. 1998** | ✓ | |  | | Canopy | Lacunarity  | [DOI:10.1016/S0303-2647(97)00092-8](https://doi.org/10.1016/S0303-2647(97)00092-8) |
 | **Zeide 1998** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x98-139](https://doi.org/10.1139/x98-139) |
 | **West et al. 1998** | | | | | | [DOI:xx](https://pdodds.w3.uvm.edu/files/papers/others/1998/west1998a.pdf) |
+| **Banavar, Maritan, & Rinaldo 1999** | | | | | | Transportation networks | [DOI:]() | 
 | **West 1999** | ✓ | | ✓ | | Branching | Box Count | [DOI:10.1126/science.284.5420.1677](https://doi.org/10.1126/science.284.5420.1677) |
 | **West et al. 1999**  | ✓ | | ✓ | | Branching |  | [DOI:10.1126/science.276.5309.122](https://doi.org/10.1126/science.276.5309.122) |
 | **Brown et al. 2000** | ✓ | | ✓ | ✓  | Multiple |  | [DOI:10.1073/pnas.97.11.6242](https://doi.org/10.1073/pnas.97.11.6242) |
 | **Li 2000** | ✓ | ✓ |  | | Patch  | Information, Box Count | [DOI:10.1006/jtbi.2000.2070](https://doi.org/10.1006/jtbi.2000.2070) |
 | **Dale 2000** | | | | | Lacunarity | | [DOI:10.1023/A:1008176601940](https://doi.org/10.1023/A:1008176601940)
+| **Zhu & Bunn 2001** |                     |                   |                |                            | Cell oxygen sensing                                                                                 |                          | [DOI: ]()    |
+| **Darveau et al. 2002** | | | X || Metabolism | | [DOI:10.1038/417166a](https://doi.org/10.1038/417166a)    |
+| **Hochachka et al. 2003** | | | X | X | Body mass effects on metabolism | | [DOI:10.1016/S1095-6433(02)00364-1](https://doi.org/10.1016/S1095-6433(02)00364-1)    |
 | **Enquist et al. 2002**  | ✓ | |  | | Canopy, Roots  |  | [DOI:10.1038/nature01269](https://doi.org/10.1038/nature01269) |
 | **Fitter 2002** | | | | | | [DOI:xx](https://www.taylorfrancis.com/chapters/edit/10.1201/9780203909423-11/characteristics-functions-root-systems-alastair-fitter) |
 | **Halley et al. 2004** | | | ✓ | | |  | [DOI:10.1098/rspa.2004.1384](https://doi.org/10.1098/rspa.2004.1384) |
@@ -94,10 +108,15 @@ Equation 2
 | **Zhang et al. 2007** | | |  | | Canopy | Length | [DOI:10.1016/j.ecolmodel.2006.08.002](https://doi.org/10.1016/j.ecolmodel.2006.08.002) |
 | **Enquist et al. 2010**  | ✓ | |  | | Canopy, Roots  | --  | [DOI:10.1098/rspb.2010.1080](https://doi.org/10.1098/rspb.2010.1080) |
 | **West et al. 2010**  | | |  | | |  | [DOI:10.1038/s41586-019-0976-6](https://doi.org/10.1038/s41586-019-0976-6) |
-| **Savage et al. 2010** | | |  | | |  | [DOI:10.1126/science.1071935](https://doi.org/10.1126/science.1071935) |
-| **Seuront 2011** | ✓ | ✓ | ✓ | ✓  | Multiple | | |
-| **Loke & Chisholm** | | | | | | | Box Counting | [DOI:10.1111/ele.14084 ](https://doi.org/10.1111/ele.14084) |
-| **Fischer & Jucker 2023** | | | | | | Box Counting | [DOI:10.1111/1365-2745.14244](https://doi.org/10.1111/1365-2745.14244) |
+| **Savage et al. 2010** | | |  | | |  | [DOI:10.1073/pnas.1012194108](https://doi.org/10.1073/pnas.1012194108) |
+| **Seuront 2011** | ✓ | ✓ | ✓ | ✓  | Multiple | | [DOI:10.1016/j.physa.2010.09.025](https://doi.org/10.1016/j.physa.2010.09.025) |
+||
+| **Brummer et al. 2017** | | | | | | | [DOI:10.1371/journal.pcbi.1005394](https://doi.org/10.1371/journal.pcbi.1005394)
+| **Husain et al. 2022a** | | | | | | | [DOI:10.3390/fractalfract6020089](https://doi.org/10.3390/fractalfract6020089)
+| **Husain et al. 2022b** | | | | | | | [DOI:10.3390/fractalfract6070379](https://doi.org/10.3390/fractalfract6070379)
+| **Loke & Chisholm 2022** | | | | | | | Box Counting | [DOI:10.1111/ele.14084 ](https://doi.org/10.1111/ele.14084) |
+| **Fischer & Jucker 2023** | ✓ | | ✓ | | | Box Counting | [DOI:10.1111/1365-2745.14244](https://doi.org/10.1111/1365-2745.14244) |
+| **Ain et al. 2024** | ✓| | | | ✓ | | | [DOI:10.1142/S0218348X24500166](https://doi.org/10.1142/S0218348X24500166)
 | **Authors Year** ✓ | ✓ | ✓ | ✓ |  | [DOI:]() |
 | 
 ---
