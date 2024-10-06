@@ -4,16 +4,13 @@
 
 In 1975, Benoit Mandelbrot introduced the word 'fractal' to describe self-similar and irregular patterns found in nature (Mandelbrot [1977](https://riocuarto.gov.ar/files/documentos/1603551413_Literatura%20de%20Rio%20Cuarto%20entre%20Todos%20-%20A%C3%91O%202%20.%20N%C2%BA11.pdf){target=_blank}). In 1985 Mandelbrot published his book on self-affine fractals and fractal dimensions (Mandelbrot [1985](https://iopscience.iop.org/article/10.1088/0031-8949/32/4/001/pdf)). Mandelbrot later published on multifractals, 1/f noises, and Gaussian self-affinity in nature (Mandelbrot ([2002](https://www.google.com/books/edition/Gaussian_Self_Affinity_and_Fractals/CLLkvv9NhgEC?hl=en&gbpv=1&dq=Mandelbrot+self-affinity&pg=PA1&printsec=frontcover){target=_blank}, [2013](https://www.google.com/books/edition/Multifractals_and_1_%C6%92_Noise/oh7nBwAAQBAJ?hl=en&gbpv=1&dq=Mandelbrot+self-affinity&pg=PA206&printsec=frontcover){target=_blank}))
 
-
 ![The Julia Set](assets/julia_set.png){ width="500" }
 
 Plate 1: [Gaston Julia]([Wikipedia](https://en.wikipedia.org/wiki/Gaston_Julia)) created so-called [Julia sets](https://en.wikipedia.org/wiki/Julia_set) using interative functions over 100 years ago. [code](../apps/julia.py) written in Python.
 
-
 ![The Mandelbrot Set](assets/mandelbrot_set.png){ width="500" }
 
 Plate 2: The so-called [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set), named in honor of Benoit Mandelbrot. [code](../apps/mandelbrot.py) written in Python. 
-
 
 Mandelbrot was careful to point out that natural phenomena, including hierarchical branching networks in organisms, are "fractal-like" over a limited range, unlike true fractals, which repeat infinitely. In a review of the most widely cited research on fractals in biology, we found that vascular organisms and forests are almost exclusively referred to as being "self-similar," and, critically, they were measured using self-similar fractal dimension techniques ([Table 1](#table-1-reported-fractal-dimensions-and-techniques-measuring-fractal-behavior-in-plants-or-forests)).
 
@@ -25,7 +22,15 @@ In most cases, the misuse of "self-similar" has had limited impact on the field.
 
 Reported fractal dimensions of trees and forests using self-similar dimensional analysis are likely to be incorrect based on these facts. Specifically, papers that report the length dimension [Hausdorff-Besicovitch] or box-counting dimension [Minkowski-Bouligand] of hierarchical branching phenomena (leaves, branches, forests) (Table 1) are more problematic.
 
+![Pythagoras tree](assets/pythagoras_tree.png){ width="500" }
+
+Plate 3: The Pythagoras Tree ([Bosman 1942](https://en.wikipedia.org/wiki/Pythagoras_tree_(fractal))). Note: the fractal uses self-similar squares with a \(45^\circ\) angle, and branches asymetrically in the positive y-axis. [code](../apps/pythagoras_tree.py) written in Python.
+
 Mandelbrot (1985) explained how evaluating fractals using self-similar techniques yields inaccurate results for measuring self-affine fractals because self-affine processes change their dimension between local and global scales. Since vascular plants have self-affine geometries, measuring them with self-similar fractal dimensions is likely to produce spurious values, as demonstrated in this study.
+
+![Branching tree](assets/branching_tree.png){ width="500" }
+
+Plate 3: A Pythagoras tree with a \(30^\circ\) angle that also includes a length and width variable. Note: the fractal uses a self-affine dimension, where branch length and width decrease at a different rate. [code](../apps/branching_tree.py) written in Python.
 
 The basic fractal concept requires an object to exhibit a self-similar signal or shape, which can be measured as:
 
@@ -50,6 +55,8 @@ m(\delta \varepsilon) = \delta^{\beta} m(\varepsilon)
 \]
 
 Equation 2
+
+
 
 #### **Table 1:** Reported fractal dimensions and techniques measuring fractal behavior in plants or forests
 
@@ -116,7 +123,8 @@ Equation 2
 | **Husain et al. 2022b** | | | | | | | [DOI:10.3390/fractalfract6070379](https://doi.org/10.3390/fractalfract6070379)
 | **Loke & Chisholm 2022** | | | | | | | Box Counting | [DOI:10.1111/ele.14084 ](https://doi.org/10.1111/ele.14084) |
 | **Fischer & Jucker 2023** | ✓ | | ✓ | | | Box Counting | [DOI:10.1111/1365-2745.14244](https://doi.org/10.1111/1365-2745.14244) |
-| **Ain et al. 2024** | ✓| | | | ✓ | | | [DOI:10.1142/S0218348X24500166](https://doi.org/10.1142/S0218348X24500166)
+| **Ain et al. 2024** | ✓ | | | | ✓ | | | [DOI:10.1142/S0218348X24500166](https://doi.org/10.1142/S0218348X24500166)
+| **Maryenko & Stepanenko 2024** | ✓ | ✓ | | | box-counting, contour-scaling  | Brain tissue | | [DOI:10.1016/j.tria.2024.100352](https://doi.org/10.1016/j.tria.2024.100352)
 | **Authors Year** ✓ | ✓ | ✓ | ✓ |  | [DOI:]() |
 | 
 ---

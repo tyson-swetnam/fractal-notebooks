@@ -17,6 +17,7 @@ copyright: 'Copyright &copy; 2024 The University of Arizona'
 nav:
   - Home: 
     - 'Home': index.md
+    - 'Dimensionality of Fractals': dims.md
     - 'Introduction': introduction.md
     - 'Methods': methods.md
     - 'Results': results.md
@@ -36,7 +37,8 @@ nav:
     - 'PyTorch test': notebooks/torch_test.ipynb
   - 'Applications':
     - 'Setup': applications.md
-    - '3D Tree with Roots': tree_roots.md
+    - 'Differential Box-Counting': dbc.md
+    - 'Viz: 3D Branching': tree_roots.md
 
 # must also set Action to use `@nomaterial` branch instead of `@master` for material
 theme:

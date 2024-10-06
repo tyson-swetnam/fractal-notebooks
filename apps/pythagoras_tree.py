@@ -28,8 +28,8 @@ def draw_pythagoras_tree(ax, x, y, size, angle, depth, max_depth):
     square[:, 0] += x
     square[:, 1] += y
 
-    # Draw the square
-    ax.fill(square[:, 0], square[:, 1], color='green', edgecolor='black')
+    # Draw the square in black
+    ax.fill(square[:, 0], square[:, 1], color='black', edgecolor='black')
 
     # Calculate new size for the child squares
     new_size = size * np.sqrt(2) / 2
@@ -48,8 +48,8 @@ def draw_pythagoras_tree(ax, x, y, size, angle, depth, max_depth):
     draw_pythagoras_tree(ax, left_x, left_y, new_size, left_angle, depth + 1, max_depth)
     draw_pythagoras_tree(ax, right_x, right_y, new_size, right_angle, depth + 1, max_depth)
 
-# Set up the plot
-fig, ax = plt.subplots()
+# Set up the plot with white background
+fig, ax = plt.subplots(facecolor='white')
 ax.set_aspect('equal')
 ax.axis('off')
 
@@ -63,9 +63,13 @@ max_depth = 12  # Maximum recursion depth
 # Draw the Pythagoras Tree
 draw_pythagoras_tree(ax, x0, y0, size, angle, depth, max_depth)
 
-# Adjust plot limits
-ax.set_xlim(-5, 5)
-ax.set_ylim(0, 10)
+# Let matplotlib automatically adjust the view
+# Removed fixed axis limits to enable automatic cropping
+# ax.set_xlim(-5, 5)
+# ax.set_ylim(0, 10)
 
-# Save the plot as a PNG file
-plt.savefig('pythagoras_tree.png', dpi=2400, bbox_inches='tight')
+# Save the plot as a black and white PNG file, cropped to the content
+plt.savefig('pythagoras_tree.png', dpi=2400, bbox_inches='tight', pad_inches=0, facecolor='white')
+
+# Optionally display the plot
+plt.show()
