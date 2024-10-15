@@ -127,15 +127,12 @@ Imagine recording the sound of ocean waves:
   
 - **Music Production**: Pink noise is used to test and calibrate audio equipment due to its balanced frequency distribution.
 
-### 2D Fractals
+## 2D Fractals
 
-Certainly! An example of a two-dimensional fractal similar to the one-dimensional fractal signals is the concept of **fractal textures** found in natural images, such as satellite photos of landscapes, cloud formations, or even medical images. One specific mathematical model that captures this is the **fractional Brownian surface** (fBs), which extends the idea of fractional Brownian motion into two dimensions.
 
----
+### Fractional Brownian Surfaces (fBs)
 
-## Fractional Brownian Surfaces (fBs)
-
-### What Are Fractional Brownian Surfaces?
+#### What Are Fractional Brownian Surfaces?
 
 Fractional Brownian surfaces are two-dimensional generalizations of fractional Brownian motion, representing surfaces whose elevations vary in a statistically self-similar way across different spatial scales. They are used to model natural terrains and textures that exhibit fractal characteristics.
 
