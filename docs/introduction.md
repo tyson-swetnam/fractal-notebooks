@@ -6,11 +6,11 @@ In 1975, Benoit Mandelbrot introduced the word 'fractal' to describe self-simila
 
 ![The Julia Set](assets/julia_set.png){ width="500" }
 
-Plate 1: [Gaston Julia]([Wikipedia](https://en.wikipedia.org/wiki/Gaston_Julia)) created so-called [Julia sets](https://en.wikipedia.org/wiki/Julia_set) using interative functions over 100 years ago. [code](../apps/julia.py) written in Python.
+Plate 1: [Gaston Julia]([Wikipedia](https://en.wikipedia.org/wiki/Gaston_Julia)) created so-called [Julia sets](https://en.wikipedia.org/wiki/Julia_set) using interative functions over 100 years ago. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/julia.py){target=_blank} written in Python.
 
 ![The Mandelbrot Set](assets/mandelbrot_set.png){ width="500" }
 
-Plate 2: The so-called [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set), named in honor of Benoit Mandelbrot. [code](../apps/mandelbrot.py) written in Python. 
+Plate 2: The so-called [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set), named in honor of Benoit Mandelbrot. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/mandelbrot.py){target=_blank} written in Python. 
 
 Mandelbrot was careful to point out that natural phenomena, including hierarchical branching networks in organisms, are "fractal-like" over a limited range, unlike true fractals, which repeat infinitely. In a review of the most widely cited research on fractals in biology, we found that vascular organisms and forests are almost exclusively referred to as being "self-similar," and, critically, they were measured using self-similar fractal dimension techniques ([Table 1](#table-1-reported-fractal-dimensions-and-techniques-measuring-fractal-behavior-in-plants-or-forests)).
 
@@ -24,13 +24,13 @@ Reported fractal dimensions of trees and forests using self-similar dimensional 
 
 ![Pythagoras tree](assets/pythagoras_tree.png){ width="500" }
 
-Plate 3: The Pythagoras Tree ([Bosman 1942](https://en.wikipedia.org/wiki/Pythagoras_tree_(fractal))). Note: the fractal uses self-similar squares with a \(45^\circ\) angle, and branches asymetrically in the positive y-axis. [code](../apps/pythagoras_tree.py) written in Python.
+Plate 3: The Pythagoras Tree ([Bosman 1942](https://en.wikipedia.org/wiki/Pythagoras_tree_(fractal))). Note: the fractal uses self-similar squares with a \(45^\circ\) angle, and branches asymetrically in the positive y-axis. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/pythagoras_tree.py){target=_blank} written in Python.
 
 Mandelbrot (1985) explained how evaluating fractals using self-similar techniques yields inaccurate results for measuring self-affine fractals because self-affine processes change their dimension between local and global scales. Since vascular plants have self-affine geometries, measuring them with self-similar fractal dimensions is likely to produce spurious values, as demonstrated in this study.
 
 ![Branching tree](assets/branching_tree.png){ width="500" }
 
-Plate 3: A Pythagoras tree with a \(30^\circ\) angle that also includes a length and width variable. Note: the fractal uses a self-affine dimension, where branch length and width decrease at a different rate. [code](../apps/branching_tree.py) written in Python.
+Plate 3: A Pythagoras tree with a \(30^\circ\) angle that also includes a length and width variable. Note: the fractal uses a self-affine dimension, where branch length and width decrease at a different rate. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/branching_tree.py){target=_blank} written in Python.
 
 The basic fractal concept requires an object to exhibit a self-similar signal or shape, which can be measured as:
 
