@@ -17,7 +17,6 @@ copyright: 'Copyright &copy; 2024 The University of Arizona'
 nav:
   - Home: 
     - 'Home': index.md
-    - 'Dimensionality of Fractals': dims.md
     - 'Introduction': introduction.md
     - 'Methods': methods.md
     - 'Results': results.md
@@ -25,6 +24,7 @@ nav:
     - 'Conclusion': conclusion.md
     - 'References': references.md
     - 'Installation': installation.md
+    - 'Dimensionality of Fractals': dims.md
     - 'Glossary & Maths': glossary.md
   - Jupyter Notebooks:
     - 'Diffusion Limited Aggregation (DLA)': notebooks/old_dla.ipynb
