@@ -1,0 +1,18 @@
+# allow-jupyter-to-weaviate.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-jupyter-to-weaviate
+  namespace: ai-workloads
+spec:
+  podSelector:
+    matchLabels:
+      app: weaviate
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: jupyterlab
+      ports:
+        - protocol: TCP
+          port: 8080

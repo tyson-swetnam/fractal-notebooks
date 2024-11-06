@@ -1,3 +1,11 @@
+# LLM embedding stuffs
+*.npy
+*.jsonl
+
+
+embeddings/
+schemas/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

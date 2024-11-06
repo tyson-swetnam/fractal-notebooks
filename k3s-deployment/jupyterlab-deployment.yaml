@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyterlab
+  namespace: ai-workloads
+  labels:
+    app: jupyterlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyterlab
+  template:
+    metadata:
+      labels:
+        app: jupyterlab
+    spec:
+      containers:
+        - name: jupyterlab
+          image: quay.io/jupyter/pytorch-notebook:cuda12-latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+            - containerPort: 8080
+          args:
+            - start-notebook.sh
+            - "--NotebookApp.token=''"
+          env:
+            - name: JUPYTER_ENABLE_LAB
+              value: "yes"
+          volumeMounts:
+            - name: jupyterlab-data
+              mountPath: /home/jovyan
+          resources:
+            limits:
+              cpu: "16"
+              memory: "64Gi"
+      #        nvidia.com/gpu: 1
+            requests:
+              cpu: "2"
+              memory: "4Gi"
+      #        nvidia.com/gpu: 1
+      volumes:
+        - name: jupyterlab-data
+          persistentVolumeClaim:
+            claimName: jupyterlab-pvc
+      #nodeSelector:
+      #  nvidia.com/gpu.present: "true"

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jupyterlab-pvc
+  namespace: ai-workloads
+  annotations:
+    volume.kubernetes.io/selected-node: r01c04u17-gpu08.cyverse.org
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: "local-storage" # Corrected
+  
