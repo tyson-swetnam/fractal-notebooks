@@ -4,5 +4,5 @@ flags:
 sharing:
   timeSlicing:
     resources:
-    - name: nvidia.com/gpu
-      replicas: 2 
+      - name: nvidia.com/gpu
+        replicas: 2

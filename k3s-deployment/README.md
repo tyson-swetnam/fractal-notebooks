@@ -28,7 +28,7 @@ If you haven't installed K3s yet, follow these steps:
 2. **Verify Installation:**
 
    ```bash
-   sudo k3s kubectl get nodes
+   kubectl get nodes
    ```
 
    You should see your node listed with the status `Ready`.
@@ -48,25 +48,25 @@ If you haven't installed K3s yet, follow these steps:
   
 ---
 
-## 2. Create Namespace
+## 2. Create AI Workloads Namespace
 
 Organize your deployments by creating a dedicated namespace.
 
 ```bash
-sudo k3s kubectl create namespace ai-workloads
+kubectl create namespace ai-workloads
 ```
 
 Verify the namespace creation:
 
 ```bash
-sudo k3s kubectl get namespaces
+kubectl get namespaces
 ```
 
 You should see `ai-workloads` listed among the namespaces.
 
 ---
 
-## 3. Deploy Weaviate
+## 3. Deploy Weaviate locally
 
 Weaviate is an open-source vector search engine.
 
@@ -82,19 +82,24 @@ kind: PersistentVolumeClaim
 metadata:
   name: weaviate-pvc
   namespace: ai-workloads
+  annotations:
+    volume.kubernetes.io/selected-node: gpu06.cyverse.org
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 32Gi
-  storageClassName: local-path
+      storage: 10Gi
+  storageClassName: "local-storage" # Corrected
+
 ```
+
+Note: you need to specify the resource you're using as annotation: `volume.kubernetes.io/selected-node: gpu06.cyverse.org`
 
 Apply the PVC:
 
 ```bash
-sudo k3s kubectl apply -f weaviate-pvc.yaml -n ai-workloads
+kubectl apply -f weaviate-pvc.yaml -n ai-workloads
 ```
 
 ### 3.2. Apply Weaviate Deployment and Service
@@ -175,8 +180,8 @@ spec:
 Apply the Deployment and Service:
 
 ```bash
-sudo k3s kubectl apply -f weaviate-deployment.yaml -n ai-workloads
-sudo k3s kubectl apply -f weaviate-service.yaml -n ai-workloads
+kubectl apply -f weaviate-deployment.yaml -n ai-workloads
+kubectl apply -f weaviate-service.yaml -n ai-workloads
 ```
 
 ---
@@ -195,19 +200,22 @@ kind: PersistentVolumeClaim
 metadata:
   name: jupyterlab-pvc
   namespace: ai-workloads
+  annotations:
+    volume.kubernetes.io/selected-node: gpu06.cyverse.org
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-  storageClassName: local-path
+  storageClassName: "local-storage" # Corrected
+  
 ```
 
 Apply the PVC:
 
 ```bash
-sudo k3s kubectl apply -f jupyterlab-pvc.yaml -n ai-workloads
+kubectl apply -f jupyterlab-pvc.yaml -n ai-workloads
 ```
 
 ### 4.2. Apply Jupyter Lab Deployment and Service
@@ -303,8 +311,8 @@ print(passwd('your_secure_password'))
 **Apply the Deployment and Service:**
 
 ```bash
-sudo k3s kubectl apply -f jupyterlab-deployment.yaml -n ai-workloads
-sudo k3s kubectl apply -f jupyterlab-service.yaml -n ai-workloads
+kubectl apply -f jupyterlab-deployment.yaml -n ai-workloads
+kubectl apply -f jupyterlab-service.yaml -n ai-workloads
 ```
 
 ---
@@ -346,25 +354,25 @@ If your pods are not running as expected, follow these steps:
 1. **Check Pod Status:**
 
    ```bash
-   sudo k3s kubectl get pods -n ai-workloads
+   kubectl get pods -n ai-workloads
    ```
 
 2. **Describe Pod for Details:**
 
    ```bash
-   sudo k3s kubectl describe pod <pod-name> -n ai-workloads
+   kubectl describe pod <pod-name> -n ai-workloads
    ```
 
 3. **Check Logs:**
 
    ```bash
-   sudo k3s kubectl logs <pod-name> -n ai-workloads
+   kubectl logs <pod-name> -n ai-workloads
    ```
 
 4. **Verify PVCs:**
 
    ```bash
-   sudo k3s kubectl get pvc -n ai-workloads
+   kubectl get pvc -n ai-workloads
    ```
 
 5. **Ensure StorageClass and Provisioner are Correctly Configured.**
@@ -391,7 +399,7 @@ If your pods are not running as expected, follow these steps:
 To remove the deployments and namespace:
 
 ```bash
-sudo k3s kubectl delete namespace ai-workloads
+kubectl delete namespace ai-workloads
 ```
 
 **Note:** This will delete all resources within the `ai-workloads` namespace, including PVCs and their associated data.
