@@ -90,10 +90,12 @@ extra:
 
 extra_css:
   - stylesheets/extra.css
+  - chatbot_widget.css
 
 extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - chatbot_widget.js
 
 # Extensions
 markdown_extensions:
