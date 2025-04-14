@@ -6,15 +6,19 @@ collection of python apps and jupyter notebooks for simulating self-affine fract
 To build the docs locally:
 
 ```
-git clone https://github.com/username/repository.git
+git clone https://github.com/CyVerse-learning-materials/fractal-notebooks.git
 
-cd repository
+cd fractal-notebooks
+
+python3 -m venv .venv
+
+source .venv/bin/activate
 
 pip install -r requirements.txt
 
-python -m mkdocs serve
+python -m mkdocs serve -a localhost:8000
 ```
-Open a browser and go to https://localhost:8000
+Open a browser and go to https://localhost:8000. If there is already something else running on localhost:8000, just change the port in the command (eg, `python -m mkdocs serve -a localhost:8001`)
 
 # Chatbot Backend Setup
 The objective is to create a backend system that:
