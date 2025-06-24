@@ -1,542 +1,411 @@
-# K3s Deployment: Weaviate and Jupyter Lab
+# K3s Kubernetes Deployment
 
-This repository provides step-by-step instructions to deploy **Weaviate** and **Jupyter Lab** on a **K3s** Kubernetes cluster. Both applications are deployed within the `ai-workloads` namespace and utilize PersistentVolumeClaims (PVCs) for persistent storage.
+This folder contains Kubernetes manifests for deploying the fractal-notebooks repository as a remote, scalable service on a K3s cluster. The deployment creates a GPU-accelerated environment suitable for running Jupyter notebooks, Streamlit applications, and vector database operations on a virtual machine.
 
----
+## Deployment Architecture
 
-## Prerequisites
+### Core Components
+- **JupyterLab**: GPU-accelerated notebook environment for fractal computation
+- **Weaviate**: Vector database for AI/ML workloads and data storage
+- **Persistent Storage**: Local storage provisioning for data persistence
+- **GPU Support**: NVIDIA device plugin integration for CUDA acceleration
 
-Before you begin, ensure you have the following:
+### Kubernetes Resources
+- **Deployments**: Application pod management and scaling
+- **Services**: Internal networking and service discovery
+- **PersistentVolumeClaims**: Data storage with node affinity
+- **ConfigMaps**: Environment configuration management
 
-- **Kubernetes Cluster:** A running K3s cluster. Instructions are provided below.
-- **kubectl Installed:** Ensure `kubectl` is installed and configured to interact with your K3s cluster.
-- **Access to Cluster Nodes:** SSH or physical access to nodes if needed.
-- **Sufficient Resources:** Ensure your cluster has enough CPU, memory, and GPU resources (if deploying GPU-intensive applications).
+## Manifest Files
 
----
+### JupyterLab Deployment
+- **`jupyterlab-deployment.yaml`** - Main JupyterLab container with PyTorch and CUDA support
+- **`jupyterlab-service.yaml`** - ClusterIP service for internal access
+- **`jupyterlab-pvc.yaml`** - Persistent storage for notebooks and data
+- **`jupyterlab-to-weaviate.yaml`** - Service configuration for database connectivity
 
-## 1. Install K3s
+### Weaviate Vector Database  
+- **`weaviate-deployment.yaml`** - Vector database for AI workloads
+- **`weaviate-service.yaml`** - Database service endpoints
+- **`weaviate-pvc.yaml`** - Persistent storage for vector data
 
-If you haven't installed K3s yet, follow these steps:
+### Infrastructure Support
+- **`storageclass.yaml`** - Local storage class configuration
+- **`nvidia-device-plugin-daemonset.yaml`** - GPU device plugin for CUDA access
+- **`nvdp.yaml`** - NVIDIA device plugin configuration
 
-1. **Run the K3s Installation Script:**
+## Step-by-Step Deployment Guide
 
-   ```bash
-   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" sh -s - --docker
-   ```
+### Prerequisites
 
-2. **Verify Installation:**
-
-   ```bash
-   kubectl get nodes
-   ```
-
-   You should see your node listed with the status `Ready`.
-
-3. **Verify NVIDIA**
-
-  ```bash
-  sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-  sudo mkdir -p /etc/kubernetes/node-feature-discovery/source.d/
-  sudo mkdir -p /etc/kubernetes/node-feature-discovery/features.d/
-
-  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-  helm repo add nvdp https://nvidia.github.io/k8s-device-plugin
-  helm repo update
-  helm upgrade --install --set gfd.enabled=true nvidia-device-plugin nvdp/nvidia-device-plugin --version 0.14.0 --namespace nvidia-device-plugin --create-namespace --set-file config.map.config=./nvdp.yaml
-  ```
-  
----
-
-## 2. Create AI Workloads Namespace
-
-Organize your deployments by creating a dedicated namespace.
-
+1. **Install K3s with Docker Runtime**
 ```bash
-kubectl create namespace ai-workloads
+# Install K3s with Docker support and disable Traefik
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" sh -s - --docker
+
+# Set up kubeconfig for current user
+sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+# Verify installation
+kubectl get nodes
 ```
 
-Verify the namespace creation:
-
+2. **Set up GPU Support (if using GPU nodes)**
 ```bash
-kubectl get namespaces
+# Create directories for GPU feature discovery
+sudo mkdir -p /etc/kubernetes/node-feature-discovery/source.d/
+sudo mkdir -p /etc/kubernetes/node-feature-discovery/features.d/
+
+# Install NVIDIA device plugin using Helm
+helm repo add nvdp https://nvidia.github.io/k8s-device-plugin
+helm repo update
+helm upgrade --install --set gfd.enabled=true nvidia-device-plugin nvdp/nvidia-device-plugin \
+  --version 0.14.0 --namespace nvidia-device-plugin --create-namespace \
+  --set-file config.map.config=./nvdp.yaml
+
+# Label GPU nodes (replace with your actual node name)
+kubectl label nodes <your-gpu-node-name> nvidia.com/gpu.present=true
 ```
 
-You should see `ai-workloads` listed among the namespaces.
-
----
-
-## 3. Deploy Weaviate locally
-
-Weaviate is an open-source vector search engine.
-
-### 3.1. Create PersistentVolumeClaim for Weaviate
-
-files created in the Pods will be mounted in `/opt/local-path-provisioner`
-
-Create a file named `weaviate-pvc.yaml` with the following content:
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: weaviate-pvc
-  namespace: ai-workloads
-  annotations:
-    volume.kubernetes.io/selected-node: gpu06.cyverse.org
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: "local-storage" # Corrected
-
-```
-
-Note: you need to specify the resource you're using as annotation: `volume.kubernetes.io/selected-node: gpu06.cyverse.org`
-
-Apply the PVC:
-
+3. **Update Node Annotations**
+Edit the PVC files to match your actual node name:
 ```bash
-kubectl apply -f weaviate-pvc.yaml -n ai-workloads
+# Update both PVC files with your node name
+sed -i 's/gpu06.cyverse.org/<your-actual-node-name>/g' jupyterlab-pvc.yaml
+sed -i 's/gpu06.cyverse.org/<your-actual-node-name>/g' weaviate-pvc.yaml
 ```
 
-### 3.2. Apply Weaviate Deployment and Service
+### Deployment Steps
 
-Create a file named `weaviate-deployment.yaml`:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: weaviate
-  namespace: ai-workloads
-  labels:
-    app: weaviate
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: weaviate
-  template:
-    metadata:
-      labels:
-        app: weaviate
-    spec:
-      containers:
-        - name: weaviate
-          image: semitechnologies/weaviate:1.27.0
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080
-          env:
-            - name: QUERY_DEFAULTS_LIMIT
-              value: "100"
-            - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
-              value: "true"
-            - name: PERSISTENCE_DATA_PATH
-              value: "/var/lib/weaviate"
-            - name: CLUSTER_GOSSIP_BIND_PORT
-              value: "7000"
-            - name: CLUSTER_DATA_BIND_PORT
-              value: "7001"
-            - name: RAFT_BOOTSTRAP_TIMEOUT
-              value: "600"
-            - name: GOGC
-              value: "100"
-          volumeMounts:
-            - name: weaviate-data
-              mountPath: /var/lib/weaviate
-      volumes:
-        - name: weaviate-data
-          persistentVolumeClaim:
-            claimName: weaviate-pvc
-```
-
-Create a file named `weaviate-service.yaml`:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: weaviate
-  namespace: ai-workloads
-  labels:
-    app: weaviate
-spec:
-  type: ClusterIP
-  selector:
-    app: weaviate
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-    - name: health
-      port: 8888
-      targetPort: 8888
-```
-
-Apply the Deployment and Service:
-
+#### Step 1: Create Namespace and Storage
 ```bash
-kubectl apply -f weaviate-deployment.yaml -n ai-workloads
-kubectl apply -f weaviate-service.yaml -n ai-workloads
+# Create the namespace
+kubectl apply -f namespace.yaml
+
+# Create the storage class
+kubectl apply -f storageclass.yaml
+
+# Verify namespace creation
+kubectl get namespaces | grep ai-workloads
 ```
 
----
-
-## 4. Deploy Jupyter Lab
-
-Jupyter Lab provides an interactive development environment for notebooks, code, and data.
-
-### 4.1. Create PersistentVolumeClaim for Jupyter Lab
-
-Create a file named `jupyterlab-pvc.yaml`:
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: jupyterlab-pvc
-  namespace: ai-workloads
-  annotations:
-    volume.kubernetes.io/selected-node: gpu06.cyverse.org
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: "local-storage" # Corrected
-  
-```
-
-Apply the PVC:
-
+#### Step 2: Deploy GPU Support (Optional)
 ```bash
-kubectl apply -f jupyterlab-pvc.yaml -n ai-workloads
+# Deploy NVIDIA device plugin DaemonSet
+kubectl apply -f nvidia-device-plugin-daemonset.yaml
+
+# Verify GPU plugin is running
+kubectl get pods -n kube-system | grep nvidia
 ```
 
-### 4.2. Apply Jupyter Lab Deployment and Service
-
-Create a file named `jupyterlab-deployment.yaml`:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: jupyterlab
-  namespace: ai-workloads
-  labels:
-    app: jupyterlab
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: jupyterlab
-  template:
-    metadata:
-      labels:
-        app: jupyterlab
-    spec:
-      containers:
-        - name: jupyterlab
-          image: quay.io/jupyter/pytorch-notebook:cuda12-latest
-          imagePullPolicy: IfNotPresent
-          args:
-            - start-notebook.sh
-          env:
-            - name: JUPYTER_ENABLE_LAB
-              value: "yes"
-            - name: JUPYTER_PASSWORD
-              value: "sha1:abcd1234efgh5678ijkl9101mnopqrstu" # Replace with your generated hash
-          ports:
-            - containerPort: 8888
-            - containerPort: 8080
-          resources:
-            requests:
-              cpu: "2"
-              memory: "4Gi"
-              nvidia.com/gpu: "2"
-            limits:
-              cpu: "16"
-              memory: "64Gi"
-              nvidia.com/gpu: "2"
-          volumeMounts:
-            - name: jupyterlab-data
-              mountPath: /home/jovyan
-      volumes:
-        - name: jupyterlab-data
-          persistentVolumeClaim:
-            claimName: jupyterlab-pvc
-      nodeSelector:
-        nvidia.com/gpu.present: "true"
-      tolerations:
-        - key: "nvidia.com/gpu"
-          operator: "Exists"
-          effect: "NoSchedule"
-```
-
-Create a file named `jupyterlab-service.yaml`:
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: jupyterlab
-  namespace: ai-workloads
-  labels:
-    app: jupyterlab
-spec:
-  type: ClusterIP
-  selector:
-    app: jupyterlab
-  ports:
-    - name: http
-      port: 8888
-      targetPort: 8888
-    - name: weaviate
-      port: 8080
-      targetPort: 8080
-```
-
-**Important:** Replace the `JUPYTER_PASSWORD` value with a secure password hash. To generate a password hash, use the following Python commands:
-
-```python
-from notebook.auth import passwd
-print(passwd('your_secure_password'))
-```
-
-**Apply the Deployment and Service:**
-
+#### Step 3: Deploy Weaviate Vector Database
 ```bash
+# Create Weaviate persistent volume claim
+kubectl apply -f weaviate-pvc.yaml
+
+# Deploy Weaviate
+kubectl apply -f weaviate-deployment.yaml
+
+# Create Weaviate service
+kubectl apply -f weaviate-service.yaml
+
+# Verify Weaviate deployment
+kubectl get pods -n ai-workloads -l app=weaviate
+kubectl logs -f deployment/weaviate -n ai-workloads
+```
+
+#### Step 4: Deploy JupyterLab
+```bash
+# Create JupyterLab persistent volume claim
+kubectl apply -f jupyterlab-pvc.yaml
+
+# Deploy JupyterLab
+kubectl apply -f jupyterlab-deployment.yaml
+
+# Create JupyterLab service
+kubectl apply -f jupyterlab-service.yaml
+
+# Apply network policy for Jupyter-Weaviate communication
+kubectl apply -f jupyterlab-to-weaviate.yaml
+
+# Verify JupyterLab deployment
+kubectl get pods -n ai-workloads -l app=jupyterlab
+kubectl logs -f deployment/jupyterlab -n ai-workloads
+```
+
+#### Step 5: Verify Complete Deployment
+```bash
+# Check all resources
+kubectl get all -n ai-workloads
+
+# Check persistent volumes
+kubectl get pv,pvc -n ai-workloads
+
+# Check GPU allocation (if using GPU)
+kubectl describe nodes | grep -A 5 "Allocated resources"
+```
+
+### Access Applications
+
+#### Method 1: NodePort Services (Recommended for VM deployment)
+```bash
+# Get node IP
+NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
+if [ -z "$NODE_IP" ]; then
+  NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+fi
+
+# Access JupyterLab (NodePort 30088)
+echo "JupyterLab URL: http://$NODE_IP:30088"
+
+# Access Weaviate (NodePort 30080)
+echo "Weaviate URL: http://$NODE_IP:30080/v1"
+
+# Access Weaviate gRPC (NodePort 30051)
+echo "Weaviate gRPC: $NODE_IP:30051"
+```
+
+#### Method 2: Port Forwarding (for local testing)
+```bash
+# Port forward JupyterLab (runs in foreground)
+kubectl port-forward service/jupyterlab 8888:8888 -n ai-workloads &
+
+# Port forward Weaviate HTTP
+kubectl port-forward service/weaviate 8080:8080 -n ai-workloads &
+
+# Port forward Weaviate gRPC
+kubectl port-forward service/weaviate 50051:50051 -n ai-workloads &
+
+# Access locally
+echo "JupyterLab: http://localhost:8888 (no password required)"
+echo "Weaviate: http://localhost:8080/v1"
+```
+
+### One-Command Deployment
+
+For experienced users, deploy everything at once:
+```bash
+# Deploy in correct order
+kubectl apply -f namespace.yaml && \
+kubectl apply -f storageclass.yaml && \
+kubectl apply -f nvidia-device-plugin-daemonset.yaml && \
+sleep 10 && \
+kubectl apply -f weaviate-pvc.yaml && \
+kubectl apply -f weaviate-deployment.yaml && \
+kubectl apply -f weaviate-service.yaml && \
+kubectl apply -f jupyterlab-pvc.yaml && \
+kubectl apply -f jupyterlab-deployment.yaml && \
+kubectl apply -f jupyterlab-service.yaml && \
+kubectl apply -f jupyterlab-to-weaviate.yaml
+
+# Wait for deployment and show status
+echo "Waiting for deployments to be ready..."
+kubectl wait --for=condition=available --timeout=300s deployment/weaviate -n ai-workloads
+kubectl wait --for=condition=available --timeout=300s deployment/jupyterlab -n ai-workloads
+kubectl get all -n ai-workloads
+```
+
+## Resource Allocation
+
+### JupyterLab Resources
+- **GPU**: 1 NVIDIA GPU (configurable)
+- **CPU**: 2-16 cores with burstable limits  
+- **Memory**: 4-64GB RAM allocation
+- **Storage**: 5GB persistent volume
+
+### Weaviate Resources  
+- **CPU**: 1-4 cores (no GPU required)
+- **Memory**: 2-8GB RAM allocation
+- **Storage**: 10GB persistent volume
+
+### Storage Configuration
+- **Storage Class**: `local-storage` using rancher.io/local-path provisioner
+- **Volume Binding**: `WaitForFirstConsumer` for optimal node placement
+- **Reclaim Policy**: `Delete` (data will be lost when PVC is deleted)
+- **Node Affinity**: Volumes bound to specific nodes via annotations
+
+## Integration with Other Folders
+
+### Relationship to `apps/`
+- JupyterLab environment can run Streamlit applications from the `apps/` folder
+- GPU acceleration enables real-time fractal rendering for complex applications
+- Remote deployment allows multiple users to access applications simultaneously
+- Container environment includes all dependencies from `apps/` requirements
+
+### Relationship to `docs/`
+- JupyterLab provides an environment for editing and running documentation notebooks
+- MkDocs site can be served from within the cluster for documentation hosting
+- Documentation build process can be automated within the Kubernetes environment
+- Remote access enables collaborative documentation development
+
+### Relationship to `docker/`
+- Kubernetes deployments use containerized versions of applications
+- JupyterLab container includes the same Python environment as Docker builds
+- Container registry integration allows automated deployment of updated applications
+- Scaling benefits from containerization strategies developed in `docker/` folder
+
+### Relationship to Repository Root
+- Persistent volumes mount the entire repository for development access
+- Git integration within JupyterLab allows version control of notebooks and code
+- Environment replication ensures consistent behavior between local and remote execution
+- Backup and restore capabilities for research data and computational results
+
+## Configuration Details
+
+### Node Affinity and Tolerations
+```yaml
+nodeSelector:
+  nvidia.com/gpu.present: "true"
+tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+```
+
+### Persistent Storage Configuration
+- **Storage Class**: `local-storage` for high-performance local disk access
+- **Node Binding**: Specific node assignment for data locality
+- **Access Mode**: `ReadWriteOnce` for single-node attachment
+- **Reclaim Policy**: Data persistence across pod restarts
+
+### Security Considerations
+- **Password Authentication**: JupyterLab secured with SHA1 password hash
+- **Network Policies**: ClusterIP services for internal-only access
+- **Resource Limits**: Prevents resource exhaustion and ensures fair sharing
+- **RBAC**: Kubernetes role-based access control for cluster security
+
+## Monitoring and Management
+
+### Health Checks
+```bash
+# Check pod status
+kubectl get pods -n ai-workloads
+
+# View logs
+kubectl logs -f deployment/jupyterlab -n ai-workloads
+kubectl logs -f deployment/weaviate -n ai-workloads
+
+# Describe resources for troubleshooting
+kubectl describe pod <pod-name> -n ai-workloads
+```
+
+### Scaling Operations
+```bash
+# Scale JupyterLab instances
+kubectl scale deployment jupyterlab --replicas=2 -n ai-workloads
+
+# Update deployment with new configuration
 kubectl apply -f jupyterlab-deployment.yaml -n ai-workloads
-kubectl apply -f jupyterlab-service.yaml -n ai-workloads
 ```
 
----
-
-## 5. Verify Deployments
-
-Ensure that both Weaviate and Jupyter Lab are deployed successfully.
-
+### Cleanup
 ```bash
-sudo k3s kubectl get all -n ai-workloads
-```
-
-**Expected Output:**
-
-```
-NAME                             READY   STATUS    RESTARTS   AGE
-pod/jupyterlab-765bc9857-zk5jm   1/1     Running   0          5m
-pod/weaviate-6678bf4f-g6j79      1/1     Running   0          6m
-
-NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
-service/jupyterlab   ClusterIP   10.43.182.60   <none>        8888/TCP,8080/TCP   6m
-service/weaviate     ClusterIP   10.43.79.218   <none>        8080/TCP,8888/TCP   6m
-
-NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/jupyterlab   1/1     1            1           6m
-deployment.apps/weaviate     1/1     1            1           6m
-
-NAME                                   DESIRED   CURRENT   READY   AGE
-replicaset.apps/jupyterlab-765bc9857   1         1         1       6m
-replicaset.apps/weaviate-6678bf4f      1         1         1       6m
-```
-
----
-
-## 6. Troubleshooting
-
-If your pods are not running as expected, follow these steps:
-
-1. **Check Pod Status:**
-
-   ```bash
-   kubectl get pods -n ai-workloads
-   ```
-
-2. **Describe Pod for Details:**
-
-   ```bash
-   kubectl describe pod <pod-name> -n ai-workloads
-   ```
-
-3. **Check Logs:**
-
-   ```bash
-   kubectl logs <pod-name> -n ai-workloads
-   ```
-
-4. **Verify PVCs:**
-
-   ```bash
-   kubectl get pvc -n ai-workloads
-   ```
-
-5. **Ensure StorageClass and Provisioner are Correctly Configured.**
-
----
-
-## 8. Security Best Practices
-
-- **Secure Jupyter Lab:**
-  - Always use a strong password.
-  - Consider setting up HTTPS using Ingress with TLS.
-  - Restrict access using Network Policies.
-
-- **Limit Resource Usage:**
-  - Define resource requests and limits to prevent resource contention.
-
-- **Regular Updates:**
-  - Keep your K3s cluster and applications up to date with security patches.
-
----
-
-## 9. Cleanup
-
-To remove the deployments and namespace:
-
-```bash
+# Remove all resources
 kubectl delete namespace ai-workloads
+
+# Individual resource cleanup
+kubectl delete -f k3s-deployment/ -n ai-workloads
 ```
 
-**Note:** This will delete all resources within the `ai-workloads` namespace, including PVCs and their associated data.
+## Troubleshooting
 
----
+### Common Issues
 
-## Finding Pods
-
-### List All Pods
-
-Retrieve all pods across all namespaces:
-
+#### Pods Stuck in Pending State
 ```bash
-sudo k3s kubectl get pods --all-namespaces
+# Check pod events for scheduling issues
+kubectl describe pod <pod-name> -n ai-workloads
+
+# Common causes:
+# - Insufficient resources (CPU/Memory/GPU)
+# - Node affinity constraints  
+# - Missing storage class or PVC binding issues
+# - GPU node labels missing
 ```
 
-### List Pods in a Specific Namespace
-
-List pods within a particular namespace:
-
+#### GPU Not Available
 ```bash
-sudo k3s kubectl get pods -n <namespace>
+# Verify NVIDIA device plugin is running
+kubectl get pods -n nvidia-device-plugin
+
+# Check GPU node labels
+kubectl get nodes --show-labels | grep gpu
+
+# Label GPU nodes if missing
+kubectl label nodes <node-name> nvidia.com/gpu.present=true
+
+# Check GPU resources on nodes
+kubectl describe nodes | grep -A 10 "Allocated resources"
 ```
 
-*Replace `<namespace>` with the name of your namespace, e.g., `ai-workloads`.*
-
-### Get Detailed Information About a Pod
-
-Obtain detailed information, including events and status, for a specific pod:
-
+#### Persistent Volume Issues
 ```bash
-sudo k3s kubectl describe pod <pod-name> -n <namespace>
+# Check PVC status
+kubectl get pvc -n ai-workloads
+
+# Check storage class
+kubectl get storageclass
+
+# Check if local-path provisioner is running
+kubectl get pods -n kube-system | grep local-path
+
+# Check node annotations match actual node names
+kubectl get nodes
 ```
 
-*Replace `<pod-name>` and `<namespace>` accordingly.*
-
----
-
-## Stopping (Deleting) Pods
-
-### Delete a Specific Pod
-
-Terminate a specific pod. Kubernetes will attempt to gracefully shut it down and may restart it based on the deployment configuration:
-
+#### Service Connectivity Problems
 ```bash
-sudo k3s kubectl delete pod <pod-name> -n <namespace>
+# Check service endpoints
+kubectl get endpoints -n ai-workloads
+
+# Test internal connectivity
+kubectl run test-pod --image=curlimages/curl -i --tty --rm -- sh
+# Inside pod: curl http://weaviate.ai-workloads.svc.cluster.local:8080/v1
+
+# Check network policies
+kubectl get networkpolicies -n ai-workloads
 ```
 
-### Delete All Pods in a Namespace
-
-Remove all pods within a specific namespace:
-
+#### Application Logs and Debugging
 ```bash
-sudo k3s kubectl delete pods --all -n <namespace>
+# Check JupyterLab logs
+kubectl logs deployment/jupyterlab -n ai-workloads
+
+# Check Weaviate logs  
+kubectl logs deployment/weaviate -n ai-workloads
+
+# Get shell access to troubleshoot
+kubectl exec -it deployment/jupyterlab -n ai-workloads -- /bin/bash
+
+# Check GPU access from within container
+kubectl exec -it deployment/jupyterlab -n ai-workloads -- nvidia-smi
 ```
 
-*Use with caution as this will disrupt all applications running in the namespace.*
-
----
-
-## Finding Namespaces
-
-### List All Namespaces
-
-View all namespaces in the cluster:
-
+### Resource Monitoring
 ```bash
-kubectl get namespaces
+# Check overall resource usage
+kubectl top pods -n ai-workloads
+kubectl top nodes
+
+# Check detailed node resources
+kubectl describe nodes
+
+# Monitor GPU utilization  
+kubectl exec -it deployment/jupyterlab -n ai-workloads -- nvidia-smi
+
+# Watch pod status in real-time
+kubectl get pods -n ai-workloads -w
 ```
 
-### Get Detailed Information About a Namespace
-
-Get comprehensive details about a specific namespace:
-
+### Performance Optimization
 ```bash
-kubectl describe namespace <namespace>
+# Check if pods are CPU/Memory throttled
+kubectl describe pod <pod-name> -n ai-workloads | grep -A 5 "Limits\|Requests"
+
+# Monitor resource usage over time
+kubectl top pods -n ai-workloads --containers
+
+# Check storage performance
+kubectl exec -it deployment/jupyterlab -n ai-workloads -- df -h
 ```
-
-*Replace `<namespace>` with the name of your namespace.*
-
----
-
-## Stopping (Deleting) Namespaces
-
-### Delete a Namespace
-
-Remove an entire namespace and all its contained resources:
-
-```bash
-kubectl delete namespace <namespace>
-```
-
-*Note:* Deleting a namespace is irreversible and will remove all resources within it, including pods, services, and deployments.
-
----
-
-## Additional Tips
-
-- **Check Current Context and Namespace:**
-
-  Ensure you are operating in the correct context and namespace:
-
-  ```bash
-  kubectl config current-context
-  kubectl config view --minify | grep namespace:
-  ```
-
-- **Switch Namespace:**
-
-  Temporarily switch the default namespace for your `kubectl` commands:
-
-  ```bash
-  kubectl config set-context --current --namespace=<namespace>
-  ```
-
-- **Force Delete a Stuck Namespace:**
-
-  If a namespace is stuck in the `Terminating` state, you may need to remove its finalizers. **Proceed with caution**:
-
-  ```bash
-  kubectl get namespace <namespace> -o json > tmp.json
-  # Edit tmp.json and remove the "finalizers" section
-  kubectl replace --raw "/api/v1/namespaces/<namespace>/finalize" -f ./tmp.json
-  ```
-
----
-
-## References
-
-- [kubectl Documentation](https://kubernetes.io/docs/reference/kubectl/)
-- [Managing Kubernetes Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
-- [Managing Pods](https://kubernetes.io/docs/concepts/workloads/pods/)
-
-
-
-
----
-
-## License
-

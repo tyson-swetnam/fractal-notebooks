@@ -1,0 +1,122 @@
+interface MandelbrotParams {
+  centerX: number;
+  centerY: number;
+  zoom: number;
+  maxIterations: number;
+  width: number;
+  height: number;
+}
+
+export class MandelbrotGenerator {
+  private params: MandelbrotParams;
+
+  constructor(params: MandelbrotParams) {
+    this.params = params;
+  }
+
+  private mandelbrotIteration(x0: number, y0: number): number {
+    let x = 0;
+    let y = 0;
+    let iteration = 0;
+
+    while (x * x + y * y <= 4 && iteration < this.params.maxIterations) {
+      const xTemp = x * x - y * y + x0;
+      y = 2 * x * y + y0;
+      x = xTemp;
+      iteration++;
+    }
+
+    return iteration;
+  }
+
+  private getColor(iteration: number): string {
+    if (iteration === this.params.maxIterations) {
+      return '#000000'; // Black for points in the set
+    }
+
+    // Create smooth color gradient
+    const hue = (iteration * 360 / this.params.maxIterations) % 360;
+    const saturation = 100;
+    const lightness = Math.min(50 + (iteration * 50 / this.params.maxIterations), 90);
+    
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
+
+  async render(ctx: CanvasRenderingContext2D): Promise<void> {
+    const { width, height, centerX, centerY, zoom } = this.params;
+    const scale = 4 / zoom;
+    
+    const imageData = ctx.createImageData(width, height);
+    const data = imageData.data;
+
+    // Calculate in chunks to allow UI updates
+    const chunkSize = 1000;
+    let pixelIndex = 0;
+
+    for (let py = 0; py < height; py++) {
+      for (let px = 0; px < width; px++) {
+        // Convert pixel coordinates to complex plane
+        const x0 = centerX + (px - width / 2) * scale / width;
+        const y0 = centerY + (py - height / 2) * scale / height;
+
+        const iteration = this.mandelbrotIteration(x0, y0);
+        const color = this.getColor(iteration);
+        
+        // Convert HSL to RGB for ImageData
+        const rgb = this.hslToRgb(color);
+        const dataIndex = (py * width + px) * 4;
+        
+        data[dataIndex] = rgb.r;     // Red
+        data[dataIndex + 1] = rgb.g; // Green
+        data[dataIndex + 2] = rgb.b; // Blue
+        data[dataIndex + 3] = 255;   // Alpha
+
+        pixelIndex++;
+
+        // Yield control periodically
+        if (pixelIndex % chunkSize === 0) {
+          await new Promise(resolve => setTimeout(resolve, 0));
+        }
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  private hslToRgb(hslString: string): { r: number; g: number; b: number } {
+    // Parse HSL string like "hsl(240, 100%, 50%)"
+    const match = hslString.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
+    if (!match) return { r: 0, g: 0, b: 0 };
+
+    const h = parseInt(match[1]) / 360;
+    const s = parseInt(match[2]) / 100;
+    const l = parseInt(match[3]) / 100;
+
+    let r, g, b;
+
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      const hue2rgb = (p: number, q: number, t: number) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    };
+  }
+}

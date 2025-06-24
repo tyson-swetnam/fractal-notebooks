@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.fractal-canvas {
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #000;
+}
+
+.controls-panel {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.parameter-control {
+  margin: 10px 0;
+}
+
+.parameter-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.parameter-input {
+  width: 100%;
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #fff;
+  padding: 8px;
+}
+
+.parameter-input:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+.btn {
+  background: #007acc;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 5px;
+}
+
+.btn:hover {
+  background: #005a9e;
+}
+
+.btn:disabled {
+  background: #333;
+  cursor: not-allowed;
+}

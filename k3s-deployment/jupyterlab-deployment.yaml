@@ -28,21 +28,47 @@ spec:
           env:
             - name: JUPYTER_ENABLE_LAB
               value: "yes"
-          volumeMounts:
-            - name: jupyterlab-data
-              mountPath: /home/jovyan
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "compute,utility"
+            - name: LD_LIBRARY_PATH
+              value: "/usr/local/nvidia/lib64:/usr/local/cuda/lib64"
           resources:
             limits:
               cpu: "16"
               memory: "64Gi"
-      #        nvidia.com/gpu: 1
             requests:
               cpu: "2"
               memory: "4Gi"
-      #        nvidia.com/gpu: 1
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: jupyterlab-data
+              mountPath: /home/jovyan
+            - name: dev-nvidia
+              mountPath: /dev/nvidia0
+            - name: dev-nvidiactl
+              mountPath: /dev/nvidiactl
+            - name: dev-nvidia-uvm
+              mountPath: /dev/nvidia-uvm
+            - name: nvidia-libs
+              mountPath: /usr/local/nvidia
+              readOnly: true
       volumes:
         - name: jupyterlab-data
           persistentVolumeClaim:
             claimName: jupyterlab-pvc
-      #nodeSelector:
-      #  nvidia.com/gpu.present: "true"
+        - name: dev-nvidia
+          hostPath:
+            path: /dev/nvidia0
+        - name: dev-nvidiactl
+          hostPath:
+            path: /dev/nvidiactl
+        - name: dev-nvidia-uvm
+          hostPath:
+            path: /dev/nvidia-uvm
+        - name: nvidia-libs
+          hostPath:
+            path: /usr/lib64
+            type: Directory

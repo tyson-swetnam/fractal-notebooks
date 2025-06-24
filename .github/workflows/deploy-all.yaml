@@ -1,0 +1,91 @@
+name: Deploy Docs and React App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      # Build MkDocs documentation
+      - name: Setup Python for MkDocs
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Build MkDocs site
+        run: mkdocs build --site-dir site
+        
+      # Build React application
+      - name: Setup Node.js for React
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+          
+      - name: Install React dependencies
+        working-directory: ./react
+        run: npm ci
+        
+      - name: Build React app
+        working-directory: ./react
+        run: npm run build
+        env:
+          PUBLIC_URL: /fractal-notebooks/react
+          
+      # Combine both builds
+      - name: Combine MkDocs and React builds
+        run: |
+          # Create combined site directory
+          mkdir -p combined-site
+          
+          # Copy MkDocs build (main site)
+          cp -r site/* combined-site/
+          
+          # Copy React build to /react subdirectory
+          mkdir -p combined-site/react
+          cp -r react/build/* combined-site/react/
+          
+          # Create a redirect from /react-apps to /react for backwards compatibility
+          mkdir -p combined-site/react-apps
+          echo '<meta http-equiv="refresh" content="0; url=/fractal-notebooks/react/">' > combined-site/react-apps/index.html
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload combined site artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./combined-site
+          
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.signal import convolve2d
 
+# Conway's Game of Life with Higher Resolution
+
 # Set higher grid size for higher resolution
 GRID_SIZE = 250  # Increase this value for even higher resolution
 

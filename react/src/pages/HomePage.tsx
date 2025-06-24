@@ -1,0 +1,223 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Typography, Container, Grid, Card, CardContent, CardActions, Button, Paper, Box } from '@mui/material';
+import { MathRenderer } from '../components/math/MathRenderer';
+
+const fractalCategories = [
+  {
+    title: '1D, 2D & 3D Fractals',
+    description: 'Explore mathematical fractals in various dimensions, from noise patterns to complex sets and cellular automata.',
+    color: '#4285f4',
+    applications: [
+      {
+        title: 'Mandelbrot Set',
+        description: 'The iconic complex fractal with infinite boundary detail. Zoom into the mathematical beauty of z² + c iteration.',
+        path: '/mandelbrot',
+        color: '#ff6b6b'
+      },
+      {
+        title: 'Julia Sets',
+        description: 'Dynamic fractal landscapes created by varying complex parameters. Each parameter creates unique artistic patterns.',
+        path: '/julia',
+        color: '#4ecdc4'
+      },
+      {
+        title: 'Brownian Motion',
+        description: 'Random walk visualization with fractal dimension analysis. Watch stochastic processes create complex paths.',
+        path: '/brownian',
+        color: '#9b59b6'
+      },
+      {
+        title: 'Conway\'s Game of Life',
+        description: 'Cellular automaton creating complex patterns from simple rules. Explore emergence and self-organization.',
+        path: '/conway',
+        color: '#e74c3c'
+      },
+      {
+        title: 'Noise Patterns',
+        description: 'White, pink, and brown noise with spectral analysis. Understand 1/f noise and fractal properties.',
+        path: '/noise',
+        color: '#f39c12'
+      },
+      {
+        title: 'Wave Dynamics',
+        description: 'Superposition of waves and tidal patterns. Explore harmonic analysis and temporal fractals.',
+        path: '/waves',
+        color: '#3498db'
+      }
+    ]
+  },
+  {
+    title: 'Branching Architectures',
+    description: 'Nature-inspired fractal structures using recursive algorithms and iterated function systems.',
+    color: '#34a853',
+    applications: [
+      {
+        title: 'Barnsley Ferns',
+        description: 'Probabilistic iterated function systems creating realistic fern patterns. Mathematical botany in action.',
+        path: '/ferns',
+        color: '#27ae60'
+      },
+      {
+        title: 'Fractal Trees',
+        description: 'Recursive branching algorithms with natural variation. Generate diverse tree forms and growth patterns.',
+        path: '/trees',
+        color: '#16a085'
+      },
+      {
+        title: 'Pythagoras Tree',
+        description: 'Geometric fractal based on Pythagorean theorem. Explore mathematical harmony in recursive squares.',
+        path: '/pythagoras',
+        color: '#8e44ad'
+      },
+      {
+        title: '3D Tree with Roots',
+        description: 'Interactive 3D fractal tree with complete crown and root systems using realistic branching algorithms.',
+        path: '/tree-roots-3d',
+        color: '#2e7d32'
+      }
+    ]
+  },
+  {
+    title: 'Diffusion Limited Aggregates',
+    description: 'Biological and physical growth patterns using random walk aggregation processes that model natural phenomena.',
+    color: '#ea4335',
+    applications: [
+      {
+        title: 'E. coli Colony',
+        description: 'Bacterial colony formation through diffusion-limited aggregation. Model the fractal growth of microbial communities.',
+        path: '/ecoli-dla',
+        color: '#dc3545'
+      },
+      {
+        title: 'Lichen Growth',
+        description: 'Radial growth patterns of lichen using grid-based DLA. Explore how simple organisms create complex forms.',
+        path: '/lichen-dla',
+        color: '#ff4757'
+      },
+      {
+        title: 'Saprophyte Organism',
+        description: 'Upward-biased growth of decomposer organisms. Simulate how nutrient gradients influence biological structures.',
+        path: '/saprophyte-dla',
+        color: '#228B22'
+      },
+      {
+        title: 'Bryophyte (Moss)',
+        description: 'Branching moss patterns with probabilistic sticking. Model how environmental factors shape plant architecture.',
+        path: '/bryophyte-dla',
+        color: '#4682B4'
+      }
+    ]
+  },
+  {
+    title: 'Riemann Zeta Functions',
+    description: 'Mathematical explorations using the Riemann Zeta function to generate space-filling patterns and 3D visualizations.',
+    color: '#9b59b6',
+    applications: [
+      {
+        title: 'Zeta Space Tiling',
+        description: 'Generate 2D geometric tilings using the Riemann Zeta function to determine shape sizes and distributions in space.',
+        path: '/zeta-space-tiling',
+        color: '#8e44ad'
+      },
+      {
+        title: '3D Zeta Visualization',
+        description: 'Explore three-dimensional space-filling patterns where the Zeta function governs volumetric distributions.',
+        path: '/zeta-3d-visualization',
+        color: '#9b59b6'
+      }
+    ]
+  }
+];
+
+export const HomePage: React.FC = () => {
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h2" component="h1" gutterBottom align="center" sx={{ mb: 2 }}>
+        Fractal Notebooks
+      </Typography>
+      <Typography variant="h5" component="p" align="center" color="text.secondary" sx={{ mb: 4 }}>
+        Interactive fractal visualization and exploration applications
+      </Typography>
+
+      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'background.paper' }}>
+        <Typography variant="h6" gutterBottom align="center">
+          What are Fractals?
+        </Typography>
+        <Typography variant="body1" align="center" sx={{ mb: 2 }}>
+          Fractals are geometric shapes that exhibit self-similarity at different scales. They are characterized by their 
+          fractal dimension <MathRenderer math="D" />, which is typically non-integer and describes how the structure 
+          fills space. Many fractals are generated by iterating simple mathematical formulas, creating infinitely 
+          complex patterns from elegant equations.
+        </Typography>
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Explore the mathematical beauty where <MathRenderer math="\lim_{n \to \infty} f^n(z)" /> creates infinite complexity
+          </Typography>
+        </Box>
+      </Paper>
+      
+      <Grid container spacing={4}>
+        {fractalCategories.map((category) => (
+          <Grid item xs={12} key={category.title}>
+            <Paper sx={{ p: 3, mb: 2 }}>
+              <Typography variant="h4" component="h2" gutterBottom sx={{ color: category.color, textAlign: 'center' }}>
+                {category.title}
+              </Typography>
+              <Typography variant="body1" sx={{ textAlign: 'center', mb: 3, color: 'text.secondary' }}>
+                {category.description}
+              </Typography>
+              
+              <Grid container spacing={3}>
+                {category.applications.map((app) => (
+                  <Grid item xs={12} md={6} lg={4} key={app.path}>
+                    <Card 
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        transition: 'transform 0.2s ease-in-out',
+                        borderTop: `3px solid ${app.color}`,
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: 3
+                        }
+                      }}
+                    >
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" component="h3" gutterBottom sx={{ color: app.color }}>
+                          {app.title}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {app.description}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button 
+                          component={Link} 
+                          to={app.path} 
+                          size="large" 
+                          variant="contained"
+                          fullWidth
+                          sx={{ 
+                            backgroundColor: app.color, 
+                            '&:hover': { 
+                              backgroundColor: app.color, 
+                              opacity: 0.8 
+                            } 
+                          }}
+                        >
+                          Explore
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
+  );
+};

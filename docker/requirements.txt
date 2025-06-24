@@ -1,0 +1,12 @@
+numpy
+matplotlib
+plotly
+streamlit
+pandas
+scipy
+numba
+ipykernel
+ipywidgets
+nbformat
+pillow
+imageio
