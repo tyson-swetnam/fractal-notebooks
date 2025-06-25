@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Typography, Slider, Button, Box } from '@mui/material';
 import { PlayArrow, Pause, Refresh, Settings } from '@mui/icons-material';
+import { CollapsiblePanel } from '../../components/controls/CollapsiblePanel';
 
 interface DLAParams {
   numWalkers: number;
@@ -696,66 +697,47 @@ export const DLAPage: React.FC = () => {
       />
 
       {/* Title and Info Panel */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 80,
-          left: 20,
-          maxWidth: 380,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(10px)',
-          padding: 2.5,
-          borderRadius: 2,
-          zIndex: 999,
-          color: 'white'
-        }}
+      <CollapsiblePanel
+        title="Diffusion-Limited Aggregation"
+        position="left"
+        defaultExpanded={true}
+        icon={<Settings fontSize="small" />}
       >
-        <Typography variant="h4" gutterBottom sx={{ 
-          fontWeight: 'bold',
-          background: 'linear-gradient(45deg, #66ccff, #9966ff, #ff6699)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          mb: 1
-        }}>
-          Diffusion-Limited Aggregation
-        </Typography>
-        
-        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
-          Vector-field guided DLA simulation with directional spreading from a central seed. 
-          Walkers follow configurable vector fields (radial, spiral, uniform) creating 
-          diverse fractal growth patterns.
-        </Typography>
-        
-        <Typography variant="caption" sx={{ 
-          fontSize: '0.75em', 
-          opacity: 0.8,
-          fontStyle: 'italic'
-        }}>
-          WebGL-accelerated • Real-time physics simulation
-        </Typography>
-      </Box>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" gutterBottom sx={{ 
+            fontWeight: 'bold',
+            background: 'linear-gradient(45deg, #66ccff, #9966ff, #ff6699)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            mb: 1
+          }}>
+            DLA Simulation
+          </Typography>
+          
+          <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
+            Vector-field guided DLA simulation with directional spreading from a central seed. 
+            Walkers follow configurable vector fields (radial, spiral, uniform) creating 
+            diverse fractal growth patterns.
+          </Typography>
+          
+          <Typography variant="caption" sx={{ 
+            fontSize: '0.75em', 
+            opacity: 0.8,
+            fontStyle: 'italic'
+          }}>
+            WebGL-accelerated • Real-time physics simulation
+          </Typography>
+        </Box>
+      </CollapsiblePanel>
 
       {/* Controls Panel */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 80,
-          right: 20,
-          width: 300,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(10px)',
-          padding: 3,
-          borderRadius: 2,
-          zIndex: 1000,
-          color: 'white'
-        }}
+      <CollapsiblePanel
+        title="DLA Controls"
+        position="right"
+        defaultExpanded={false}
+        icon={<Settings fontSize="small" />}
       >
-        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Settings fontSize="small" />
-          DLA Controls
-        </Typography>
-
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <Button
             variant="contained"
@@ -853,28 +835,27 @@ export const DLAPage: React.FC = () => {
             sx={{ color: '#66ccff' }}
           />
         </Box>
-      </Box>
+      </CollapsiblePanel>
 
       {/* Statistics overlay */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          left: 20,
-          color: 'white',
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          padding: 2,
-          borderRadius: 1,
-          zIndex: 999
-        }}
+      <CollapsiblePanel
+        title="Statistics"
+        position="bottom"
+        defaultExpanded={false}
       >
-        <Typography variant="body2">Cluster Particles: {cluster.length}</Typography>
-        <Typography variant="body2">Active Walkers: {walkers.length}</Typography>
-        <Typography variant="body2">Max Generation: {cluster.length > 0 ? Math.max(...cluster.map(p => p.generation)) : 0}</Typography>
-        <Typography variant="body2" sx={{ mt: 1, fontSize: '0.7em', opacity: 0.8 }}>
-          Renderer: {useWebGL ? 'WebGL' : '2D Canvas'} | {isInitialized ? 'Ready' : 'Initializing...'}
-        </Typography>
-      </Box>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+          <Box>
+            <Typography variant="body2">Cluster Particles: {cluster.length}</Typography>
+            <Typography variant="body2">Active Walkers: {walkers.length}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="body2">Max Generation: {cluster.length > 0 ? Math.max(...cluster.map(p => p.generation)) : 0}</Typography>
+            <Typography variant="body2" sx={{ fontSize: '0.85em', opacity: 0.8 }}>
+              Renderer: {useWebGL ? 'WebGL' : '2D Canvas'} | {isInitialized ? 'Ready' : 'Initializing...'}
+            </Typography>
+          </Box>
+        </Box>
+      </CollapsiblePanel>
     </div>
   );
 };

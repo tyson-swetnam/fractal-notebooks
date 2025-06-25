@@ -29,7 +29,6 @@ const navItems: NavItem[] = [
       { path: '/conway', label: 'Conway\'s Game of Life' },
       { path: '/noise', label: 'Noise Patterns' },
       { path: '/waves', label: 'Wave Dynamics' },
-      { path: '/dla', label: 'Diffusion-Limited Aggregation' },
     ]
   },
   { 
@@ -42,6 +41,7 @@ const navItems: NavItem[] = [
   { 
     label: 'Branching Architectures',
     items: [
+      { path: '/dla', label: 'Diffusion-Limited Aggregation' },
       { path: '/ferns', label: 'Barnsley Ferns' },
       { path: '/trees', label: 'Fractal Trees' },
       { path: '/pythagoras', label: 'Pythagoras Tree' },

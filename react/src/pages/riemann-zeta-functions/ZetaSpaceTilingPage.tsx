@@ -666,3 +666,5 @@ export const ZetaSpaceTilingPage: React.FC = () => {
   );
 };
 
+export default ZetaSpaceTilingPage;
+

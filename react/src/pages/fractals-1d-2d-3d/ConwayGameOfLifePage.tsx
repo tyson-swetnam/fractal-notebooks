@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Typography, Slider, Button, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { PlayArrow, Pause, SkipNext, Refresh, Settings } from '@mui/icons-material';
+import { PlayArrow, Pause, SkipNext, Refresh, Settings, Info } from '@mui/icons-material';
+import { CollapsiblePanel } from '../../components/controls/CollapsiblePanel';
 
 interface GameOfLifeParams {
   gridWidth: number;
@@ -629,66 +630,47 @@ export const ConwayGameOfLifePage: React.FC = () => {
       />
 
       {/* Title and Info Panel */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 80,
-          left: 20,
-          maxWidth: 380,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(10px)',
-          padding: 2.5,
-          borderRadius: 2,
-          zIndex: 999,
-          color: 'white'
-        }}
+      <CollapsiblePanel
+        title="Conway's Game of Life"
+        position="left"
+        defaultExpanded={true}
+        icon={<Info fontSize="small" />}
       >
-        <Typography variant="h4" gutterBottom sx={{ 
-          fontWeight: 'bold',
-          background: 'linear-gradient(45deg, #0099ff, #9933ff, #ff3399)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          mb: 1
-        }}>
-          Conway's Game of Life
-        </Typography>
-        
-        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
-          A cellular automaton that creates complex patterns from simple rules. 
-          Cells live, die, and reproduce based on their neighbors, creating 
-          infinite emergent behaviors from just four basic rules.
-        </Typography>
-        
-        <Typography variant="caption" sx={{ 
-          fontSize: '0.75em', 
-          opacity: 0.8,
-          fontStyle: 'italic'
-        }}>
-          WebGL-accelerated • Real-time cellular evolution • Generation: {generation}
-        </Typography>
-      </Box>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" gutterBottom sx={{ 
+            fontWeight: 'bold',
+            background: 'linear-gradient(45deg, #0099ff, #9933ff, #ff3399)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            mb: 1
+          }}>
+            Cellular Automaton
+          </Typography>
+          
+          <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
+            A cellular automaton that creates complex patterns from simple rules. 
+            Cells live, die, and reproduce based on their neighbors, creating 
+            infinite emergent behaviors from just four basic rules.
+          </Typography>
+          
+          <Typography variant="caption" sx={{ 
+            fontSize: '0.75em', 
+            opacity: 0.8,
+            fontStyle: 'italic'
+          }}>
+            WebGL-accelerated • Real-time cellular evolution • Generation: {generation}
+          </Typography>
+        </Box>
+      </CollapsiblePanel>
 
       {/* Controls Panel */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 80,
-          right: 20,
-          width: 320,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(10px)',
-          padding: 3,
-          borderRadius: 2,
-          zIndex: 1000,
-          color: 'white'
-        }}
+      <CollapsiblePanel
+        title="Game Controls"
+        position="right"
+        defaultExpanded={false}
+        icon={<Settings fontSize="small" />}
       >
-        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Settings fontSize="small" />
-          Game Controls
-        </Typography>
-
         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <Button
             variant="contained"
@@ -816,31 +798,30 @@ export const ConwayGameOfLifePage: React.FC = () => {
         >
           Randomize ({params.initialDensity}%)
         </Button>
-      </Box>
+      </CollapsiblePanel>
 
       {/* Statistics overlay */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          left: 20,
-          color: 'white',
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          padding: 2,
-          borderRadius: 1,
-          zIndex: 999
-        }}
+      <CollapsiblePanel
+        title="Statistics"
+        position="bottom"
+        defaultExpanded={false}
       >
-        <Typography variant="body2">Generation: {generation}</Typography>
-        <Typography variant="body2">Grid: {params.gridWidth}×{params.gridHeight}</Typography>
-        <Typography variant="body2">Living Cells: {grid.reduce((sum, row) => sum + row.filter(cell => cell).length, 0)}</Typography>
-        <Typography variant="body2" sx={{ mt: 1, fontSize: '0.7em', opacity: 0.8 }}>
-          Renderer: {useWebGL ? 'WebGL' : '2D Canvas'} | {isInitialized ? 'Ready' : 'Initializing...'}
-        </Typography>
-        <Typography variant="body2" sx={{ fontSize: '0.7em', opacity: 0.6 }}>
-          Click cells to toggle (when paused)
-        </Typography>
-      </Box>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+          <Box>
+            <Typography variant="body2">Generation: {generation}</Typography>
+            <Typography variant="body2">Grid: {params.gridWidth}×{params.gridHeight}</Typography>
+            <Typography variant="body2">Living Cells: {grid.reduce((sum, row) => sum + row.filter(cell => cell).length, 0)}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="body2" sx={{ fontSize: '0.85em', opacity: 0.8 }}>
+              Renderer: {useWebGL ? 'WebGL' : '2D Canvas'} | {isInitialized ? 'Ready' : 'Initializing...'}
+            </Typography>
+            <Typography variant="body2" sx={{ fontSize: '0.85em', opacity: 0.6 }}>
+              Click cells to toggle (when paused)
+            </Typography>
+          </Box>
+        </Box>
+      </CollapsiblePanel>
     </div>
   );
 };

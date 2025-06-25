@@ -13,8 +13,8 @@ import { BrownianMotionPage } from './pages/fractals-1d-2d-3d/BrownianMotionPage
 import { ConwayGameOfLifePage } from './pages/fractals-1d-2d-3d/ConwayGameOfLifePage';
 import { NoisePage } from './pages/fractals-1d-2d-3d/NoisePage';
 import { WavesPage } from './pages/fractals-1d-2d-3d/WavesPage';
-import { DLAPage } from './pages/fractals-1d-2d-3d/DLAPage';
 // Branching Architectures
+import { DLAPage } from './pages/branching-architectures/DLAPage';
 import { FernPage } from './pages/branching-architectures/FernPage';
 import { TreePage } from './pages/branching-architectures/TreePage';
 import { PythagorasTreePage } from './pages/branching-architectures/PythagorasTreePage';
@@ -49,8 +49,8 @@ const AppContent: React.FC = () => {
               <Route path="/conway" element={<ConwayGameOfLifePage />} />
               <Route path="/noise" element={<NoisePage />} />
               <Route path="/waves" element={<WavesPage />} />
-              <Route path="/dla" element={<DLAPage />} />
               {/* Branching Architectures */}
+              <Route path="/dla" element={<DLAPage />} />
               <Route path="/ferns" element={<FernPage />} />
               <Route path="/trees" element={<TreePage />} />
               <Route path="/pythagoras" element={<PythagorasTreePage />} />
