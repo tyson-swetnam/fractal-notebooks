@@ -53,6 +53,12 @@ const fractalCategories = [
     color: '#34a853',
     applications: [
       {
+        title: 'Diffusion-Limited Aggregation',
+        description: 'Vector-field guided particle aggregation creating dendritic growth patterns. Models lightning, coral, and river networks.',
+        path: '/dla',
+        color: '#66ccff'
+      },
+      {
         title: 'Barnsley Ferns',
         description: 'Probabilistic iterated function systems creating realistic fern patterns. Mathematical botany in action.',
         path: '/ferns',
