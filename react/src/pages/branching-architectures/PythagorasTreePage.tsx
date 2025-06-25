@@ -7,10 +7,8 @@ import Plot from 'react-plotly.js';
 
 interface TreeParams {
   maxDepth: number;
-  leftAngle: number;
-  rightAngle: number;
-  leftScale: number;
-  rightScale: number;
+  theta: number; // Angle between branches (classic Pythagoras tree uses 45°)
+  scale: number; // Scaling factor for child squares
   animationSpeed: number;
   colorMode: 'depth' | 'rainbow' | 'classic';
 }
@@ -31,11 +29,9 @@ export const PythagorasTreePage: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentDepth, setCurrentDepth] = useState(0);
   const [params, setParams] = useState<TreeParams>({
-    maxDepth: 12,
-    leftAngle: 45,
-    rightAngle: 45,
-    leftScale: 0.7071,  // √2/2 - matches Python new_size = size * np.sqrt(2) / 2
-    rightScale: 0.7071, // √2/2 - matches Python new_size = size * np.sqrt(2) / 2
+    maxDepth: 12, // Matches Python max_depth = 12
+    theta: 45, // Classic Pythagoras tree angle (matches Python +45/-45)
+    scale: Math.sqrt(2) / 2, // Matches Python new_size = size * np.sqrt(2) / 2
     animationSpeed: 500,
     colorMode: 'depth'
   });
@@ -44,52 +40,48 @@ export const PythagorasTreePage: React.FC = () => {
 
   const createChildSquare = useCallback((parent: Square, side: 'left' | 'right'): Square | null => {
     const isLeft = side === 'left';
-    const angle = isLeft ? params.leftAngle : params.rightAngle;
-    const scale = isLeft ? params.leftScale : params.rightScale;
     
-    const newSize = parent.width * scale;
+    // Calculate new size using exact Python formula: new_size = size * np.sqrt(2) / 2
+    const newSize = parent.width * params.scale;
     const parentAngleRad = (parent.angle * Math.PI) / 180;
     
-    // Calculate parent square corners using the same method as Python reference
-    const parentCenterX = parent.x + parent.width / 2;
-    const parentCenterY = parent.y + parent.height / 2;
-    
-    // Parent square corners (starting from bottom-left, counter-clockwise)
+    // Calculate parent square corners exactly as Python does
+    // Python: square starting from [0,0], [0,size], [size,size], [size,0], [0,0]
     const corners = [
-      [-parent.width / 2, -parent.height / 2], // bottom-left
-      [-parent.width / 2, parent.height / 2],  // top-left
-      [parent.width / 2, parent.height / 2],   // top-right
-      [parent.width / 2, -parent.height / 2],  // bottom-right
+      [0, 0],                    // bottom-left (index 0)
+      [0, parent.height],        // top-left (index 1) 
+      [parent.width, parent.height], // top-right (index 2)
+      [parent.width, 0],         // bottom-right (index 3)
     ];
     
-    // Rotate and translate parent corners
+    // Apply rotation matrix exactly as Python does: square = square @ R.T
     const cos = Math.cos(parentAngleRad);
     const sin = Math.sin(parentAngleRad);
     
-    const rotatedCorners = corners.map(([dx, dy]) => [
-      parentCenterX + dx * cos - dy * sin,
-      parentCenterY + dx * sin + dy * cos
+    const rotatedCorners = corners.map(([x, y]) => [
+      x * cos - y * sin,
+      x * sin + y * cos
     ]);
     
-    // Top edge corners (index 1 = top-left, index 2 = top-right)
-    const topLeftX = rotatedCorners[1][0];
-    const topLeftY = rotatedCorners[1][1];
-    const topRightX = rotatedCorners[2][0];
-    const topRightY = rotatedCorners[2][1];
+    // Translate to position exactly as Python does: square[:, 0] += x, square[:, 1] += y
+    const translatedCorners = rotatedCorners.map(([x, y]) => [
+      parent.x + x,
+      parent.y + y
+    ]);
     
     let newX, newY, newAngle;
     
     if (isLeft) {
-      // Left branch - follows Python algorithm exactly
-      newAngle = parent.angle + angle;
-      newX = topLeftX;
-      newY = topLeftY;
+      // Left branch: Python uses angle + 45, position at square[1] (top-left)
+      newAngle = parent.angle + params.theta;
+      newX = translatedCorners[1][0]; // square[1, 0]
+      newY = translatedCorners[1][1]; // square[1, 1]
     } else {
-      // Right branch - follows Python algorithm exactly
-      newAngle = parent.angle - angle;
+      // Right branch: Python uses angle - 45, position calculated from square[2] (top-right)
+      newAngle = parent.angle - params.theta;
       const newAngleRad = (newAngle * Math.PI) / 180;
-      newX = topRightX - newSize * Math.cos(newAngleRad);
-      newY = topRightY - newSize * Math.sin(newAngleRad);
+      newX = translatedCorners[2][0] - newSize * Math.cos(newAngleRad); // square[2, 0] - new_size * cos(right_angle)
+      newY = translatedCorners[2][1] - newSize * Math.sin(newAngleRad); // square[2, 1] - new_size * sin(right_angle)
     }
     
     return {
@@ -101,7 +93,7 @@ export const PythagorasTreePage: React.FC = () => {
       depth: parent.depth + 1,
       color: ''
     };
-  }, [params.leftAngle, params.rightAngle, params.leftScale, params.rightScale]);
+  }, [params.theta, params.scale]);
 
   const getSquareColor = useCallback((depth: number, maxDepth: number): string => {
     switch (params.colorMode) {
@@ -311,17 +303,21 @@ export const PythagorasTreePage: React.FC = () => {
               Mathematical Construction
             </Typography>
             <Typography variant="body2" sx={{ mb: 2 }}>
-              The Pythagoras tree is constructed by recursively placing squares on the hypotenuse of right triangles. 
-              Each generation creates two child squares with scaling factors:
+              The Pythagoras tree is constructed by recursively placing squares on the hypotenuse of the previous generation. 
+              Each parent square generates two child squares using the algorithm:
             </Typography>
             <MathRenderer 
-              math="s_{\text{left}} = \cos(\theta), \quad s_{\text{right}} = \sin(\theta)" 
+              math="\text{new\_size} = \text{size} \times \frac{\sqrt{2}}{2}" 
+              block 
+            />
+            <MathRenderer 
+              math="\text{left\_angle} = \text{angle} + \theta, \quad \text{right\_angle} = \text{angle} - \theta" 
               block 
             />
             <Typography variant="body2" sx={{ mt: 2 }}>
-              For the classic tree with <MathRenderer math="\theta = 45°" />, both scales equal 
-              <MathRenderer math="\frac{\sqrt{2}}{2} \approx 0.707" />, giving each child square 
-              area <MathRenderer math="\frac{1}{2}" /> of its parent.
+              For the classic tree with <MathRenderer math="\theta = 45°" /> and scale factor 
+              <MathRenderer math="\frac{\sqrt{2}}{2} \approx 0.707" />, each child square has 
+              area <MathRenderer math="\frac{1}{2}" /> of its parent, creating the iconic self-similar fractal.
             </Typography>
           </Box>
         )}
@@ -380,49 +376,41 @@ export const PythagorasTreePage: React.FC = () => {
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Left Angle: {params.leftAngle}°</Typography>
+              <Typography gutterBottom>Branch Angle (θ): {params.theta}°</Typography>
+              <Typography variant="caption" display="block" sx={{ mb: 1, opacity: 0.7 }}>
+                Angle between left and right branches (classic: 45°)
+              </Typography>
               <Slider
-                value={params.leftAngle}
-                onChange={(_, value) => handleParamChange('leftAngle', value as number)}
+                value={params.theta}
+                onChange={(_, value) => handleParamChange('theta', value as number)}
                 min={10}
                 max={80}
                 step={1}
+                marks={[
+                  { value: 30, label: '30°' },
+                  { value: 45, label: '45°' },
+                  { value: 60, label: '60°' }
+                ]}
                 valueLabelDisplay="auto"
               />
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Right Angle: {params.rightAngle}°</Typography>
+              <Typography gutterBottom>Scale Factor: {params.scale.toFixed(3)}</Typography>
+              <Typography variant="caption" display="block" sx={{ mb: 1, opacity: 0.7 }}>
+                Size ratio of child to parent squares (classic: √2/2 ≈ 0.707)
+              </Typography>
               <Slider
-                value={params.rightAngle}
-                onChange={(_, value) => handleParamChange('rightAngle', value as number)}
-                min={10}
-                max={80}
-                step={1}
-                valueLabelDisplay="auto"
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Left Scale: {params.leftScale.toFixed(3)}</Typography>
-              <Slider
-                value={params.leftScale}
-                onChange={(_, value) => handleParamChange('leftScale', value as number)}
+                value={params.scale}
+                onChange={(_, value) => handleParamChange('scale', value as number)}
                 min={0.3}
                 max={0.9}
-                step={0.01}
-                valueLabelDisplay="auto"
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Right Scale: {params.rightScale.toFixed(3)}</Typography>
-              <Slider
-                value={params.rightScale}
-                onChange={(_, value) => handleParamChange('rightScale', value as number)}
-                min={0.3}
-                max={0.9}
-                step={0.01}
+                step={0.001}
+                marks={[
+                  { value: 0.5, label: '0.5' },
+                  { value: Math.sqrt(2)/2, label: '√2/2' },
+                  { value: 0.8, label: '0.8' }
+                ]}
                 valueLabelDisplay="auto"
               />
             </Box>
