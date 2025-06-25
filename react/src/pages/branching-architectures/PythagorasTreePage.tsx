@@ -34,8 +34,8 @@ export const PythagorasTreePage: React.FC = () => {
     maxDepth: 12,
     leftAngle: 45,
     rightAngle: 45,
-    leftScale: 0.7071,  // √2/2
-    rightScale: 0.7071, // √2/2
+    leftScale: 0.7071,  // √2/2 - matches Python new_size = size * np.sqrt(2) / 2
+    rightScale: 0.7071, // √2/2 - matches Python new_size = size * np.sqrt(2) / 2
     animationSpeed: 500,
     colorMode: 'depth'
   });
@@ -50,58 +50,51 @@ export const PythagorasTreePage: React.FC = () => {
     const newSize = parent.width * scale;
     const parentAngleRad = (parent.angle * Math.PI) / 180;
     
-    // Parent square center
+    // Calculate parent square corners using the same method as Python reference
     const parentCenterX = parent.x + parent.width / 2;
     const parentCenterY = parent.y + parent.height / 2;
     
-    // Calculate the top edge of the parent square (the hypotenuse)
+    // Parent square corners (starting from bottom-left, counter-clockwise)
+    const corners = [
+      [-parent.width / 2, -parent.height / 2], // bottom-left
+      [-parent.width / 2, parent.height / 2],  // top-left
+      [parent.width / 2, parent.height / 2],   // top-right
+      [parent.width / 2, -parent.height / 2],  // bottom-right
+    ];
+    
+    // Rotate and translate parent corners
     const cos = Math.cos(parentAngleRad);
     const sin = Math.sin(parentAngleRad);
     
-    // Top-left and top-right corners of the parent square
-    const topLeftX = parentCenterX - (parent.width / 2) * cos + (parent.height / 2) * sin;
-    const topLeftY = parentCenterY - (parent.width / 2) * sin - (parent.height / 2) * cos;
-    const topRightX = parentCenterX + (parent.width / 2) * cos + (parent.height / 2) * sin;
-    const topRightY = parentCenterY + (parent.width / 2) * sin - (parent.height / 2) * cos;
+    const rotatedCorners = corners.map(([dx, dy]) => [
+      parentCenterX + dx * cos - dy * sin,
+      parentCenterY + dx * sin + dy * cos
+    ]);
     
-    let newCenterX, newCenterY, newAngle;
+    // Top edge corners (index 1 = top-left, index 2 = top-right)
+    const topLeftX = rotatedCorners[1][0];
+    const topLeftY = rotatedCorners[1][1];
+    const topRightX = rotatedCorners[2][0];
+    const topRightY = rotatedCorners[2][1];
+    
+    let newX, newY, newAngle;
     
     if (isLeft) {
-      // Left child square - positioned on the left part of the top edge
+      // Left branch - follows Python algorithm exactly
       newAngle = parent.angle + angle;
-      const newAngleRad = (newAngle * Math.PI) / 180;
-      
-      // Position the child square so its bottom-right corner touches the top-left corner of parent
-      const childBottomRightX = topLeftX;
-      const childBottomRightY = topLeftY;
-      
-      // Calculate child center from its bottom-right corner
-      const childCos = Math.cos(newAngleRad);
-      const childSin = Math.sin(newAngleRad);
-      
-      newCenterX = childBottomRightX - (newSize / 2) * childCos + (newSize / 2) * childSin;
-      newCenterY = childBottomRightY - (newSize / 2) * childSin - (newSize / 2) * childCos;
-      
+      newX = topLeftX;
+      newY = topLeftY;
     } else {
-      // Right child square - positioned on the right part of the top edge
+      // Right branch - follows Python algorithm exactly
       newAngle = parent.angle - angle;
       const newAngleRad = (newAngle * Math.PI) / 180;
-      
-      // Position the child square so its bottom-left corner touches the top-right corner of parent
-      const childBottomLeftX = topRightX;
-      const childBottomLeftY = topRightY;
-      
-      // Calculate child center from its bottom-left corner
-      const childCos = Math.cos(newAngleRad);
-      const childSin = Math.sin(newAngleRad);
-      
-      newCenterX = childBottomLeftX + (newSize / 2) * childCos + (newSize / 2) * childSin;
-      newCenterY = childBottomLeftY + (newSize / 2) * childSin - (newSize / 2) * childCos;
+      newX = topRightX - newSize * Math.cos(newAngleRad);
+      newY = topRightY - newSize * Math.sin(newAngleRad);
     }
     
     return {
-      x: newCenterX - newSize / 2,
-      y: newCenterY - newSize / 2,
+      x: newX,
+      y: newY,
       width: newSize,
       height: newSize,
       angle: newAngle,
@@ -132,10 +125,10 @@ export const PythagorasTreePage: React.FC = () => {
     const newSquares: Square[] = [];
     const initialSize = 100;
     
-    // Start with the base square
+    // Start with the base square - positioned to grow upward like the Python version
     const baseSquare: Square = {
       x: -initialSize / 2,
-      y: -150,
+      y: -100, // Start higher so tree grows upward
       width: initialSize,
       height: initialSize,
       angle: 0,
@@ -173,32 +166,36 @@ export const PythagorasTreePage: React.FC = () => {
     setSquares(newSquares);
   }, [params.maxDepth, createChildSquare, getSquareColor]);
 
-  // Helper function to get square corners for Plotly
+  // Helper function to get square corners for Plotly - matches Python algorithm exactly
   const getSquareCorners = (square: Square) => {
-    const centerX = square.x + square.width / 2;
-    const centerY = square.y + square.height / 2;
-    const halfWidth = square.width / 2;
-    const halfHeight = square.height / 2;
+    // Use the same coordinate system as Python: bottom-left origin
+    const corners = [
+      [0, 0],                    // bottom-left
+      [0, square.height],        // top-left
+      [square.width, square.height], // top-right
+      [square.width, 0],         // bottom-right
+      [0, 0]                     // close the shape
+    ];
     
+    // Apply rotation matrix (same as Python)
     const angleRad = (square.angle * Math.PI) / 180;
     const cos = Math.cos(angleRad);
     const sin = Math.sin(angleRad);
     
-    // Calculate rotated corners
-    const corners = [
-      [-halfWidth, -halfHeight],
-      [halfWidth, -halfHeight],
-      [halfWidth, halfHeight],
-      [-halfWidth, halfHeight],
-      [-halfWidth, -halfHeight] // Close the shape
-    ].map(([dx, dy]) => [
-      centerX + dx * cos - dy * sin,
-      centerY + dx * sin + dy * cos
+    const rotatedCorners = corners.map(([x, y]) => [
+      x * cos - y * sin,
+      x * sin + y * cos
+    ]);
+    
+    // Translate to position (same as Python)
+    const translatedCorners = rotatedCorners.map(([x, y]) => [
+      square.x + x,
+      square.y + y
     ]);
     
     return {
-      x: corners.map(corner => corner[0]),
-      y: corners.map(corner => corner[1])
+      x: translatedCorners.map(corner => corner[0]),
+      y: translatedCorners.map(corner => corner[1])
     };
   };
 
@@ -342,7 +339,7 @@ export const PythagorasTreePage: React.FC = () => {
                 },
                 yaxis: {
                   visible: false,
-                  range: [-200, 400]
+                  range: [-150, 450]
                 },
                 showlegend: false,
                 margin: { l: 0, r: 0, t: 0, b: 0 },
