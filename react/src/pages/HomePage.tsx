@@ -79,37 +79,6 @@ const fractalCategories = [
     ]
   },
   {
-    title: 'Diffusion Limited Aggregates',
-    description: 'Biological and physical growth patterns using random walk aggregation processes that model natural phenomena.',
-    color: '#ea4335',
-    applications: [
-      {
-        title: 'E. coli Colony',
-        description: 'Bacterial colony formation through diffusion-limited aggregation. Model the fractal growth of microbial communities.',
-        path: '/ecoli-dla',
-        color: '#dc3545'
-      },
-      {
-        title: 'Lichen Growth',
-        description: 'Radial growth patterns of lichen using grid-based DLA. Explore how simple organisms create complex forms.',
-        path: '/lichen-dla',
-        color: '#ff4757'
-      },
-      {
-        title: 'Saprophyte Organism',
-        description: 'Upward-biased growth of decomposer organisms. Simulate how nutrient gradients influence biological structures.',
-        path: '/saprophyte-dla',
-        color: '#228B22'
-      },
-      {
-        title: 'Bryophyte (Moss)',
-        description: 'Branching moss patterns with probabilistic sticking. Model how environmental factors shape plant architecture.',
-        path: '/bryophyte-dla',
-        color: '#4682B4'
-      }
-    ]
-  },
-  {
     title: 'Riemann Zeta Functions',
     description: 'Mathematical explorations using the Riemann Zeta function to generate space-filling patterns and 3D visualizations.',
     color: '#9b59b6',

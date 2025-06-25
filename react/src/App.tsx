@@ -13,16 +13,12 @@ import { BrownianMotionPage } from './pages/fractals-1d-2d-3d/BrownianMotionPage
 import { ConwayGameOfLifePage } from './pages/fractals-1d-2d-3d/ConwayGameOfLifePage';
 import { NoisePage } from './pages/fractals-1d-2d-3d/NoisePage';
 import { WavesPage } from './pages/fractals-1d-2d-3d/WavesPage';
+import { DLAPage } from './pages/fractals-1d-2d-3d/DLAPage';
 // Branching Architectures
 import { FernPage } from './pages/branching-architectures/FernPage';
 import { TreePage } from './pages/branching-architectures/TreePage';
 import { PythagorasTreePage } from './pages/branching-architectures/PythagorasTreePage';
 import { TreeRoots3DPage } from './pages/branching-architectures/TreeRoots3DPage';
-// Diffusion Limited Aggregates
-import { EcoliDLAPage } from './pages/diffusion-limited-aggregates/EcoliDLAPage';
-import { LichenDLAPage } from './pages/diffusion-limited-aggregates/LichenDLAPage';
-import { SaprophyteDLAPage } from './pages/diffusion-limited-aggregates/SaprophyteDLAPage';
-import { BryophyteDLAPage } from './pages/diffusion-limited-aggregates/BryophyteDLAPage';
 // Riemann Zeta Functions
 import { ZetaSpaceTilingPage } from './pages/riemann-zeta-functions/ZetaSpaceTilingPage';
 import { Zeta3DVisualizationPage } from './pages/riemann-zeta-functions/Zeta3DVisualizationPage';
@@ -53,16 +49,12 @@ const AppContent: React.FC = () => {
               <Route path="/conway" element={<ConwayGameOfLifePage />} />
               <Route path="/noise" element={<NoisePage />} />
               <Route path="/waves" element={<WavesPage />} />
+              <Route path="/dla" element={<DLAPage />} />
               {/* Branching Architectures */}
               <Route path="/ferns" element={<FernPage />} />
               <Route path="/trees" element={<TreePage />} />
               <Route path="/pythagoras" element={<PythagorasTreePage />} />
               <Route path="/tree-roots-3d" element={<TreeRoots3DPage />} />
-              {/* Diffusion Limited Aggregates */}
-              <Route path="/ecoli-dla" element={<EcoliDLAPage />} />
-              <Route path="/lichen-dla" element={<LichenDLAPage />} />
-              <Route path="/saprophyte-dla" element={<SaprophyteDLAPage />} />
-              <Route path="/bryophyte-dla" element={<BryophyteDLAPage />} />
               {/* Riemann Zeta Functions */}
               <Route path="/zeta-space-tiling" element={<ZetaSpaceTilingPage />} />
               <Route path="/zeta-3d-visualization" element={<Zeta3DVisualizationPage />} />

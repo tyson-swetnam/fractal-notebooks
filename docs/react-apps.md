@@ -9,19 +9,20 @@ The React applications are organized into two main categories based on their mat
 ### 1D/2D/3D Fractals
 Mathematical fractals exploring various dimensions, complex dynamics, and stochastic processes:
 
-- **[Mandelbrot Set](https://tyson-swetnam.github.io/fractal-notebooks/react#/mandelbrot)** - Complex iteration fractal with infinite boundary detail
-- **[Julia Sets](https://tyson-swetnam.github.io/fractal-notebooks/react#/julia)** - Parameter-dependent complex fractals with multiple presets  
-- **[Brownian Motion](https://tyson-swetnam.github.io/fractal-notebooks/react#/brownian)** - Random walk visualization with fractal dimension analysis
-- **[Conway's Game of Life](https://tyson-swetnam.github.io/fractal-notebooks/react#/conway)** - Cellular automaton with pattern presets and emergence
-- **[Noise Patterns](https://tyson-swetnam.github.io/fractal-notebooks/react#/noise)** - White, pink, and brown noise with spectral analysis
-- **[Wave Dynamics](https://tyson-swetnam.github.io/fractal-notebooks/react#/waves)** - Multi-component wave superposition and tidal patterns
+- **[Mandelbrot Set](../react/#/mandelbrot)** - Complex iteration fractal with infinite boundary detail
+- **[Julia Sets](../react/#/julia)** - Parameter-dependent complex fractals with multiple presets  
+- **[Brownian Motion](../react/#/brownian)** - Random walk visualization with fractal dimension analysis
+- **[Conway's Game of Life](../react/#/conway)** - Full-screen cellular automaton with WebGL acceleration and multiple color schemes
+- **[Diffusion-Limited Aggregation](../react/#/dla)** - Vector-field guided particle aggregation with directional spreading patterns
+- **[Noise Patterns](../react/#/noise)** - White, pink, and brown noise with spectral analysis
+- **[Wave Dynamics](../react/#/waves)** - Multi-component wave superposition and tidal patterns
 
 ### Branching Architectures  
 Nature-inspired recursive structures using mathematical growth algorithms:
 
-- **[Barnsley Ferns](https://tyson-swetnam.github.io/fractal-notebooks/react#/ferns)** - Iterated Function Systems (IFS) with multiple fern species
-- **[Fractal Trees](https://tyson-swetnam.github.io/fractal-notebooks/react#/trees)** - Recursive branching with natural variation and growth styles
-- **[Pythagoras Tree](https://tyson-swetnam.github.io/fractal-notebooks/react#/pythagoras)** - Geometric fractal based on Pythagorean theorem
+- **[Barnsley Ferns](../react/#/ferns)** - Iterated Function Systems (IFS) with multiple fern species
+- **[Fractal Trees](../react/#/trees)** - Recursive branching with natural variation and growth styles
+- **[Pythagoras Tree](../react/#/pythagoras)** - Geometric fractal based on Pythagorean theorem
 
 ## Features
 
@@ -56,10 +57,19 @@ Where the behavior depends on whether the sequence remains bounded or escapes to
 Brownian motion visualization demonstrates random walk behavior with fractal dimension analysis using box-counting methods.
 
 ### Cellular Automata
-Conway's Game of Life showcases emergence from simple rules:
-- Live cell with 2-3 neighbors survives
-- Dead cell with exactly 3 neighbors becomes alive
-- All other cells die or remain dead
+Conway's Game of Life showcases emergence from simple rules with modern enhancements:
+- **Classic Rules**: Live cell with 2-3 neighbors survives; dead cell with exactly 3 neighbors becomes alive
+- **WebGL Acceleration**: Full-screen 240×120 resolution for immersive visualization
+- **Multiple Color Schemes**: Classic blue, neon rainbow, fire, and ocean wave themes
+- **Cell Age Tracking**: Visual effects based on how long cells have been alive
+- **Dense Initial Configurations**: 75% initial density for immediate complex patterns
+
+### Diffusion-Limited Aggregation
+Advanced particle simulation demonstrating emergent growth patterns:
+- **Vector Field Guidance**: Radial, spiral, and uniform directional spreading
+- **Real-time Physics**: WebGL-accelerated particle collision and sticking
+- **Dynamic Growth**: Particles spawn from expanding radius as cluster grows
+- **Mathematical Accuracy**: True DLA algorithm with configurable parameters
 
 ### Spectral Analysis
 Noise pattern applications provide insight into 1/f noise and its relationship to fractal dimension through power spectral density analysis.
@@ -86,7 +96,7 @@ Branching architectures demonstrate mathematical recursion in nature through:
 
 ## Getting Started
 
-Visit the **[React Applications Home](https://tyson-swetnam.github.io/fractal-notebooks/react)** to begin exploring. Each application includes:
+Visit the **[React Applications Home](../react/)** to begin exploring. Each application includes:
 
 1. **Mathematical Context**: KaTeX-rendered equations and theoretical background
 2. **Interactive Controls**: Real-time parameter adjustment with immediate feedback

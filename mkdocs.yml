@@ -7,6 +7,9 @@ site_description: 'Interactive fractal exploration with React applications, Pyth
 site_author: 'Tyson Swetnam'
 site_url: 'https://tyson-swetnam.github.io/fractal-notebooks'
 
+# Enable GitHub Pages deployment
+use_directory_urls: true
+
 edit_uri: edit/main/docs
 
 # Copyright
@@ -26,20 +29,9 @@ nav:
     - 'Installation': installation.md
     - 'Dimensionality of Fractals': dims.md
     - 'Glossary & Maths': glossary.md
-  - Interactive React Apps:
-    - '1D/2D/3D Fractals':
-      - 'Mandelbrot Set': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/mandelbrot'
-      - 'Julia Sets': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/julia'
-      - 'Brownian Motion': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/brownian'
-      - "Conway's Game of Life": 'https://tyson-swetnam.github.io/fractal-notebooks/react#/conway'
-      - 'Noise Patterns': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/noise'
-      - 'Wave Dynamics': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/waves'
-    - 'Branching Architectures':
-      - 'Barnsley Ferns': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/ferns'
-      - 'Fractal Trees': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/trees'
-      - 'Pythagoras Tree': 'https://tyson-swetnam.github.io/fractal-notebooks/react#/pythagoras'
-    - 'React App Home': 'https://tyson-swetnam.github.io/fractal-notebooks/react'
-    - 'About React Apps': react-apps.md
+  - Interactive React Apps: 
+    - 'React Applications': react-apps.md
+    - 'Launch Interactive Apps': 'react/'
   - Jupyter Notebooks:
     - 'Diffusion Limited Aggregation (DLA)': notebooks/old_dla.ipynb
     - 'Barnsleys Ferns': notebooks/ferns.ipynb
@@ -72,6 +64,7 @@ theme:
     - content.action.edit
     - content.action.view
     - content.tooltips
+    - navigation.top
   # Default values, taken from mkdocs_theme.yml
   language: en
   palette:

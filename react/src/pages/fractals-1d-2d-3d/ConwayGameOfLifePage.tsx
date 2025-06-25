@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Typography, Grid, Button, Box, Paper, FormControl, InputLabel, Select, MenuItem, Slider } from '@mui/material';
-import { MathRenderer } from '../../components/math/MathRenderer';
-import { PlayArrow, Pause, SkipNext, Refresh } from '@mui/icons-material';
+import { Typography, Slider, Button, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { PlayArrow, Pause, SkipNext, Refresh, Settings } from '@mui/icons-material';
 
 interface GameOfLifeParams {
-  gridSize: number;
+  gridWidth: number;
+  gridHeight: number;
   animationSpeed: number;
   wrapEdges: boolean;
   initialDensity: number;
+  cellGlow: number;
+  colorScheme: 'classic' | 'neon' | 'fire' | 'ocean';
 }
 
 const PRESET_PATTERNS = {
@@ -28,12 +30,6 @@ const PRESET_PATTERNS = {
     [1, 0, 0, 1],
     [0, 1, 1, 0]
   ],
-  loaf: [
-    [0, 1, 1, 0],
-    [1, 0, 0, 1],
-    [0, 1, 0, 1],
-    [0, 0, 1, 0]
-  ],
   toad: [
     [0, 1, 1, 1],
     [1, 1, 1, 0]
@@ -43,35 +39,220 @@ const PRESET_PATTERNS = {
     [1, 1, 0, 0],
     [0, 0, 1, 1],
     [0, 0, 1, 1]
+  ],
+  pulsar: [
+    [0,0,1,1,1,0,0,0,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [0,0,1,1,1,0,0,0,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,1,1,1,0,0,0,1,1,1,0,0],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [1,0,0,0,0,1,0,1,0,0,0,0,1],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,1,1,1,0,0,0,1,1,1,0,0]
   ]
 };
 
+// WebGL shaders for Conway's Game of Life
+const vertexShaderSource = `
+  attribute vec2 a_position;
+  attribute float a_state;
+  attribute float a_age;
+  
+  uniform vec2 u_resolution;
+  uniform float u_cellSize;
+  uniform float u_time;
+  
+  varying float v_state;
+  varying float v_age;
+  varying vec2 v_position;
+  varying float v_time;
+  
+  void main() {
+    vec2 cellPos = a_position * u_cellSize;
+    vec2 position = ((cellPos / u_resolution) * 2.0 - 1.0) * vec2(1, -1);
+    gl_Position = vec4(position, 0, 1);
+    gl_PointSize = u_cellSize;
+    v_state = a_state;
+    v_age = a_age;
+    v_position = a_position;
+    v_time = u_time;
+  }
+`;
+
+const fragmentShaderSource = `
+  precision mediump float;
+  
+  uniform int u_colorScheme;
+  uniform float u_cellGlow;
+  uniform float u_cellSize;
+  
+  varying float v_state;
+  varying float v_age;
+  varying vec2 v_position;
+  varying float v_time;
+  
+  vec3 getColorScheme(float age, int scheme) {
+    if (scheme == 0) { // classic
+      return vec3(0.0, 0.6, 1.0);
+    } else if (scheme == 1) { // neon
+      float hue = age * 0.1 + v_time * 0.001;
+      return vec3(
+        0.5 + 0.5 * sin(hue),
+        0.5 + 0.5 * sin(hue + 2.094),
+        0.5 + 0.5 * sin(hue + 4.188)
+      );
+    } else if (scheme == 2) { // fire
+      float intensity = min(age * 0.05, 1.0);
+      return vec3(1.0, intensity * 0.6, intensity * 0.2);
+    } else { // ocean
+      float wave = sin(v_position.x * 0.1 + v_time * 0.005) * 0.3 + 0.7;
+      return vec3(0.1, 0.4 + wave * 0.3, 0.8 + wave * 0.2);
+    }
+  }
+  
+  void main() {
+    if (v_state < 0.5) {
+      discard; // Don't render dead cells
+    }
+    
+    vec2 coord = gl_PointCoord - vec2(0.5);
+    float dist = length(coord);
+    
+    // Create square cells with rounded corners
+    float cell = 1.0 - smoothstep(0.35, 0.5, dist);
+    
+    // Add glow effect
+    float glow = (1.0 - smoothstep(0.0, 0.7, dist)) * u_cellGlow;
+    
+    vec3 color = getColorScheme(v_age, u_colorScheme);
+    float alpha = cell + glow * 0.3;
+    
+    // Pulse based on age
+    float pulse = 0.8 + 0.2 * sin(v_age * 0.3 + v_time * 0.01);
+    
+    gl_FragColor = vec4(color * pulse, alpha);
+  }
+`;
+
 export const ConwayGameOfLifePage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<NodeJS.Timeout>();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const glRef = useRef<WebGLRenderingContext | null>(null);
+  const programRef = useRef<WebGLProgram | null>(null);
+  const animationRef = useRef<number>();
+  const timeRef = useRef<number>(0);
+  
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [useWebGL, setUseWebGL] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [generation, setGeneration] = useState(0);
+  
   const [params, setParams] = useState<GameOfLifeParams>({
-    gridSize: 50,
-    animationSpeed: 200,
+    gridWidth: 240,
+    gridHeight: 120,
+    animationSpeed: 60,
     wrapEdges: true,
-    initialDensity: 30
+    initialDensity: 75,
+    cellGlow: 0.5,
+    colorScheme: 'neon'
   });
 
   const [grid, setGrid] = useState<boolean[][]>([]);
-  const [cellSize, setCellSize] = useState(10);
+  const [cellAges, setCellAges] = useState<number[][]>([]);
 
+  // WebGL initialization
+  const initWebGL = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      console.error('Canvas not available for WebGL initialization');
+      return false;
+    }
+
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+    canvas.style.width = dimensions.width + 'px';
+    canvas.style.height = dimensions.height + 'px';
+
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.warn('WebGL not supported, falling back to 2D canvas');
+      setUseWebGL(false);
+      setIsInitialized(true);
+      return true;
+    }
+
+    glRef.current = gl;
+
+    // Create and compile shaders
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    
+    if (!vertexShader || !fragmentShader) return false;
+
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    
+    gl.compileShader(vertexShader);
+    gl.compileShader(fragmentShader);
+
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+      console.error('Vertex shader error:', gl.getShaderInfoLog(vertexShader));
+      return false;
+    }
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+      console.error('Fragment shader error:', gl.getShaderInfoLog(fragmentShader));
+      return false;
+    }
+
+    // Create and link program
+    const program = gl.createProgram();
+    if (!program) return false;
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return false;
+    }
+    
+    programRef.current = program;
+
+    // Enable blending for glow effects
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    console.log('WebGL initialized successfully');
+    setIsInitialized(true);
+    return true;
+  }, [dimensions]);
+
+  // Initialize grid with random pattern
   const initializeGrid = useCallback(() => {
-    const newGrid = Array(params.gridSize).fill(null).map(() => 
-      Array(params.gridSize).fill(false)
+    const density = params.initialDensity / 100;
+    const newGrid = Array(params.gridHeight).fill(null).map(() => 
+      Array(params.gridWidth).fill(null).map(() => Math.random() < density)
+    );
+    const newAges = Array(params.gridHeight).fill(null).map(() => 
+      Array(params.gridWidth).fill(0)
     );
     setGrid(newGrid);
+    setCellAges(newAges);
     setGeneration(0);
-  }, [params.gridSize]);
+    timeRef.current = 0;
+  }, [params.gridWidth, params.gridHeight, params.initialDensity]);
 
+  // Count neighbors with wrapping
   const countNeighbors = useCallback((grid: boolean[][], row: number, col: number): number => {
     let count = 0;
-    const size = grid.length;
+    const height = grid.length;
+    const width = grid[0]?.length || 0;
     
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
@@ -81,10 +262,10 @@ export const ConwayGameOfLifePage: React.FC = () => {
         let newCol = col + j;
         
         if (params.wrapEdges) {
-          newRow = (newRow + size) % size;
-          newCol = (newCol + size) % size;
+          newRow = (newRow + height) % height;
+          newCol = (newCol + width) % width;
         } else {
-          if (newRow < 0 || newRow >= size || newCol < 0 || newCol >= size) continue;
+          if (newRow < 0 || newRow >= height || newCol < 0 || newCol >= width) continue;
         }
         
         if (grid[newRow][newCol]) count++;
@@ -94,122 +275,283 @@ export const ConwayGameOfLifePage: React.FC = () => {
     return count;
   }, [params.wrapEdges]);
 
-  const nextGeneration = useCallback((currentGrid: boolean[][]): boolean[][] => {
-    const size = currentGrid.length;
-    const newGrid = Array(size).fill(null).map(() => Array(size).fill(false));
-    
-    for (let row = 0; row < size; row++) {
-      for (let col = 0; col < size; col++) {
-        const neighbors = countNeighbors(currentGrid, row, col);
-        const currentCell = currentGrid[row][col];
-        
-        // Conway's Game of Life rules
-        if (currentCell) {
-          // Live cell with 2 or 3 neighbors survives
-          newGrid[row][col] = neighbors === 2 || neighbors === 3;
-        } else {
-          // Dead cell with exactly 3 neighbors becomes alive
-          newGrid[row][col] = neighbors === 3;
-        }
-      }
-    }
-    
-    return newGrid;
-  }, [countNeighbors]);
-
-  const drawGrid = useCallback(() => {
-    if (!canvasRef.current || grid.length === 0) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    const size = Math.min(canvas.width, canvas.height);
-    const cellSize = size / params.gridSize;
-    setCellSize(cellSize);
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw grid lines
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 0.5;
-    
-    for (let i = 0; i <= params.gridSize; i++) {
-      const pos = i * cellSize;
-      ctx.beginPath();
-      ctx.moveTo(pos, 0);
-      ctx.lineTo(pos, size);
-      ctx.stroke();
-      
-      ctx.beginPath();
-      ctx.moveTo(0, pos);
-      ctx.lineTo(size, pos);
-      ctx.stroke();
-    }
-    
-    // Draw live cells
-    ctx.fillStyle = '#007acc';
-    for (let row = 0; row < params.gridSize; row++) {
-      for (let col = 0; col < params.gridSize; col++) {
-        if (grid[row][col]) {
-          ctx.fillRect(
-            col * cellSize + 1, 
-            row * cellSize + 1, 
-            cellSize - 2, 
-            cellSize - 2
-          );
-        }
-      }
-    }
-  }, [grid, params.gridSize]);
-
-  const step = useCallback(() => {
+  // Next generation calculation
+  const nextGeneration = useCallback(() => {
     setGrid(currentGrid => {
-      const newGrid = nextGeneration(currentGrid);
+      if (currentGrid.length === 0) return currentGrid;
+      
+      const height = currentGrid.length;
+      const width = currentGrid[0]?.length || 0;
+      const newGrid = Array(height).fill(null).map(() => Array(width).fill(false));
+      
+      setCellAges(currentAges => {
+        const newAges = Array(height).fill(null).map(() => Array(width).fill(0));
+        
+        for (let row = 0; row < height; row++) {
+          for (let col = 0; col < width; col++) {
+            const neighbors = countNeighbors(currentGrid, row, col);
+            const currentCell = currentGrid[row][col];
+            
+            // Conway's Game of Life rules
+            if (currentCell) {
+              // Live cell with 2 or 3 neighbors survives
+              if (neighbors === 2 || neighbors === 3) {
+                newGrid[row][col] = true;
+                newAges[row][col] = currentAges[row][col] + 1;
+              }
+            } else {
+              // Dead cell with exactly 3 neighbors becomes alive
+              if (neighbors === 3) {
+                newGrid[row][col] = true;
+                newAges[row][col] = 0;
+              }
+            }
+          }
+        }
+        
+        return newAges;
+      });
+      
       setGeneration(gen => gen + 1);
+      timeRef.current += 1;
       return newGrid;
     });
-  }, [nextGeneration]);
+  }, [countNeighbors]);
 
-  const animate = useCallback(() => {
-    step();
-    if (isPlaying) {
-      animationRef.current = setTimeout(() => {
-        animate();
-      }, 501 - params.animationSpeed);
+  // WebGL rendering
+  const render = useCallback(() => {
+    const gl = glRef.current;
+    const program = programRef.current;
+    if (!gl || !program || grid.length === 0) return;
+
+    try {
+      gl.viewport(0, 0, dimensions.width, dimensions.height);
+      gl.clearColor(0.02, 0.02, 0.08, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      gl.useProgram(program);
+
+      const cellSizeX = dimensions.width / params.gridWidth;
+      const cellSizeY = dimensions.height / params.gridHeight;
+      const cellSize = Math.min(cellSizeX, cellSizeY);
+      
+      const positions: number[] = [];
+      const states: number[] = [];
+      const ages: number[] = [];
+
+      for (let row = 0; row < params.gridHeight; row++) {
+        for (let col = 0; col < params.gridWidth; col++) {
+          if (grid[row] && grid[row][col]) {
+            positions.push(col + 0.5, row + 0.5);
+            states.push(1.0);
+            ages.push(cellAges[row][col]);
+          }
+        }
+      }
+
+      if (positions.length === 0) return;
+
+      // Create buffers
+      const positionBuffer = gl.createBuffer();
+      const stateBuffer = gl.createBuffer();
+      const ageBuffer = gl.createBuffer();
+
+      // Position attribute
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+      const positionLocation = gl.getAttribLocation(program, 'a_position');
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+      // State attribute
+      gl.bindBuffer(gl.ARRAY_BUFFER, stateBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(states), gl.STATIC_DRAW);
+      const stateLocation = gl.getAttribLocation(program, 'a_state');
+      gl.enableVertexAttribArray(stateLocation);
+      gl.vertexAttribPointer(stateLocation, 1, gl.FLOAT, false, 0, 0);
+
+      // Age attribute
+      gl.bindBuffer(gl.ARRAY_BUFFER, ageBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ages), gl.STATIC_DRAW);
+      const ageLocation = gl.getAttribLocation(program, 'a_age');
+      gl.enableVertexAttribArray(ageLocation);
+      gl.vertexAttribPointer(ageLocation, 1, gl.FLOAT, false, 0, 0);
+
+      // Set uniforms
+      const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+      gl.uniform2f(resolutionLocation, dimensions.width, dimensions.height);
+      
+      const cellSizeLocation = gl.getUniformLocation(program, 'u_cellSize');
+      gl.uniform1f(cellSizeLocation, cellSize);
+      
+      const timeLocation = gl.getUniformLocation(program, 'u_time');
+      gl.uniform1f(timeLocation, timeRef.current);
+
+      const colorSchemeLocation = gl.getUniformLocation(program, 'u_colorScheme');
+      const colorSchemeMap = { 'classic': 0, 'neon': 1, 'fire': 2, 'ocean': 3 };
+      gl.uniform1i(colorSchemeLocation, colorSchemeMap[params.colorScheme] || 1);
+
+      const cellGlowLocation = gl.getUniformLocation(program, 'u_cellGlow');
+      gl.uniform1f(cellGlowLocation, params.cellGlow);
+
+      // Draw
+      gl.drawArrays(gl.POINTS, 0, positions.length / 2);
+
+      // Cleanup
+      gl.deleteBuffer(positionBuffer);
+      gl.deleteBuffer(stateBuffer);
+      gl.deleteBuffer(ageBuffer);
+      
+    } catch (error) {
+      console.error('WebGL rendering error:', error);
     }
-  }, [step, isPlaying, params.animationSpeed]);
+  }, [grid, cellAges, dimensions, params.gridWidth, params.gridHeight, params.colorScheme, params.cellGlow]);
 
-  useEffect(() => {
-    drawGrid();
-  }, [drawGrid]);
+  // 2D Canvas fallback rendering
+  const render2D = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || grid.length === 0) return;
 
-  useEffect(() => {
-    initializeGrid();
-  }, [initializeGrid]);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
+    try {
+      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+      
+      // Set background
+      ctx.fillStyle = '#050520';
+      ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+
+      const cellSizeX = dimensions.width / params.gridWidth;
+      const cellSizeY = dimensions.height / params.gridHeight;
+
+      for (let row = 0; row < params.gridHeight; row++) {
+        for (let col = 0; col < params.gridWidth; col++) {
+          if (grid[row] && grid[row][col]) {
+            const age = cellAges[row][col];
+            let color;
+            
+            switch (params.colorScheme) {
+              case 'classic':
+                color = '#0099ff';
+                break;
+              case 'fire':
+                const intensity = Math.min(age * 0.05, 1.0);
+                color = `rgb(255, ${Math.floor(intensity * 153)}, ${Math.floor(intensity * 51)})`;
+                break;
+              case 'ocean':
+                color = `hsl(200, 80%, ${60 + Math.sin(age * 0.3) * 20}%)`;
+                break;
+              default: // neon
+                const hue = (age * 10) % 360;
+                color = `hsl(${hue}, 80%, 60%)`;
+            }
+            
+            ctx.fillStyle = color;
+            ctx.fillRect(col * cellSizeX, row * cellSizeY, cellSizeX - 1, cellSizeY - 1);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('2D Canvas rendering error:', error);
+    }
+  }, [grid, cellAges, dimensions, params.gridWidth, params.gridHeight, params.colorScheme]);
+
+  // Animation loop
+  const animate = useCallback(() => {
+    nextGeneration();
+    if (useWebGL) {
+      render();
+    } else {
+      render2D();
+    }
+    
+    if (isAnimating) {
+      animationRef.current = requestAnimationFrame(() => {
+        setTimeout(animate, 101 - params.animationSpeed);
+      });
+    }
+  }, [isAnimating, nextGeneration, render, render2D, useWebGL, params.animationSpeed]);
+
+  // Handle window resize
   useEffect(() => {
-    if (isPlaying) {
+    const handleResize = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Initialize WebGL when dimensions change
+  useEffect(() => {
+    const success = initWebGL();
+    if (!success) {
+      console.error('Failed to initialize WebGL');
+    }
+  }, [initWebGL]);
+
+  // Initialize grid and auto-start
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    const timer = setTimeout(() => {
+      initializeGrid();
+      setTimeout(() => {
+        if (useWebGL) {
+          render();
+        } else {
+          render2D();
+        }
+        // Auto-start the animation with the dense initial pattern
+        setIsAnimating(true);
+      }, 100);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [isInitialized, initializeGrid, render, render2D, useWebGL]);
+
+  // Animation control
+  useEffect(() => {
+    if (isAnimating) {
       animate();
     }
     return () => {
       if (animationRef.current) {
-        clearTimeout(animationRef.current);
+        cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, animate]);
+  }, [isAnimating, animate]);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const handleParamChange = (key: keyof GameOfLifeParams, value: number | boolean | string) => {
+    setParams(prev => ({ ...prev, [key]: value }));
+  };
+
+  const toggleAnimation = () => {
+    setIsAnimating(!isAnimating);
+  };
+
+  const step = () => {
+    nextGeneration();
+    if (useWebGL) {
+      render();
+    } else {
+      render2D();
+    }
   };
 
   const randomize = () => {
-    const density = params.initialDensity / 100; // Convert percentage to decimal
-    const newGrid = Array(params.gridSize).fill(null).map(() =>
-      Array(params.gridSize).fill(null).map(() => Math.random() < density)
+    const density = params.initialDensity / 100;
+    const newGrid = Array(params.gridHeight).fill(null).map(() =>
+      Array(params.gridWidth).fill(null).map(() => Math.random() < density)
+    );
+    const newAges = Array(params.gridHeight).fill(null).map(() => 
+      Array(params.gridWidth).fill(0)
     );
     setGrid(newGrid);
+    setCellAges(newAges);
     setGeneration(0);
+    timeRef.current = 0;
   };
 
   const clear = () => {
@@ -218,222 +560,287 @@ export const ConwayGameOfLifePage: React.FC = () => {
 
   const placePattern = (patternName: keyof typeof PRESET_PATTERNS) => {
     const pattern = PRESET_PATTERNS[patternName];
-    const newGrid = [...grid];
-    const startRow = Math.floor((params.gridSize - pattern.length) / 2);
-    const startCol = Math.floor((params.gridSize - pattern[0].length) / 2);
-    
-    // Clear grid first
-    for (let i = 0; i < params.gridSize; i++) {
-      for (let j = 0; j < params.gridSize; j++) {
-        newGrid[i][j] = false;
-      }
-    }
+    const newGrid = Array(params.gridHeight).fill(null).map(() => Array(params.gridWidth).fill(false));
+    const newAges = Array(params.gridHeight).fill(null).map(() => Array(params.gridWidth).fill(0));
+    const startRow = Math.floor((params.gridHeight - pattern.length) / 2);
+    const startCol = Math.floor((params.gridWidth - pattern[0].length) / 2);
     
     // Place pattern
     for (let i = 0; i < pattern.length; i++) {
       for (let j = 0; j < pattern[i].length; j++) {
-        if (startRow + i < params.gridSize && startCol + j < params.gridSize) {
+        if (startRow + i < params.gridHeight && startCol + j < params.gridWidth) {
           newGrid[startRow + i][startCol + j] = pattern[i][j] === 1;
         }
       }
     }
     
     setGrid(newGrid);
+    setCellAges(newAges);
     setGeneration(0);
+    timeRef.current = 0;
   };
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current || isPlaying) return;
+    if (!canvasRef.current || isAnimating) return;
     
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     
-    const col = Math.floor(x / cellSize);
-    const row = Math.floor(y / cellSize);
+    const cellSizeX = dimensions.width / params.gridWidth;
+    const cellSizeY = dimensions.height / params.gridHeight;
+    const col = Math.floor(x / cellSizeX);
+    const row = Math.floor(y / cellSizeY);
     
-    if (row >= 0 && row < params.gridSize && col >= 0 && col < params.gridSize) {
-      const newGrid = [...grid];
+    if (row >= 0 && row < params.gridHeight && col >= 0 && col < params.gridWidth) {
+      const newGrid = [...grid.map(row => [...row])];
+      const newAges = [...cellAges.map(row => [...row])];
       newGrid[row][col] = !newGrid[row][col];
+      newAges[row][col] = 0;
       setGrid(newGrid);
+      setCellAges(newAges);
     }
   };
 
-  const handleParamChange = (key: keyof GameOfLifeParams, value: number | boolean) => {
-    setParams(prev => ({ ...prev, [key]: value }));
-  };
-
   return (
-    <div className="page-container">
-      <Typography variant="h3" component="h1" className="page-title">
-        Conway's Game of Life
-      </Typography>
-      <Typography variant="body1" className="page-description">
-        Explore the fascinating cellular automaton that creates complex patterns from simple rules.
-      </Typography>
+    <div style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      width: '100vw', 
+      height: '100vh', 
+      overflow: 'hidden',
+      backgroundColor: '#050520'
+    }}>
+      {/* Full-screen WebGL canvas */}
+      <canvas
+        ref={canvasRef}
+        onClick={handleCanvasClick}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          cursor: isAnimating ? 'default' : 'pointer'
+        }}
+      />
 
-      <Paper sx={{ p: 3, mb: 3, backgroundColor: 'background.paper' }}>
-        <Typography variant="h6" gutterBottom>
-          Rules of the Game
+      {/* Title and Info Panel */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 80,
+          left: 20,
+          maxWidth: 380,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(10px)',
+          padding: 2.5,
+          borderRadius: 2,
+          zIndex: 999,
+          color: 'white'
+        }}
+      >
+        <Typography variant="h4" gutterBottom sx={{ 
+          fontWeight: 'bold',
+          background: 'linear-gradient(45deg, #0099ff, #9933ff, #ff3399)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          mb: 1
+        }}>
+          Conway's Game of Life
         </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          Conway's Game of Life follows four simple rules for each cell based on its eight neighbors:
+        
+        <Typography variant="body2" sx={{ mb: 1.5, lineHeight: 1.4 }}>
+          A cellular automaton that creates complex patterns from simple rules. 
+          Cells live, die, and reproduce based on their neighbors, creating 
+          infinite emergent behaviors from just four basic rules.
         </Typography>
-        <Box component="ul" sx={{ pl: 3, mb: 2 }}>
-          <Typography component="li" variant="body2">
-            Live cell with 2-3 neighbors → survives
-          </Typography>
-          <Typography component="li" variant="body2">
-            Live cell with &lt;2 neighbors → dies (underpopulation)
-          </Typography>
-          <Typography component="li" variant="body2">
-            Live cell with &gt;3 neighbors → dies (overpopulation)
-          </Typography>
-          <Typography component="li" variant="body2">
-            Dead cell with exactly 3 neighbors → becomes alive (reproduction)
+        
+        <Typography variant="caption" sx={{ 
+          fontSize: '0.75em', 
+          opacity: 0.8,
+          fontStyle: 'italic'
+        }}>
+          WebGL-accelerated • Real-time cellular evolution • Generation: {generation}
+        </Typography>
+      </Box>
+
+      {/* Controls Panel */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 80,
+          right: 20,
+          width: 320,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(10px)',
+          padding: 3,
+          borderRadius: 2,
+          zIndex: 1000,
+          color: 'white'
+        }}
+      >
+        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Settings fontSize="small" />
+          Game Controls
+        </Typography>
+
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <Button
+            variant="contained"
+            onClick={toggleAnimation}
+            startIcon={isAnimating ? <Pause /> : <PlayArrow />}
+            size="small"
+            fullWidth
+            sx={{ backgroundColor: isAnimating ? '#d32f2f' : '#2e7d32' }}
+          >
+            {isAnimating ? 'Pause' : 'Play'}
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={step}
+            startIcon={<SkipNext />}
+            size="small"
+            fullWidth
+            disabled={isAnimating}
+            sx={{ borderColor: '#666', color: 'white' }}
+          >
+            Step
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={clear}
+            startIcon={<Refresh />}
+            size="small"
+            fullWidth
+            disabled={isAnimating}
+            sx={{ borderColor: '#666', color: 'white' }}
+          >
+            Clear
+          </Button>
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" gutterBottom>Grid Resolution: {params.gridWidth}×{params.gridHeight}</Typography>
+          <Typography variant="body2" sx={{ fontSize: '0.75em', opacity: 0.7, mb: 1 }}>
+            Optimized for widescreen display
           </Typography>
         </Box>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          Mathematically: <MathRenderer math="s'_{i,j} = f(s_{i,j}, \sum_{n \in N} s_n)" /> where N represents the 8-neighborhood.
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" gutterBottom>Animation Speed: {params.animationSpeed}</Typography>
+          <Slider
+            value={params.animationSpeed}
+            onChange={(_, value) => handleParamChange('animationSpeed', value as number)}
+            min={10}
+            max={100}
+            size="small"
+            sx={{ color: '#9933ff' }}
+          />
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" gutterBottom>Initial Density: {params.initialDensity}%</Typography>
+          <Slider
+            value={params.initialDensity}
+            onChange={(_, value) => handleParamChange('initialDensity', value as number)}
+            min={5}
+            max={99}
+            step={5}
+            size="small"
+            sx={{ color: '#ff3399' }}
+          />
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2" gutterBottom>Cell Glow: {(params.cellGlow * 100).toFixed(0)}%</Typography>
+          <Slider
+            value={params.cellGlow}
+            onChange={(_, value) => handleParamChange('cellGlow', value as number)}
+            min={0}
+            max={1}
+            step={0.1}
+            size="small"
+            sx={{ color: '#00ffcc' }}
+          />
+        </Box>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel sx={{ color: 'white' }}>Color Scheme</InputLabel>
+          <Select
+            value={params.colorScheme}
+            onChange={(e) => handleParamChange('colorScheme', e.target.value)}
+            label="Color Scheme"
+            size="small"
+            sx={{ color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#666' } }}
+          >
+            <MenuItem value="classic">Classic Blue</MenuItem>
+            <MenuItem value="neon">Neon Rainbow</MenuItem>
+            <MenuItem value="fire">Fire</MenuItem>
+            <MenuItem value="ocean">Ocean Wave</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel sx={{ color: 'white' }}>Preset Patterns</InputLabel>
+          <Select
+            value=""
+            onChange={(e) => {
+              const pattern = e.target.value as keyof typeof PRESET_PATTERNS;
+              if (pattern) placePattern(pattern);
+            }}
+            label="Preset Patterns"
+            size="small"
+            sx={{ color: 'white', '.MuiOutlinedInput-notchedOutline': { borderColor: '#666' } }}
+          >
+            {Object.keys(PRESET_PATTERNS).map((pattern) => (
+              <MenuItem key={pattern} value={pattern}>
+                {pattern.charAt(0).toUpperCase() + pattern.slice(1)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="outlined"
+          onClick={randomize}
+          fullWidth
+          disabled={isAnimating}
+          sx={{ borderColor: '#666', color: 'white' }}
+        >
+          Randomize ({params.initialDensity}%)
+        </Button>
+      </Box>
+
+      {/* Statistics overlay */}
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 20,
+          left: 20,
+          color: 'white',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          padding: 2,
+          borderRadius: 1,
+          zIndex: 999
+        }}
+      >
+        <Typography variant="body2">Generation: {generation}</Typography>
+        <Typography variant="body2">Grid: {params.gridWidth}×{params.gridHeight}</Typography>
+        <Typography variant="body2">Living Cells: {grid.reduce((sum, row) => sum + row.filter(cell => cell).length, 0)}</Typography>
+        <Typography variant="body2" sx={{ mt: 1, fontSize: '0.7em', opacity: 0.8 }}>
+          Renderer: {useWebGL ? 'WebGL' : '2D Canvas'} | {isInitialized ? 'Ready' : 'Initializing...'}
         </Typography>
-        <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-          Use the Initial Cell Density slider to control how many cells are alive when randomizing. 
-          Lower densities create sparse patterns, while higher densities lead to complex initial configurations.
+        <Typography variant="body2" sx={{ fontSize: '0.7em', opacity: 0.6 }}>
+          Click cells to toggle (when paused)
         </Typography>
-      </Paper>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
-          <Box className="visualization-area">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={600}
-              onClick={handleCanvasClick}
-              style={{
-                maxWidth: '100%',
-                height: 'auto',
-                border: '1px solid #333',
-                borderRadius: '4px',
-                backgroundColor: '#000',
-                cursor: isPlaying ? 'default' : 'pointer'
-              }}
-            />
-            <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
-              Generation: {generation} | Click cells to toggle (when paused)
-            </Typography>
-          </Box>
-        </Grid>
-
-        <Grid item xs={12} lg={4}>
-          <Box className="controls-area">
-            <Typography variant="h6" gutterBottom>
-              Game Controls
-            </Typography>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Grid Size: {params.gridSize}×{params.gridSize}</Typography>
-              <Slider
-                value={params.gridSize}
-                onChange={(_, value) => handleParamChange('gridSize', value as number)}
-                min={20}
-                max={100}
-                step={5}
-                valueLabelDisplay="auto"
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Speed: {params.animationSpeed}</Typography>
-              <Slider
-                value={params.animationSpeed}
-                onChange={(_, value) => handleParamChange('animationSpeed', value as number)}
-                min={50}
-                max={500}
-                step={25}
-                valueLabelDisplay="auto"
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography gutterBottom>Initial Cell Density: {params.initialDensity}%</Typography>
-              <Slider
-                value={params.initialDensity}
-                onChange={(_, value) => handleParamChange('initialDensity', value as number)}
-                min={5}
-                max={80}
-                step={5}
-                valueLabelDisplay="auto"
-                marks={[
-                  { value: 10, label: '10%' },
-                  { value: 30, label: '30%' },
-                  { value: 50, label: '50%' },
-                  { value: 70, label: '70%' }
-                ]}
-              />
-            </Box>
-
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Preset Patterns</InputLabel>
-              <Select
-                label="Preset Patterns"
-                value=""
-                onChange={(e) => {
-                  const pattern = e.target.value as keyof typeof PRESET_PATTERNS;
-                  if (pattern) placePattern(pattern);
-                }}
-              >
-                {Object.keys(PRESET_PATTERNS).map((pattern) => (
-                  <MenuItem key={pattern} value={pattern}>
-                    {pattern.charAt(0).toUpperCase() + pattern.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
-              <Button
-                variant="contained"
-                onClick={togglePlay}
-                startIcon={isPlaying ? <Pause /> : <PlayArrow />}
-                fullWidth
-              >
-                {isPlaying ? 'Pause' : 'Play'}
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={step}
-                startIcon={<SkipNext />}
-                fullWidth
-                disabled={isPlaying}
-              >
-                Step
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={randomize}
-                fullWidth
-                disabled={isPlaying}
-              >
-                Randomize ({params.initialDensity}%)
-              </Button>
-
-              <Button
-                variant="outlined"
-                onClick={clear}
-                startIcon={<Refresh />}
-                fullWidth
-                disabled={isPlaying}
-              >
-                Clear Grid
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
+      </Box>
     </div>
   );
 };

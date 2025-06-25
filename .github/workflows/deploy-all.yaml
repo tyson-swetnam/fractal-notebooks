@@ -47,6 +47,12 @@ jobs:
         working-directory: ./react
         run: npm ci
         
+      - name: Run React type checking and linting
+        working-directory: ./react
+        run: |
+          npm run type-check
+          npm run lint
+        
       - name: Build React app
         working-directory: ./react
         run: npm run build
@@ -65,6 +71,9 @@ jobs:
           # Copy React build to /react subdirectory
           mkdir -p combined-site/react
           cp -r react/build/* combined-site/react/
+          
+          # Ensure React router works with GitHub Pages by copying index.html to 404.html
+          cp react/build/index.html combined-site/react/404.html
           
           # Create a redirect from /react-apps to /react for backwards compatibility
           mkdir -p combined-site/react-apps

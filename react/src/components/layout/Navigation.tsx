@@ -29,15 +29,7 @@ const navItems: NavItem[] = [
       { path: '/conway', label: 'Conway\'s Game of Life' },
       { path: '/noise', label: 'Noise Patterns' },
       { path: '/waves', label: 'Wave Dynamics' },
-    ]
-  },
-  { 
-    label: 'Diffusion Limited Aggregates',
-    items: [
-      { path: '/ecoli-dla', label: 'E. coli Colony' },
-      { path: '/lichen-dla', label: 'Lichen Growth' },
-      { path: '/saprophyte-dla', label: 'Saprophyte Organism' },
-      { path: '/bryophyte-dla', label: 'Bryophyte (Moss)' },
+      { path: '/dla', label: 'Diffusion-Limited Aggregation' },
     ]
   },
   { 
