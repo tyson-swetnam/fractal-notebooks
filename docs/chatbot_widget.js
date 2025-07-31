@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div id="chat-body">
             <iframe 
-                src="https://chat-qa.cyverse.org/fractal-notebooks" 
+                src="https://chat-qa.cyverse.org/fractal-notebooks/" 
                 id="chat-frame" 
                 width="100%" 
                 height="100%"
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener for iframe messages (if the iframe sends any)
     window.addEventListener('message', function(event) {
-        if (event.origin === 'https://chat-qa.cyverse.org/fractal/') {
+        if (event.origin === 'https://chat-qa.cyverse.org/fractal-notebooks/') {
             if (event.data.type === 'link') {
                 window.open(event.data.url, '_blank', 'noopener,noreferrer');
             }
