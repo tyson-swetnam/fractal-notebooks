@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div id="chat-body">
             <iframe 
-                src="https://chat-qa.cyverse.org/weaviate/fractal-notebooks/" 
+                src="https://cyversegpt.cyverse.org//weaviate/fractal-notebooks/" 
                 id="chat-frame" 
                 width="100%" 
                 height="100%"
