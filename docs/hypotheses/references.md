@@ -149,3 +149,37 @@ Odum, Howard T., and Richard C. Pinkerton. "Time's Speed Regulator: The Optimum 
 Schneider, Eric D., and James J. Kay. "Life as a Manifestation of the Second Law of Thermodynamics." *Mathematical and Computer Modelling*, vol. 19, no. 6--8, 1994, pp. 25--48.
 
 Martyushev, Leonid M., and Vladimir D. Seleznev. "Maximum Entropy Production Principle in Physics, Chemistry and Biology." *Physics Reports*, vol. 426, no. 1, 2006, pp. 1--45.
+
+## Riemann Zeta Function and Fractal Strings
+
+Lapidus, Michel L., and Machiel van Frankenhuijsen. *Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings*. 2nd ed., Springer, 2013.
+
+Lapidus, Michel L., and Carl Pomerance. "The Riemann Zeta-Function and the One-Dimensional Weyl-Berry Conjecture for Fractal Drums." *Proceedings of the London Mathematical Society*, vol. 66, no. 1, 1993, pp. 41--69.
+
+Lapidus, Michel L. "Fractal Strings, Complex Dimensions and the Spectral Operator: From the Riemann Hypothesis to Phase Transitions and Universality." *Journal of Physics A: Mathematical and Theoretical*, vol. 52, 2019.
+
+## Random Matrix Theory and GUE Statistics
+
+Mehta, Madan Lal. *Random Matrices*. 3rd ed., Academic Press, 2004.
+
+Montgomery, Hugh L. "The Pair Correlation of Zeros of the Zeta Function." *Analytic Number Theory*, Proceedings of Symposia in Pure Mathematics, vol. 24, 1973, pp. 181--193.
+
+Odlyzko, Andrew M. "On the Distribution of Spacings Between Zeros of the Zeta Function." *Mathematics of Computation*, vol. 48, no. 177, 1987, pp. 273--308.
+
+Berry, Michael V., and Jonathan P. Keating. "The Riemann Zeros and Eigenvalue Asymptotics." *SIAM Review*, vol. 41, no. 2, 1999, pp. 236--266.
+
+## Spectral Geometry and Complex Dimensions
+
+Kac, Mark. "Can One Hear the Shape of a Drum?" *The American Mathematical Monthly*, vol. 73, no. 4, 1966, pp. 1--23.
+
+Teplyaev, Alexander. "Spectral Zeta Functions of Fractals and the Complex Dynamics of Polynomials." *Transactions of the American Mathematical Society*, vol. 359, no. 9, 2007, pp. 4339--4358.
+
+Lapidus, Michel L. "Spectral and Fractal Geometry: From the Weyl-Berry Conjecture for the Vibrations of Fractal Drums to the Riemann Zeta-Function." *Differential Equations and Mathematical Physics*, Mathematical Science Engineering, vol. 186, 1992, pp. 151--182.
+
+## Lacunarity and Texture Analysis
+
+Plotnick, Roy E., et al. "Lacunarity Analysis: A General Technique for the Analysis of Spatial Patterns." *Physical Review E*, vol. 53, no. 5, 1996, pp. 5461--5468.
+
+Allain, Claire, and Michel Cloitre. "Characterizing the Lacunarity of Random and Deterministic Fractal Sets." *Physical Review A*, vol. 44, no. 6, 1991, pp. 3552--3558.
+
+Gefen, Yuval, Yitzhak Meir, and Amnon Aharony. "Geometric Implementation of Hypercubic Lattices with Noninteger Dimensionality by Use of Low Lacunarity Fractal Lattices." *Physical Review Letters*, vol. 50, no. 2, 1983, pp. 145--148.

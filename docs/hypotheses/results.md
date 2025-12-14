@@ -1,219 +1,287 @@
-# Results
+# Expected Results
 
-This section outlines expected outcomes under null and alternative hypotheses for each of the three proposed studies, including predicted measurement ranges and statistical power considerations.
+This section outlines expected outcomes under null and alternative hypotheses for each of the five primary hypotheses, including predicted measurement ranges and statistical considerations.
 
 ---
 
-## Hypothesis 1: Stochastic Geometry in Lichens and Algae
+## Hypothesis 1: The "Optimal Filling" Hypothesis (Fractal Dimension)
 
-### Expected Outcomes Under \(H_0\)
+### Expected Outcomes Under \(H_{10}\) (Null)
 
-If the null hypothesis is correct---that lichen/algal fractal dimension is genetically fixed regardless of environmental conditions---we predict:
+If the null hypothesis is correct---that there is no difference in fractal dimension across forest types---we predict:
 
-**Fractal Dimension:** Invariant across all nutrient treatments at \(D = 1.71 \pm 0.05\), consistent with standard DLA.
+- **Fractal Dimension:** Invariant across all groups at \(D = 2.3 \pm 0.2\)
+- **ANOVA:** \(F\)-statistic with \(p > 0.05\)
+- No systematic trend with forest age or disturbance history
 
-**Statistical Pattern:** No significant correlation between nutrient concentration (or diffusion coefficient) and measured \(D\). ANOVA across treatment groups will yield \(F\)-statistics with \(p > 0.05\).
+### Expected Outcomes Under \(H_{1a}\) (Alternative)
 
-**Morphological Constancy:** Colony morphology remains dendritic regardless of nutrient availability, with consistent branch spacing and tip density.
+If the alternative hypothesis is correct---that old-growth forests exhibit higher fractal dimensions due to optimal space packing---we predict:
 
-### Expected Outcomes Under \(H_A\)
+**Group A (Old Growth):**
 
-If the alternative hypothesis is correct---that fractal dimension responds dynamically to nutrient availability---we predict:
+- \(D_{\text{surf}} = 2.6\)--\(2.8\)
+- Multi-layered canopy structure
+- Maximum "surface area" for photosynthesis
 
-**Low-Nutrient Conditions (Diffusion-Limited):**
+**Group B (Late-Successional with Disturbance):**
 
-- Open, dendritic morphology
-- \(D = 1.65\)--\(1.75\)
-- High surface-area-to-mass ratio
-- Tip-dominated growth patterns
+- \(D_{\text{surf}} = 2.3\)--\(2.5\)
+- Developing heterogeneity
+- Recovering toward optimal packing
 
-**High-Nutrient Conditions (Reaction-Limited):**
+**Group C (Monoculture Plantation):**
 
-- Compact, space-filling morphology
-- \(D = 1.85\)--\(1.95\)
-- High biomass density
-- Uniform radial expansion
-
-**Intermediate Conditions:**
-
-- Transitional morphologies
-- \(D\) values spanning the range continuously
-- Mixed growth patterns
-
-**Statistical Pattern:** Strong negative correlation (\(r < -0.7\)) between nutrient availability and \(D\). ANOVA will show significant treatment effects (\(p < 0.01\)).
+- \(D_{\text{surf}} = 2.1\)--\(2.3\)
+- Near-uniform canopy ("flat sheet")
+- Poor space utilization
 
 ### Predicted Measurement Ranges
 
-| Treatment | Nutrient Level | Predicted \(D\) (\(H_0\)) | Predicted \(D\) (\(H_A\)) |
-|-----------|----------------|---------------------------|---------------------------|
-| Low agar, low N | Very low | \(1.71 \pm 0.05\) | \(1.68 \pm 0.04\) |
-| Standard agar, medium N | Medium | \(1.71 \pm 0.05\) | \(1.78 \pm 0.05\) |
-| High agar, high N | High | \(1.71 \pm 0.05\) | \(1.92 \pm 0.04\) |
-
-### Power Analysis
-
-For detecting a difference of \(\Delta D = 0.15\) between low and high nutrient treatments with \(\sigma = 0.05\):
-
-- Effect size (Cohen's \(d\)): \(d = 0.15/0.05 = 3.0\)
-- Required sample size per group: \(n = 6\) for 95% power at \(\alpha = 0.05\)
-- Recommended sample size: \(n = 20\) per treatment to accommodate biological variability
+| Group | Forest Type | \(D_{\text{surf}}\) (\(H_0\)) | \(D_{\text{surf}}\) (\(H_A\)) |
+|-------|-------------|-------------------------------|-------------------------------|
+| A | Old Growth (>200 yr) | \(2.3 \pm 0.2\) | \(2.70 \pm 0.10\) |
+| B | Late-Successional | \(2.3 \pm 0.2\) | \(2.40 \pm 0.12\) |
+| C | Plantation (20-50 yr) | \(2.3 \pm 0.2\) | \(2.15 \pm 0.10\) |
 
 ---
 
-## Hypothesis 2: Branching Architecture in Angiosperms versus Gymnosperms
+## Hypothesis 2: The "Scale Invariance" Hypothesis (Lacunarity)
 
-### Expected Outcomes Under \(H_0\)
+### Expected Outcomes Under \(H_{20}\) (Null)
 
-If the null hypothesis is correct---that both clades converge to universal WBE-predicted architecture---we predict:
+If the null hypothesis is correct---that Lacunarity curves do not differentiate forest types---we predict:
 
-**Fractal Dimension:** Both gymnosperms and angiosperms exhibit \(D = 2.5 \pm 0.1\) for the woody branch network.
+- No significant difference in \(R^2\) of linear fit on log-log axes
+- Similar "kink" patterns across all forest types
+- Deviations from linearity random rather than systematic
 
-**Multifractal Spectrum:** Narrow spectrum width \(\Delta \alpha < 0.2\) for both groups, indicating monofractal scaling.
+### Expected Outcomes Under \(H_{2a}\) (Alternative)
 
-**Leonardo's Rule:** Both groups satisfy area-preserving branching:
+If the alternative hypothesis is correct---that old-growth exhibits scale invariance while disturbed forests show spectral kinks---we predict:
 
-\[
-\frac{r_{\text{parent}}^2}{\sum r_{\text{daughter}}^2} = 1.0 \pm 0.1
-\]
+**Group A (Old Growth):**
 
-**Path Fraction:** No systematic difference in \(P_f\) between clades.
+- \(\Lambda(r)\) follows strict power-law decay
+- \(R^2 > 0.95\) for linear regression on log-log plot
+- No characteristic gap scale dominates
 
-### Expected Outcomes Under \(H_A\)
+**Group B (Late-Successional with Disturbance):**
 
-If the alternative hypothesis is correct---that gymnosperms and angiosperms exhibit distinct fractal architectures---we predict:
+- \(\Lambda(r)\) exhibits "spectral kinks" at specific scales
+- \(R^2 = 0.7\)--\(0.9\) due to deviations
+- Kink position corresponds to disturbance scale (e.g., logging road width, windthrow radius)
 
-**Gymnosperms (Monofractal):**
+**Group C (Monoculture Plantation):**
 
-- Box-counting dimension: \(D = 2.4\)--\(2.6\)
-- Spectrum width: \(\Delta \alpha = 0.1\)--\(0.2\)
-- Leonardo's Rule adherence: deviations \(< 10\%\)
-- High path fraction: \(P_f > 0.7\)
-- Excurrent crown form with single dominant axis
+- \(\Lambda(r)\) shows strong characteristic scale
+- \(R^2 < 0.8\) with systematic deviation
+- Kink at tree spacing interval
 
-**Angiosperms (Multifractal):**
+### Disturbance Signatures
 
-- Box-counting dimension: \(D = 2.2\)--\(2.8\) (higher variance)
-- Spectrum width: \(\Delta \alpha = 0.4\)--\(0.8\)
-- Leonardo's Rule violations: deviations \(> 20\%\) common
-- Lower path fraction: \(P_f = 0.4\)--\(0.6\)
-- Decurrent crown form with multiple competing axes
-
-**Statistical Pattern:** Significant between-clade differences in \(\Delta \alpha\) (\(t\)-test \(p < 0.001\)) and \(P_f\) (\(p < 0.01\)).
-
-### Predicted Measurement Ranges
-
-| Metric | Gymnosperm (\(H_0\)) | Gymnosperm (\(H_A\)) | Angiosperm (\(H_0\)) | Angiosperm (\(H_A\)) |
-|--------|----------------------|----------------------|----------------------|----------------------|
-| \(D\) | \(2.5 \pm 0.1\) | \(2.5 \pm 0.1\) | \(2.5 \pm 0.1\) | \(2.5 \pm 0.2\) |
-| \(\Delta \alpha\) | \(< 0.2\) | \(0.15 \pm 0.05\) | \(< 0.2\) | \(0.55 \pm 0.15\) |
-| \(P_f\) | \(0.6 \pm 0.1\) | \(0.75 \pm 0.08\) | \(0.6 \pm 0.1\) | \(0.50 \pm 0.10\) |
-| Leonardo deviation | \(< 10\%\) | \(5 \pm 3\%\) | \(< 10\%\) | \(25 \pm 10\%\) |
-
-### Power Analysis
-
-For detecting a difference of \(\Delta(\Delta \alpha) = 0.4\) between clades with pooled \(\sigma = 0.15\):
-
-- Effect size (Cohen's \(d\)): \(d = 0.4/0.15 = 2.67\)
-- Required sample size per group: \(n = 5\) for 90% power at \(\alpha = 0.05\)
-- Recommended sample size: \(n = 10\) per species, 3 species per clade, to capture within-clade variance
-
-### Covariates and Confounds
-
-The following variables should be controlled or included as covariates:
-
-- **Tree size:** Include DBH and total height in models
-- **Site conditions:** Block by site or include soil moisture and light availability
-- **Ontogenetic stage:** Compare trees of similar relative age
-- **Measurement artifacts:** Assess TLS occlusion and QSM reconstruction error
+| Disturbance Type | Expected Kink Scale | Interpretation |
+|------------------|---------------------|----------------|
+| Recent Tree Fall | 15--25 m | Single large gap |
+| Windthrow | 30--50 m | Cluster of gaps |
+| Logging Road | 10--15 m | Linear feature |
+| Fire | Variable | Patch-dependent |
 
 ---
 
-## Hypothesis 3: Canopy Topography and Gap Dynamics
+## Hypothesis 3: The "Zeta" Distribution of Gaps (Metabolic Scaling)
 
-### Expected Outcomes Under \(H_0\)
+### Expected Outcomes Under \(H_{30}\) (Null)
 
-If the null hypothesis is correct---that gaps are randomly distributed and \(D_{\text{surf}}\) is independent of gap patterns---we predict:
+If the null hypothesis is correct---that gap sizes follow exponential rather than power-law distributions---we predict:
 
-**Gap Size Distribution:** Exponential or Poisson distribution, not power-law:
+**Gap Size Distribution:**
 
 \[
 P(S) \sim e^{-S/\bar{S}}
 \]
 
-with characteristic scale \(\bar{S}\) (mean gap size).
+- Characteristic mean gap size \(\bar{S}\)
+- Exponential tail (rapid decline)
+- Likelihood Ratio Test favors exponential model
 
-**Surface Dimension:** \(D_{\text{surf}}\) values vary independently of gap characteristics, driven primarily by crown geometry.
+### Expected Outcomes Under \(H_{3a}\) (Alternative)
 
-**Successional Pattern:** No systematic trend in \(D_{\text{surf}}\) or gap distribution parameters across successional stages.
+If the alternative hypothesis is correct---that gap sizes follow a Zeta (power-law) distribution in old-growth---we predict:
 
-**Correlation:** No significant relationship between \(D_{\text{surf}}\) and \(\lambda\) (if power-law fits are attempted despite poor fit).
+**Old Growth (Group A):**
 
-### Expected Outcomes Under \(H_A\)
+- Power-law distribution: \(P(A) \sim A^{-\alpha}\)
+- Exponent: \(\alpha = 1.8\)--\(2.2\) (related to \(\zeta(2) = \pi^2/6\))
+- Extended scaling regime: 2+ orders of magnitude
+- Self-Organized Criticality confirmed
 
-If the alternative hypothesis is correct---that old-growth forests self-organize to critical states---we predict:
+**Late-Successional (Group B):**
 
-**Young Plantation:**
+- Truncated power-law with exponential cutoff
+- \(\alpha = 2.3\)--\(2.8\)
+- Limited scaling range
 
-- Near-uniform canopy: \(D_{\text{surf}} = 2.1\)--\(2.3\)
-- Few gaps; distribution poorly characterized or exponential
-- No power-law scaling (insufficient range)
+**Plantation (Group C):**
 
-**Mid-Successional:**
+- Exponential or lognormal distribution
+- No power-law signature
+- Characteristic gap size dominates
 
-- Developing heterogeneity: \(D_{\text{surf}} = 2.3\)--\(2.5\)
-- Emerging power-law signature with \(\lambda = 2.5\)--\(3.0\)
-- Truncated distribution (largest gaps limited by stand age)
+### Gap Distribution Parameters
 
-**Old-Growth:**
+| Group | Distribution Type | Exponent \(\alpha\) | Scaling Range |
+|-------|-------------------|---------------------|---------------|
+| A (Old Growth) | Power Law | \(2.0 \pm 0.2\) | \(10^1\)--\(10^4\) m\(^2\) |
+| B (Late-Successional) | Truncated Power Law | \(2.5 \pm 0.3\) | \(10^1\)--\(10^3\) m\(^2\) |
+| C (Plantation) | Exponential | N/A | N/A |
 
-- Maximum roughness: \(D_{\text{surf}} = 2.5\)--\(2.8\)
-- Clear power-law distribution with \(\lambda = 1.8\)--\(2.2\)
-- Extended scaling regime spanning 2+ orders of magnitude
-- \(D_{\text{surf}}\) and \(\lambda\) coupled per the predicted relationship
+---
 
-**Statistical Pattern:** Strong negative correlation between \(D_{\text{surf}}\) and \(\lambda\) across sites (\(r < -0.8\)). The relationship \(D_{\text{surf}} = 3 - (\lambda - 1)\) explains \(> 60\%\) of variance.
+## Hypothesis 4: Universal Repulsion (The "Spectral DNA")
 
-### Predicted Measurement Ranges
+### Expected Outcomes Under \(H_{40}\) (Null)
 
-| Stage | Age (yr) | \(D_{\text{surf}}\) (\(H_0\)) | \(D_{\text{surf}}\) (\(H_A\)) | \(\lambda\) (\(H_A\)) |
-|-------|----------|-------------------------------|-------------------------------|------------------------|
-| Plantation | 20 | \(2.2 \pm 0.2\) | \(2.15 \pm 0.10\) | N/A (exponential) |
-| Mid-succession | 75 | \(2.3 \pm 0.2\) | \(2.40 \pm 0.12\) | \(2.7 \pm 0.3\) |
-| Old-growth | 250 | \(2.4 \pm 0.2\) | \(2.65 \pm 0.10\) | \(2.0 \pm 0.2\) |
+If the null hypothesis is correct---that tree locations are random---we predict:
 
-### Power Analysis
+**Nearest Neighbor Spacing (NNS):**
 
-For detecting a correlation of \(r = -0.8\) between \(D_{\text{surf}}\) and \(\lambda\):
+- Poisson distribution: \(P(s) = e^{-s}\)
+- No repulsion between dominant trees
+- \(\chi^2\) test favors Poisson model
 
-- Required sample size: \(n = 7\) sites for 80% power at \(\alpha = 0.05\)
-- Recommended sample size: \(n = 15\)+ sites across the successional gradient to establish robust regression relationships
+### Expected Outcomes Under \(H_{4a}\) (Alternative)
 
-For comparing gap distributions between stages using Kolmogorov-Smirnov test with effect size \(d = 0.5\):
+If the alternative hypothesis is correct---that old-growth trees exhibit GUE-like repulsion---we predict:
 
-- Required sample size: \(n = 100\)+ gaps per stage for 90% power
-- Old-growth sites typically contain 200--500 measurable gaps per km\(^2\)
+**Old Growth (Group A):**
 
-### Methodological Considerations
+- Wigner-Dyson distribution (GOE/GUE statistics)
+- Linear repulsion at small distances: \(P(s) \propto s\) as \(s \to 0\)
+- Characteristic "level repulsion" signature
+- \(\chi^2\) test strongly favors GUE over Poisson
 
-**Scale Dependence:** DBC results depend on the range of box sizes analyzed. Report scaling exponents only over regimes where \(R^2 > 0.95\) for log-log regression.
+**Physical Interpretation:**
 
-**Edge Effects:** Gaps intersecting plot boundaries must be handled consistently (exclude, or use correction factors).
+- Small \(s\): Rare to find two dominant trees very close (competition)
+- Medium \(s\): Most likely spacing (optimal resource sharing)
+- Large \(s\): Exponential tail (random long-range)
 
-**Minimum Mappable Gap:** Detection threshold depends on CHM resolution. Report as methodological parameter.
+### The GUE Pair Correlation Function
 
-**Temporal Dynamics:** Gap distributions are non-stationary. Single time-point analysis captures snapshot; repeat surveys enable dynamic modeling.
+In old-growth forests, the probability of finding two giant trees at distance \(r\) should follow:
+
+\[
+g(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2
+\]
+
+| Model | Pair Correlation at \(r=0\) | Physical Meaning |
+|-------|----------------------------|------------------|
+| Poisson | \(g(0) = 1\) | No repulsion; random |
+| GUE | \(g(0) = 0\) | Strong repulsion; competition |
+| Hexagonal Lattice | \(g(0) = 0\), periodic peaks | Perfect order |
+
+**Prediction:** Old-growth forests should fall between GUE (soft repulsion) and lattice (hard repulsion), indicating evolutionary optimization of spacing.
+
+---
+
+## Hypothesis 5: Biotic Decoupling (The Topographic Test)
+
+### Expected Outcomes Under \(H_{50}\) (Null)
+
+If the null hypothesis is correct---that fractal dimension correlates equally with topography across all forest types---we predict:
+
+- Similar correlation coefficients between \(D_{\text{local}}\) and TWI/Slope across Groups A, B, C
+- No significant difference by Fisher's z-test
+
+### Expected Outcomes Under \(H_{5a}\) (Alternative)
+
+If the alternative hypothesis is correct---that old-growth forests "buffer" topographic constraints---we predict:
+
+**Group A (Old Growth):**
+
+- Weak correlation: \(|r| < 0.3\) between \(D_{\text{local}}\) and topography
+- Forest structure independent of underlying terrain
+- "Biotic Decoupling" achieved
+
+**Group B (Late-Successional):**
+
+- Moderate correlation: \(|r| = 0.4\)--\(0.6\)
+- Partial decoupling; some terrain signature remains
+
+**Group C (Plantation):**
+
+- Strong correlation: \(|r| > 0.6\)
+- Forest structure follows terrain (valleys dense, ridges sparse)
+- "Environmentally Driven" system
+
+### Predicted Correlations with Topography
+
+| Group | \(r\) (D vs. TWI) | \(r\) (D vs. Slope) | Interpretation |
+|-------|-------------------|---------------------|----------------|
+| A (Old Growth) | \(0.15 \pm 0.10\) | \(-0.20 \pm 0.10\) | Biotically decoupled |
+| B (Late-Successional) | \(0.45 \pm 0.15\) | \(-0.40 \pm 0.15\) | Transitioning |
+| C (Plantation) | \(0.70 \pm 0.10\) | \(-0.65 \pm 0.12\) | Environmentally driven |
+
+---
+
+## Four Spatial Distribution Hypotheses: Expected Signatures
+
+### Fractal String Gap Hypothesis
+
+**Old Growth Prediction:**
+
+- Gap lengths along transects: \(N(L) \sim L^{-D}\) with \(D \approx 1.3\)
+- Scale invariance: no characteristic gap size
+- Log-log plot linear over 1.5+ decades
+
+### Prime Number Repulsion (GUE) Hypothesis
+
+**Old Growth Prediction:**
+
+- Pair correlation function matches GUE: \(g(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2\)
+- Strong rejection of Poisson null
+- Spacing statistics match quantum chaotic systems
+
+### Complex Dimension (Oscillation) Hypothesis
+
+**Old Growth Prediction:**
+
+- Lacunarity vs. \(\log(r)\) shows periodic oscillation
+- Period: \(p = 2\pi/\omega\) where \(\omega\) is imaginary part of complex dimension
+- Amplitude: Low, constant (steady state)
+- Interpretation: Forest constructed via recursive, self-similar algorithm
+
+### Riemann Gas Density Hypothesis
+
+**Old Growth Prediction:**
+
+- Number density: \(N(>m) \sim m^{-2}\)
+- Packing density: \(\approx 1.645\) (related to \(\zeta(2) = \pi^2/6\))
+- System at "Edge of Chaos"---critical density threshold
 
 ---
 
 ## Summary of Testable Predictions
 
-The following table summarizes key quantitative predictions distinguishing null from alternative hypotheses:
-
 | Hypothesis | Metric | \(H_0\) Prediction | \(H_A\) Prediction | Discriminating Power |
 |------------|--------|--------------------|--------------------|----------------------|
-| H1 (DLA) | \(D\) vs nutrients | No correlation | \(r < -0.7\) | High |
-| H1 (DLA) | \(D\) range | \(1.66\)--\(1.76\) | \(1.65\)--\(1.95\) | Medium |
-| H2 (Branching) | \(\Delta \alpha\) | \(< 0.2\) both | Gymnosperm \(\ll\) Angiosperm | High |
-| H2 (Branching) | Leonardo deviation | \(< 10\%\) both | Angiosperm \(> 20\%\) | High |
-| H3 (Canopy) | Gap distribution | Exponential | Power-law | High |
-| H3 (Canopy) | \(D_{\text{surf}}\) vs \(\lambda\) | No correlation | \(r < -0.8\) | High |
+| H1 (Optimal Filling) | \(D_{\text{surf}}\) across groups | No difference | Old Growth > Plantation | High |
+| H2 (Scale Invariance) | Lacunarity \(R^2\) | Similar across groups | Old Growth > Disturbed | High |
+| H3 (Zeta Distribution) | Gap size distribution | Exponential | Power Law (\(\alpha \approx 2\)) | High |
+| H4 (Universal Repulsion) | NNS distribution | Poisson | GUE/Wigner-Dyson | High |
+| H5 (Biotic Decoupling) | \(r\)(D vs. Topography) | Similar across groups | Old Growth < Plantation | Medium |
+
+---
+
+## Significance / Expected Outcomes
+
+If **Hypotheses 3 and 4** are confirmed, this provides evidence that biological systems (forests) at equilibrium converge upon the same mathematical "universality classes" found in:
+
+- **Number Theory:** Riemann Zeta function
+- **Quantum Chaos:** Random Matrix Theory (GUE)
+
+This would establish a non-destructive, remote-sensing method for identifying forests that have reached:
+
+- **"Optimal Packing" (Old Growth):** Maximum metabolic efficiency, self-organized criticality
+- **"Sub-optimal" (Immature/Degraded):** Transitioning toward or recovering from critical state
