@@ -2,8 +2,8 @@ docs_dir: docs/
 repo_name: 'tyson-swetnam/fractal-notebooks'
 repo_url: 'https://github.com/tyson-swetnam/fractal-notebooks'
 
-site_name: 'Fractal self-affinity'
-site_description: 'Interactive fractal exploration with React applications, Python simulations, and Jupyter Notebooks'
+site_name: 'Fractal Self-Affinity in Nature'
+site_description: 'Self-affine fractals, metabolic scaling theory, and the geometry of biological systems'
 site_author: 'Tyson Swetnam'
 site_url: 'https://tyson-swetnam.github.io/fractal-notebooks'
 
@@ -18,33 +18,69 @@ copyright: 'Copyright &copy; 2024 The University of Arizona'
 # Navigation Page
 
 nav:
-  - Home: 
-    - 'Home': index.md
-    - 'Introduction': introduction.md
-    - 'Methods': methods.md
-    - 'Results': results.md
-    - 'Discussion': discussion.md
-    - 'Conclusion': conclusion.md
-    - 'References': references.md
-    - 'Installation': installation.md
-    - 'Dimensionality of Fractals': dims.md
-    - 'Glossary & Maths': glossary.md
-  - Interactive React Apps: 
-    - 'React Applications': react-apps.md
-    - 'Launch Interactive Apps': 'react/'
-  - Jupyter Notebooks:
-    - 'Diffusion Limited Aggregation (DLA)': notebooks/old_dla.ipynb
-    - 'Barnsleys Ferns': notebooks/ferns.ipynb
-    - 'Self-similar Fractals': notebooks/fractals.ipynb
-    - 'Self-affine Fractals': notebooks/fractal_generators.ipynb
-    - 'Differential Box Counting': notebooks/dbc.ipynb
-    - 'Riemann Zeta Functions 2D': notebooks/zeta_space.ipynb
-    - 'Riemann Zeta Functions in 3D': notebooks/zeta_3d.ipynb
-    - 'PyTorch test': notebooks/torch_test.ipynb
-  - 'Applications':
-    - 'Setup': applications.md
-    - 'Differential Box-Counting': dbc.md
-    - 'Viz: 3D Branching': tree_roots.md
+  - Home: index.md
+
+  - Part I - Foundations:
+    - History of Fractals: foundations/history.md
+    - Mathematical Foundations: foundations/mathematics.md
+    - Fractal Dimensionality: foundations/dimensionality.md
+    - Glossary & Equations: foundations/glossary.md
+
+  - Part II - Metabolic Scaling:
+    - Abstract: metabolic-scaling/abstract.md
+    - Introduction: metabolic-scaling/introduction.md
+    - Methods: metabolic-scaling/methods.md
+    - Results: metabolic-scaling/results.md
+    - Discussion: metabolic-scaling/discussion.md
+    - Conclusion: metabolic-scaling/conclusion.md
+    - References: metabolic-scaling/references.md
+
+  - Part III - Spectral Geometry:
+    - Abstract: spectral-geometry/abstract.md
+    - Introduction: spectral-geometry/introduction.md
+    - Methods: spectral-geometry/methods.md
+    - Results: spectral-geometry/results.md
+    - Discussion: spectral-geometry/discussion.md
+    - Conclusion: spectral-geometry/conclusion.md
+    - References: spectral-geometry/references.md
+
+  - Part IV - Biological Geometry:
+    - Abstract: biological-geometry/abstract.md
+    - Introduction: biological-geometry/introduction.md
+    - Methods: biological-geometry/methods.md
+    - Results: biological-geometry/results.md
+    - Discussion: biological-geometry/discussion.md
+    - Conclusion: biological-geometry/conclusion.md
+    - References: biological-geometry/references.md
+
+  - Part V - Research Hypotheses:
+    - Abstract: hypotheses/abstract.md
+    - Introduction: hypotheses/introduction.md
+    - Methods: hypotheses/methods.md
+    - Expected Results: hypotheses/results.md
+    - Discussion: hypotheses/discussion.md
+    - Conclusion: hypotheses/conclusion.md
+    - References: hypotheses/references.md
+
+  - Part VI - Applications:
+    - Overview: applications/index.md
+    - Installation: applications/installation.md
+    - React Apps: applications/react-apps.md
+    - Streamlit Apps: applications/streamlit-apps.md
+    - Box-Counting Tool: applications/dbc.md
+    - 3D Visualization: applications/tree-roots-3d.md
+
+  - Part VII - Notebooks:
+    - Overview: notebooks/index.md
+    - DLA: notebooks/old_dla.ipynb
+    - Ferns: notebooks/ferns.ipynb
+    - Self-Similar Fractals: notebooks/fractals.ipynb
+    - Self-Affine Generators: notebooks/fractal_generators.ipynb
+    - Differential Box-Counting: notebooks/dbc.ipynb
+    - Riemann Zeta 2D: notebooks/zeta_space.ipynb
+    - Riemann Zeta 3D: notebooks/zeta_3d.ipynb
+
+  - Interactive React Apps: react/
 
 # must also set Action to use `@nomaterial` branch instead of `@master` for material
 theme:
@@ -137,7 +173,8 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
