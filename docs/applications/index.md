@@ -44,7 +44,7 @@ This section provides access to interactive tools and demonstrations for explori
 
 The React applications are deployed and accessible online:
 
-[**Launch Interactive Apps**](../react/){ .md-button .md-button--primary }
+[**Launch Interactive Apps**](https://tyson-swetnam.github.io/fractal-notebooks/react/){ .md-button .md-button--primary }
 
 Or run locally:
 

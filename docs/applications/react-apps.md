@@ -2,7 +2,7 @@
 
 The React application suite provides high-performance, GPU-accelerated fractal visualizations directly in your web browser.
 
-[**Launch All Apps**](../react/){ .md-button .md-button--primary }
+[**Launch All Apps**](https://tyson-swetnam.github.io/fractal-notebooks/react/){ .md-button .md-button--primary }
 
 ---
 

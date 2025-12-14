@@ -80,7 +80,7 @@ nav:
     - Riemann Zeta 2D: notebooks/zeta_space.ipynb
     - Riemann Zeta 3D: notebooks/zeta_3d.ipynb
 
-  - Interactive React Apps: react/
+  - Interactive React Apps: https://tyson-swetnam.github.io/fractal-notebooks/react/
 
 # must also set Action to use `@nomaterial` branch instead of `@master` for material
 theme:
