@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git Commit Policy
+
+**IMPORTANT:** After every successful prompt completion that modifies files, commit the changes immediately:
+
+```bash
+git add <modified-files>
+git commit -m "<concise description of what was done>"
+```
+
+Commit message guidelines:
+- Start with a verb: Add, Update, Fix, Remove, Refactor, Implement
+- Keep the first line under 72 characters
+- Reference the user's request when relevant
+- Example: `git commit -m "Add WebGL shader for Julia set visualization"`
+
+This ensures all changes are tracked in git history, allowing context recovery when sessions end or context windows fill.
+
 ## Project Overview
 
 Fractal Notebooks is a collection of fractal visualization tools with three main components:
@@ -26,6 +43,7 @@ npm start                       # Dev server at http://localhost:33000
 npm run build                   # Production build
 npm run type-check              # TypeScript type checking
 npm run lint                    # ESLint
+npm run test                    # Run Jest tests
 ```
 
 ### Streamlit Applications
@@ -47,11 +65,12 @@ docker run -p 8501:8501 fractal-app
 ### React App Structure (`react/src/`)
 - Uses HashRouter for GitHub Pages compatibility
 - **Pages organized by category:**
-  - `pages/fractals-1d-2d-3d/` - Mandelbrot, Julia, Brownian, Conway, Noise, Waves
+  - `pages/fractals-1d-2d-3d/` - Mandelbrot, Julia, Brownian, Conway, Noise, PinkNoise, Waves
   - `pages/branching-architectures/` - DLA, Fern, Tree, Pythagoras, TreeRoots3D
   - `pages/riemann-zeta-functions/` - Zeta space tiling and 3D visualization
 - **Components:** `components/controls/`, `components/layout/`, `components/math/`
-- **Theming:** Custom theme context in `contexts/ThemeContext` with MUI integration
+- **Utilities:** `utils/` contains WebGL implementations for Mandelbrot/Julia (performance), noise generators, and theme configuration
+- **Theming:** Custom ThemeContext with light/dark/system modes, persisted to localStorage, integrated with MUI
 - **Visualization libraries:** D3, Plotly, KaTeX for math rendering
 
 ### Streamlit Apps (`apps/`)
@@ -60,10 +79,15 @@ docker run -p 8501:8501 fractal-app
 - Generated GIFs/images stored locally during runtime
 
 ### Documentation (`docs/`)
-- MkDocs Material theme with custom color scheme
+- MkDocs Material theme with custom color scheme (`fractals` palette)
 - Jupyter notebooks embedded via `mkdocs-jupyter` plugin
 - MathJax for LaTeX equation rendering
 - Notebooks in `docs/notebooks/` cover DLA, ferns, fractals, DBC, Riemann zeta functions
+
+### Kubernetes Deployment (`k3s-deployment/`)
+- JupyterLab and Weaviate deployments with persistent storage
+- NVIDIA device plugin for GPU workloads
+- Local-path storage class configuration
 
 ## CI/CD
 
