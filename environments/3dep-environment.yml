@@ -1,0 +1,75 @@
+# 3DEP Canopy Height Model Workflows Environment
+# For use with CyVerse VICE or local JupyterLab
+#
+# Installation:
+#   conda env create -f 3dep-environment.yml
+#   conda activate 3dep
+#
+# Verification:
+#   python -c "import pdal; import geopandas; import rioxarray; print('Ready!')"
+
+name: 3dep
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Core Python
+  - python=3.11
+  - pip
+
+  # Jupyter environment
+  - notebook
+  - jupyterlab
+  - ipykernel
+  - ipywidgets
+
+  # Geospatial core
+  - gdal>=3.6
+  - geopandas>=0.14
+  - rasterio>=1.3
+  - rioxarray>=0.15
+  - xarray>=2023.0
+  - shapely>=2.0
+  - fiona>=1.9
+  - pyproj>=3.6
+
+  # Point cloud processing
+  - pdal>=2.6
+  - python-pdal>=3.2
+
+  # Scientific computing
+  - numpy>=1.24
+  - pandas>=2.0
+  - scipy>=1.11
+
+  # Visualization
+  - matplotlib>=3.7
+  - ipyleaflet>=0.17
+  - folium>=0.14
+  - contextily>=1.4
+
+  # Data access
+  - requests>=2.31
+  - tqdm>=4.65
+
+  # File formats
+  - h5py>=3.9
+  - netcdf4>=1.6
+
+  # Image processing (for previews)
+  - pillow>=10.0
+
+  # Cloud-Optimized GeoTIFF support
+  - rio-cogeo>=5.0
+
+  # Pip dependencies
+  - pip:
+    # HyRiver suite for 3DEP access
+    - py3dep>=0.16
+    - pynhd>=0.16
+    - pygeohydro>=0.16
+
+    # Additional utilities
+    - leafmap>=0.27

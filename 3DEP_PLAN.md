@@ -2,7 +2,20 @@
 
 ## Overview
 
-This document outlines the plan to integrate USGS 3D Elevation Program (3DEP) workflows from the [OpenTopography OT_3DEP_Workflows](https://github.com/OpenTopography/OT_3DEP_Workflows) repository into this project. The primary goal is to create modified notebooks that generate **Canopy Height Models (CHMs)** for selected forest sites across the USA and globally.
+This document outlines the plan to integrate USGS 3D Elevation Program (3DEP) workflows from the [OpenTopography OT_3DEP_Workflows](https://github.com/OpenTopography/OT_3DEP_Workflows) repository into this project. The primary goal is to create modified notebooks that generate **Canopy Height Models (CHMs)** for selected forest sites across the USA.
+
+## Execution Environment
+
+**Target Platform:** [CyVerse](https://cyverse.org/) - Cloud computing platform with unlimited storage
+
+**Key Specifications:**
+- **Storage:** CyVerse Data Store (no size limits)
+- **Compute:** CyVerse VICE (Visual Interactive Computing Environment) with JupyterLab
+- **Resolution Rules:**
+  - `0.5m` resolution when point density < 12 points/m²
+  - `0.333m` resolution when point density ≥ 12 points/m²
+- **CHM Processing:** Direct subtraction only (DSM - DTM), **no smoothing or IDW interpolation**
+- **Scope:** USA forest sites only (3DEP coverage)
 
 ## Source Repository
 
@@ -169,10 +182,24 @@ rm -rf /tmp/OT_3DEP_Workflows
 The Canopy Height Model workflow (Notebook 05) will be enhanced to:
 
 1. **Batch processing** - Process multiple sites sequentially
-2. **Quality metrics** - Add CHM statistics (max height, mean height, coverage %)
-3. **Visualization** - Hillshade overlays, histogram analysis
-4. **Export formats** - GeoTIFF, Cloud-Optimized GeoTIFF (COG), PNG previews
-5. **Metadata** - Auto-generate JSON metadata for each output
+2. **Adaptive resolution** - Automatically select resolution based on point density:
+   ```python
+   def get_resolution(point_density_per_m2):
+       """Select resolution based on point density."""
+       if point_density_per_m2 >= 12:
+           return 0.333  # High density: ~3 points per pixel
+       else:
+           return 0.5    # Standard density: ~3 points per pixel
+   ```
+3. **Direct CHM calculation** - Simple subtraction only:
+   ```python
+   # CHM = DSM - DTM (no smoothing, no IDW)
+   chm = dsm - dtm
+   ```
+4. **Quality metrics** - Add CHM statistics (max height, mean height, coverage %, point density)
+5. **Visualization** - Hillshade overlays, histogram analysis
+6. **Export formats** - GeoTIFF, Cloud-Optimized GeoTIFF (COG), PNG previews
+7. **Metadata** - Auto-generate JSON metadata for each output including point density and resolution used
 
 ---
 
@@ -193,19 +220,7 @@ The Canopy Height Model workflow (Notebook 05) will be enhanced to:
 | Ocala | FL | Longleaf Pine | 29.2°N, 81.8°W | Sandhill ecosystem |
 | White Mountain | NH | Northern Hardwood | 44.0°N, 71.5°W | Alpine/subalpine |
 
-### 4.2 Candidate Sites - Global
-
-| Site | Country | Forest Type | Data Source | Notes |
-|------|---------|-------------|-------------|-------|
-| Black Forest | Germany | Mixed Conifer | EU-DEM/Copernicus | Dense coverage |
-| Amazon (Manaus) | Brazil | Tropical | GEDI/ICESat-2 | Canopy complexity |
-| Białowieża | Poland/Belarus | Primeval | EU-DEM | Ancient forest |
-| Daintree | Australia | Tropical | AusDEM | Rainforest |
-| Yakushima | Japan | Temperate | Japan GSI | UNESCO site |
-
-> **Note:** Global sites may require alternative data sources (GEDI, ICESat-2, national DEMs) as 3DEP coverage is USA-only.
-
-### 4.3 Site Definition Format
+### 4.2 Site Definition Format
 
 ```python
 FOREST_SITES = {
@@ -227,6 +242,10 @@ FOREST_SITES = {
     },
     # ... additional sites
 }
+
+# Resolution is determined dynamically based on actual point density:
+# - point_density >= 12 pts/m² → resolution = 0.333m
+# - point_density <  12 pts/m² → resolution = 0.5m
 ```
 
 ---
@@ -271,8 +290,8 @@ FOREST_SITES = {
 1. Load CHM outputs
 2. Height distribution analysis
 3. Canopy gap detection
-4. Cross-site comparisons
-5. Time series (if multi-temporal data available)
+4. Cross-site comparisons by forest type
+5. Summary statistics and reporting
 ```
 
 ### 5.2 Utility Modules
@@ -309,20 +328,26 @@ nav:
       - Forest Sites: notebooks/3dep/forest_sites.md
 ```
 
-### 6.3 Output Storage
+### 6.3 Output Storage (CyVerse Data Store)
+
+Outputs will be stored in CyVerse Data Store with the following structure:
 
 ```
-outputs/3dep/
+/iplant/home/<username>/3dep/
 ├── chm/
 │   ├── sequoia/
-│   │   ├── chm_sequoia_2024.tif
-│   │   ├── chm_sequoia_2024_preview.png
-│   │   └── metadata.json
+│   │   ├── chm_sequoia.tif           # Full resolution GeoTIFF
+│   │   ├── chm_sequoia_cog.tif       # Cloud-Optimized GeoTIFF
+│   │   ├── chm_sequoia_preview.png   # Quick-look visualization
+│   │   └── metadata.json             # Processing metadata (resolution, point density, etc.)
 │   ├── tongass/
 │   └── ...
-├── dem/
-└── point_clouds/
+├── dtm/                               # Digital Terrain Models (ground)
+├── dsm/                               # Digital Surface Models (canopy top)
+└── point_clouds/                      # Downloaded LAZ files (if cached)
 ```
+
+> **Note:** CyVerse provides unlimited storage. Large intermediate files (point clouds) can be retained for reproducibility.
 
 ---
 
@@ -360,13 +385,21 @@ outputs/3dep/
 
 ---
 
+## Resolved Decisions
+
+| Question | Decision |
+|----------|----------|
+| Storage | CyVerse Data Store (unlimited) |
+| Resolution | Adaptive: 0.5m (<12 ppm) or 0.333m (≥12 ppm) |
+| CHM Method | Direct subtraction only, no smoothing/IDW |
+| Temporal | Not a priority for initial implementation |
+| Global Sites | Deferred - focus on USA/3DEP coverage first |
+
 ## Open Questions
 
-1. **Storage:** Where should large CHM outputs be stored? (Git LFS, external bucket, etc.)
-2. **API Keys:** Does OpenTopography require API keys for bulk downloads?
-3. **Resolution:** What spatial resolution to target? (1m, 3m, 10m)
-4. **Temporal:** Include multi-year comparisons for change detection?
-5. **Global Sites:** Which alternative data sources to prioritize for non-US sites?
+1. **API Keys:** Does OpenTopography require API keys for bulk downloads?
+2. **Site Selection:** Final list of forest sites to prioritize?
+3. **CyVerse Environment:** Use existing VICE image or create custom?
 
 ---
 
