@@ -36,11 +36,78 @@ Generate Canopy Height Models (CHM) and perform fractal dimension analysis for a
 | `superior_old_growth` | Superior Old Growth | MN | Boreal Conifer | ~30m |
 | `conecuh_longleaf` | Conecuh Longleaf | AL | Longleaf Pine | ~35m |
 
+## Notebook Structure
+
+Create a dedicated notebook for each site by copying templates:
+
+```
+modified/
+├── 1_forest_sites_map.ipynb          # Interactive map (shared)
+├── 2_chm_user_aoi.ipynb              # Template for CHM generation
+├── 3_chm_fractal_analysis.ipynb      # Template for fractal analysis
+│
+├── sites/
+│   ├── sequoia_giant_forest/
+│   │   ├── chm_sequoia_giant_forest.ipynb
+│   │   └── fractal_sequoia_giant_forest.ipynb
+│   ├── redwood_humboldt/
+│   │   ├── chm_redwood_humboldt.ipynb
+│   │   └── fractal_redwood_humboldt.ipynb
+│   ├── great_smoky_cove/
+│   │   ├── chm_great_smoky_cove.ipynb
+│   │   └── fractal_great_smoky_cove.ipynb
+│   ├── harvard_forest/
+│   │   ├── chm_harvard_forest.ipynb
+│   │   └── fractal_harvard_forest.ipynb
+│   ├── wind_river/
+│   │   ├── chm_wind_river.ipynb
+│   │   └── fractal_wind_river.ipynb
+│   ├── olympic_hoh/
+│   │   ├── chm_olympic_hoh.ipynb
+│   │   └── fractal_olympic_hoh.ipynb
+│   ├── tongass_mendenhall/
+│   │   ├── chm_tongass_mendenhall.ipynb
+│   │   └── fractal_tongass_mendenhall.ipynb
+│   ├── yellowstone_lodgepole/
+│   │   ├── chm_yellowstone_lodgepole.ipynb
+│   │   └── fractal_yellowstone_lodgepole.ipynb
+│   ├── coconino_ponderosa/
+│   │   ├── chm_coconino_ponderosa.ipynb
+│   │   └── fractal_coconino_ponderosa.ipynb
+│   ├── white_mountain_northern/
+│   │   ├── chm_white_mountain_northern.ipynb
+│   │   └── fractal_white_mountain_northern.ipynb
+│   ├── ocala_longleaf/
+│   │   ├── chm_ocala_longleaf.ipynb
+│   │   └── fractal_ocala_longleaf.ipynb
+│   ├── niwot_ridge/
+│   │   ├── chm_niwot_ridge.ipynb
+│   │   └── fractal_niwot_ridge.ipynb
+│   ├── rocky_mountain_subalpine/
+│   │   ├── chm_rocky_mountain_subalpine.ipynb
+│   │   └── fractal_rocky_mountain_subalpine.ipynb
+│   ├── gila_mixed_conifer/
+│   │   ├── chm_gila_mixed_conifer.ipynb
+│   │   └── fractal_gila_mixed_conifer.ipynb
+│   ├── mark_twain_ozark/
+│   │   ├── chm_mark_twain_ozark.ipynb
+│   │   └── fractal_mark_twain_ozark.ipynb
+│   ├── boundary_waters/
+│   │   ├── chm_boundary_waters.ipynb
+│   │   └── fractal_boundary_waters.ipynb
+│   ├── superior_old_growth/
+│   │   ├── chm_superior_old_growth.ipynb
+│   │   └── fractal_superior_old_growth.ipynb
+│   └── conecuh_longleaf/
+│       ├── chm_conecuh_longleaf.ipynb
+│       └── fractal_conecuh_longleaf.ipynb
+```
+
 ## Workflow
 
 ### Phase 1: CHM Generation
 
-For each site, run `2_chm_user_aoi.ipynb` to generate:
+For each site, the `chm_<site_id>.ipynb` notebook generates:
 - Digital Surface Model (DSM) - highest returns
 - Digital Terrain Model (DTM) - ground returns
 - Canopy Height Model (CHM = DSM - DTM)
@@ -54,7 +121,7 @@ For each site, run `2_chm_user_aoi.ipynb` to generate:
 
 ### Phase 2: Fractal Analysis
 
-For each CHM, run `3_chm_fractal_analysis.ipynb` to compute:
+For each site, the `fractal_<site_id>.ipynb` notebook computes:
 - Box-counting fractal dimension (2D surface complexity)
 - Lacunarity analysis (gap distribution)
 - Multiscale roughness metrics
@@ -71,46 +138,65 @@ outputs/3dep/
 │   │   └── sequoia_giant_forest_metadata.json
 │   ├── redwood_humboldt/
 │   │   └── ...
-│   └── [18 more sites]/
+│   └── [17 more sites]/
 ├── fractal/
 │   ├── sequoia_giant_forest/
 │   │   ├── sequoia_giant_forest_fractal.json
 │   │   ├── sequoia_giant_forest_boxcount.png
 │   │   └── sequoia_giant_forest_lacunarity.png
-│   └── [18 more sites]/
+│   └── [17 more sites]/
 └── summary/
     ├── all_sites_chm_stats.csv
     └── all_sites_fractal_dims.csv
 ```
 
-## Batch Processing Approach
-
-### Option A: Sequential (Simple)
-Process sites one at a time in priority order. Slower but simpler to debug.
-
-### Option B: Parallel by Region (Recommended)
-Process sites in parallel groups:
-1. Pacific Northwest (5 sites)
-2. Rocky Mountains/Southwest (4 sites)
-3. Eastern Forests (4 sites)
-4. Boreal/Northern (2 sites)
-5. Southeastern (2 sites)
-6. Research Sites (2 sites - some overlap)
-
-### Option C: Full Parallel
-Launch all 19 sites simultaneously. Fastest but requires significant memory/compute.
-
 ## Implementation Tasks
 
-- [ ] Create batch processing script for CHM generation
-- [ ] Modify `2_chm_user_aoi.ipynb` to accept site_id parameter
-- [ ] Create batch processing script for fractal analysis
-- [ ] Modify `3_chm_fractal_analysis.ipynb` to accept CHM path parameter
-- [ ] Create summary aggregation script
-- [ ] Add progress tracking and error handling
-- [ ] Test with Priority 1 sites first
-- [ ] Run full batch for all 19 sites
+- [ ] Create `sites/` directory structure (19 site folders)
+- [ ] Create script to generate site-specific CHM notebooks from template
+- [ ] Create script to generate site-specific fractal notebooks from template
+- [ ] Generate all 19 CHM notebooks with site-specific parameters
+- [ ] Generate all 19 fractal notebooks with site-specific CHM paths
+- [ ] Run Priority 1 sites first (5 sites) to validate workflow
+- [ ] Run Priority 2 sites (7 sites)
+- [ ] Run Priority 3 sites (7 sites)
+- [ ] Create summary aggregation notebook
 - [ ] Generate comparative analysis report
+
+## Notebook Generation
+
+Each site notebook will be created by:
+1. Copying the template notebook
+2. Updating the site configuration cell with:
+   - `SITE_ID` - site identifier from YAML
+   - `SITE_NAME` - human-readable name
+   - `BBOX` - bounding box coordinates
+   - `EXPECTED_MAX_HEIGHT` - for validation
+3. Updating output paths to use site-specific directories
+
+Example configuration cell for CHM notebook:
+```python
+# Site Configuration
+SITE_ID = "sequoia_giant_forest"
+SITE_NAME = "Sequoia Giant Forest"
+BBOX = [-118.77, 36.55, -118.72, 36.60]
+EXPECTED_MAX_HEIGHT = 95  # meters
+
+# Output paths
+OUTPUT_BASE = Path("outputs/3dep")
+CHM_DIR = OUTPUT_BASE / "chm" / SITE_ID
+```
+
+Example configuration cell for fractal notebook:
+```python
+# Site Configuration
+SITE_ID = "sequoia_giant_forest"
+SITE_NAME = "Sequoia Giant Forest"
+
+# Input/Output paths
+CHM_PATH = Path("outputs/3dep/chm") / SITE_ID / f"{SITE_ID}_chm.tif"
+FRACTAL_DIR = Path("outputs/3dep/fractal") / SITE_ID
+```
 
 ## Expected Results
 
@@ -131,3 +217,5 @@ Launch all 19 sites simultaneously. Fastest but requires significant memory/comp
 - Some sites may lack 3DEP coverage - check availability first
 - Alaska site (Tongass) may have limited lidar coverage
 - LTER sites (Harvard, Niwot) have ground truth for validation
+- Each notebook is self-contained and can be run independently
+- Site notebooks can be run in parallel on multi-core systems
