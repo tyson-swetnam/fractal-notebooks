@@ -43,6 +43,13 @@ def load_notebook(path):
 
 def save_notebook(notebook, path):
     """Save a Jupyter notebook as JSON."""
+    # Clear all execution outputs and execution counts
+    for cell in notebook['cells']:
+        if 'outputs' in cell:
+            cell['outputs'] = []
+        if 'execution_count' in cell:
+            cell['execution_count'] = None
+
     with open(path, 'w') as f:
         json.dump(notebook, f, indent=1)
 
@@ -61,47 +68,47 @@ def update_chm_notebook(template_notebook, site_id, site_config):
             if 'AOI_GEOJSON' in source and 'SITE_NAME' in source:
                 bbox = site_config['bbox']
 
-                # Create new configuration cell
-                new_source = f'''# Define AOI using GeoJSON
-# {site_config['name']}, {site_config['state']}
-
-AOI_GEOJSON = {{
-  "type": "FeatureCollection",
-  "features": [
-    {{
-      "type": "Feature",
-      "properties": {{}},
-      "geometry": {{
-        "coordinates": [
-          [
-            [{bbox[0]}, {bbox[3]}],
-            [{bbox[0]}, {bbox[1]}],
-            [{bbox[2]}, {bbox[1]}],
-            [{bbox[2]}, {bbox[3]}],
-            [{bbox[0]}, {bbox[3]}]
-          ]
-        ],
-        "type": "Polygon"
-      }}
-    }}
-  ]
-}}
-
-SITE_NAME = "{site_id}"
-
-# Parse GeoJSON and create AOI
-feature = AOI_GEOJSON['features'][0]
-AOI_GCS = shape(feature['geometry'])
-AOI_EPSG3857 = gcs_to_proj(AOI_GCS)
-
-# Calculate bounding box for reference
-AOI_BBOX = list(AOI_GCS.bounds)  # [west, south, east, north]
-
-print(f"Site: {{SITE_NAME}}")
-print(f"Bounding box (WGS84): {{AOI_BBOX}}")
-print(f"Area: {{AOI_EPSG3857.area / 1e6:.4f}} km²")
-'''
-                cell['source'] = new_source.split('\n')
+                # Create new configuration cell with proper newlines
+                cell['source'] = [
+                    '# Define AOI using GeoJSON\n',
+                    f'# {site_config["name"]}, {site_config["state"]}\n',
+                    '\n',
+                    'AOI_GEOJSON = {\n',
+                    '  "type": "FeatureCollection",\n',
+                    '  "features": [\n',
+                    '    {\n',
+                    '      "type": "Feature",\n',
+                    '      "properties": {},\n',
+                    '      "geometry": {\n',
+                    '        "coordinates": [\n',
+                    '          [\n',
+                    f'            [{bbox[0]}, {bbox[3]}],\n',
+                    f'            [{bbox[0]}, {bbox[1]}],\n',
+                    f'            [{bbox[2]}, {bbox[1]}],\n',
+                    f'            [{bbox[2]}, {bbox[3]}],\n',
+                    f'            [{bbox[0]}, {bbox[3]}]\n',
+                    '          ]\n',
+                    '        ],\n',
+                    '        "type": "Polygon"\n',
+                    '      }\n',
+                    '    }\n',
+                    '  ]\n',
+                    '}\n',
+                    '\n',
+                    f'SITE_NAME = "{site_id}"\n',
+                    '\n',
+                    '# Parse GeoJSON and create AOI\n',
+                    "feature = AOI_GEOJSON['features'][0]\n",
+                    'AOI_GCS = shape(feature["geometry"])\n',
+                    'AOI_EPSG3857 = gcs_to_proj(AOI_GCS)\n',
+                    '\n',
+                    '# Calculate bounding box for reference\n',
+                    'AOI_BBOX = list(AOI_GCS.bounds)  # [west, south, east, north]\n',
+                    '\n',
+                    'print(f"Site: {SITE_NAME}")\n',
+                    'print(f"Bounding box (WGS84): {AOI_BBOX}")\n',
+                    'print(f"Area: {AOI_EPSG3857.area / 1e6:.4f} km²")'
+                ]
 
         elif cell['cell_type'] == 'markdown':
             source = ''.join(cell['source']) if isinstance(cell['source'], list) else cell['source']
