@@ -47,8 +47,7 @@ dependencies:
 
   # Visualization
   - matplotlib>=3.7
-  - ipyleaflet>=0.17
-  - jupyter-leaflet>=0.17
+  - ipyleaflet>=0.17,<0.20  # v0.20 has leaflet version conflict with JupyterLab 4.5
   - folium>=0.14
   - contextily>=1.4
 
