@@ -103,6 +103,17 @@ print(f"Area: {{AOI_EPSG3857.area / 1e6:.4f}} km²")
 '''
                 cell['source'] = new_source.split('\n')
 
+        elif cell['cell_type'] == 'markdown':
+            source = ''.join(cell['source']) if isinstance(cell['source'], list) else cell['source']
+
+            # Update the section 5 markdown header
+            if 'Define Area of Interest (AOI)' in source and 'Current AOI:' in source:
+                cell['source'] = [
+                    f'## 5. Define Area of Interest (AOI)\n',
+                    '\n',
+                    f'Current AOI: **{site_config["name"]}, {site_config["state"]}**'
+                ]
+
     # Update the title cell
     for cell in notebook['cells']:
         if cell['cell_type'] == 'markdown':
