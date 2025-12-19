@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "coconino_ponderosa",
+        "name": "Coconino Ponderosa Pine",
+        "description": "Largest ponderosa pine forest in North America",
+        "state": "AZ",
+        "forest_type": "ponderosa_pine",
+        "expected_max_height_m": 40,
+        "notes": "Open parkland structure, frequent fire regime",
+        "priority": 2,
+        "bbox": [
+          -111.65,
+          35.15,
+          -111.58,
+          35.22
+        ],
+        "center": [
+          -111.61500000000001,
+          35.185
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.65,
+              35.15
+            ],
+            [
+              -111.58,
+              35.15
+            ],
+            [
+              -111.58,
+              35.22
+            ],
+            [
+              -111.65,
+              35.22
+            ],
+            [
+              -111.65,
+              35.15
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

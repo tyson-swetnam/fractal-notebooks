@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "redwood_humboldt",
+        "name": "Humboldt Redwoods",
+        "description": "Old-growth coast redwood forest",
+        "state": "CA",
+        "forest_type": "coast_redwood",
+        "expected_max_height_m": 115,
+        "notes": "Tallest trees on Earth - Hyperion (115.92m) nearby",
+        "priority": 1,
+        "bbox": [
+          -123.98,
+          40.3,
+          -123.9,
+          40.38
+        ],
+        "center": [
+          -123.94,
+          40.34
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.98,
+              40.3
+            ],
+            [
+              -123.9,
+              40.3
+            ],
+            [
+              -123.9,
+              40.38
+            ],
+            [
+              -123.98,
+              40.38
+            ],
+            [
+              -123.98,
+              40.3
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

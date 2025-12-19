@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "great_smoky_cove",
+        "name": "Great Smoky Mountains Cove Forest",
+        "description": "Most biodiverse temperate forest in North America",
+        "state": "TN",
+        "forest_type": "mixed_mesophytic",
+        "expected_max_height_m": 55,
+        "notes": "UNESCO World Heritage Site, exceptional biodiversity",
+        "priority": 1,
+        "bbox": [
+          -83.52,
+          35.58,
+          -83.45,
+          35.65
+        ],
+        "center": [
+          -83.485,
+          35.614999999999995
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -83.52,
+              35.58
+            ],
+            [
+              -83.45,
+              35.58
+            ],
+            [
+              -83.45,
+              35.65
+            ],
+            [
+              -83.52,
+              35.65
+            ],
+            [
+              -83.52,
+              35.58
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

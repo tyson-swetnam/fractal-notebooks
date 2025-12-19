@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "niwot_ridge",
+        "name": "Niwot Ridge LTER",
+        "description": "Alpine/subalpine research site",
+        "state": "CO",
+        "forest_type": "subalpine",
+        "expected_max_height_m": 20,
+        "notes": "Treeline dynamics and alpine tundra",
+        "priority": 2,
+        "bbox": [
+          -105.6,
+          40.03,
+          -105.55,
+          40.07
+        ],
+        "center": [
+          -105.57499999999999,
+          40.05
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -105.6,
+              40.03
+            ],
+            [
+              -105.55,
+              40.03
+            ],
+            [
+              -105.55,
+              40.07
+            ],
+            [
+              -105.6,
+              40.07
+            ],
+            [
+              -105.6,
+              40.03
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

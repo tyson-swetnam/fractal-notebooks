@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "harvard_forest",
+        "name": "Harvard Forest LTER",
+        "description": "Long-term ecological research site",
+        "state": "MA",
+        "forest_type": "transition_hardwood",
+        "expected_max_height_m": 30,
+        "notes": "NEON site with extensive ground truth data",
+        "priority": 1,
+        "bbox": [
+          -72.2,
+          42.52,
+          -72.16,
+          42.55
+        ],
+        "center": [
+          -72.18,
+          42.535
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.2,
+              42.52
+            ],
+            [
+              -72.16,
+              42.52
+            ],
+            [
+              -72.16,
+              42.55
+            ],
+            [
+              -72.2,
+              42.55
+            ],
+            [
+              -72.2,
+              42.52
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

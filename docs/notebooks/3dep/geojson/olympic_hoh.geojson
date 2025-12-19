@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "olympic_hoh",
+        "name": "Olympic Hoh Rainforest",
+        "description": "Temperate rainforest with massive Sitka spruce",
+        "state": "WA",
+        "forest_type": "temperate_rainforest",
+        "expected_max_height_m": 75,
+        "notes": "One of few temperate rainforests in North America",
+        "priority": 2,
+        "bbox": [
+          -123.95,
+          47.82,
+          -123.88,
+          47.88
+        ],
+        "center": [
+          -123.91499999999999,
+          47.85
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.95,
+              47.82
+            ],
+            [
+              -123.88,
+              47.82
+            ],
+            [
+              -123.88,
+              47.88
+            ],
+            [
+              -123.95,
+              47.88
+            ],
+            [
+              -123.95,
+              47.82
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

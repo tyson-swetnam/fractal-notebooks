@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "wind_river",
+        "name": "Wind River Experimental Forest",
+        "description": "Old-growth Douglas-fir research site",
+        "state": "WA",
+        "forest_type": "douglas_fir",
+        "expected_max_height_m": 65,
+        "notes": "AmeriFlux tower site with carbon flux data",
+        "priority": 1,
+        "bbox": [
+          -122.0,
+          45.8,
+          -121.93,
+          45.86
+        ],
+        "center": [
+          -121.965,
+          45.83
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.0,
+              45.8
+            ],
+            [
+              -121.93,
+              45.8
+            ],
+            [
+              -121.93,
+              45.86
+            ],
+            [
+              -122.0,
+              45.86
+            ],
+            [
+              -122.0,
+              45.8
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

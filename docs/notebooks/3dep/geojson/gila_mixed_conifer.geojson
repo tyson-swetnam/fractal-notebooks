@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "gila_mixed_conifer",
+        "name": "Gila Mixed Conifer",
+        "description": "Sky island forest ecosystem",
+        "state": "NM",
+        "forest_type": "mixed_conifer",
+        "expected_max_height_m": 35,
+        "notes": "Isolated mountain forest ecosystem",
+        "priority": 3,
+        "bbox": [
+          -108.22,
+          33.22,
+          -108.15,
+          33.28
+        ],
+        "center": [
+          -108.185,
+          33.25
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -108.22,
+              33.22
+            ],
+            [
+              -108.15,
+              33.22
+            ],
+            [
+              -108.15,
+              33.28
+            ],
+            [
+              -108.22,
+              33.28
+            ],
+            [
+              -108.22,
+              33.22
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "sequoia_giant_forest",
+        "name": "Sequoia Giant Forest",
+        "description": "Home to the largest trees on Earth by volume",
+        "state": "CA",
+        "forest_type": "giant_sequoia",
+        "expected_max_height_m": 95,
+        "notes": "Contains General Sherman tree (84m tall, largest by volume)",
+        "priority": 1,
+        "bbox": [
+          -118.77,
+          36.55,
+          -118.72,
+          36.6
+        ],
+        "center": [
+          -118.745,
+          36.575
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -118.77,
+              36.55
+            ],
+            [
+              -118.72,
+              36.55
+            ],
+            [
+              -118.72,
+              36.6
+            ],
+            [
+              -118.77,
+              36.6
+            ],
+            [
+              -118.77,
+              36.55
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

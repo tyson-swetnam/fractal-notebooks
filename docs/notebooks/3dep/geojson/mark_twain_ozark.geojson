@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "mark_twain_ozark",
+        "name": "Mark Twain Ozark Highlands",
+        "description": "Oak-hickory forest of the Ozarks",
+        "state": "MO",
+        "forest_type": "oak_hickory",
+        "expected_max_height_m": 35,
+        "notes": "Central hardwood forest region",
+        "priority": 3,
+        "bbox": [
+          -91.55,
+          37.42,
+          -91.48,
+          37.48
+        ],
+        "center": [
+          -91.515,
+          37.45
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -91.55,
+              37.42
+            ],
+            [
+              -91.48,
+              37.42
+            ],
+            [
+              -91.48,
+              37.48
+            ],
+            [
+              -91.55,
+              37.48
+            ],
+            [
+              -91.55,
+              37.42
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "yellowstone_lodgepole",
+        "name": "Yellowstone Lodgepole Pine",
+        "description": "Post-1988 fire regeneration study area",
+        "state": "WY",
+        "forest_type": "lodgepole_pine",
+        "expected_max_height_m": 30,
+        "notes": "Regenerating forest after 1988 fires",
+        "priority": 2,
+        "bbox": [
+          -110.45,
+          44.55,
+          -110.38,
+          44.62
+        ],
+        "center": [
+          -110.41499999999999,
+          44.584999999999994
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -110.45,
+              44.55
+            ],
+            [
+              -110.38,
+              44.55
+            ],
+            [
+              -110.38,
+              44.62
+            ],
+            [
+              -110.45,
+              44.62
+            ],
+            [
+              -110.45,
+              44.55
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

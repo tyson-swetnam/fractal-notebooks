@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "boundary_waters",
+        "name": "Boundary Waters Wilderness",
+        "description": "Boreal-northern hardwood transition",
+        "state": "MN",
+        "forest_type": "boreal_mixed",
+        "expected_max_height_m": 25,
+        "notes": "Red and white pine, paper birch, aspen",
+        "priority": 3,
+        "bbox": [
+          -91.85,
+          48.02,
+          -91.78,
+          48.08
+        ],
+        "center": [
+          -91.815,
+          48.05
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -91.85,
+              48.02
+            ],
+            [
+              -91.78,
+              48.02
+            ],
+            [
+              -91.78,
+              48.08
+            ],
+            [
+              -91.85,
+              48.08
+            ],
+            [
+              -91.85,
+              48.02
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "ocala_longleaf",
+        "name": "Ocala Longleaf Pine",
+        "description": "Florida sandhill longleaf pine ecosystem",
+        "state": "FL",
+        "forest_type": "longleaf_pine",
+        "expected_max_height_m": 35,
+        "notes": "Fire-maintained longleaf pine savanna",
+        "priority": 2,
+        "bbox": [
+          -81.85,
+          29.18,
+          -81.78,
+          29.25
+        ],
+        "center": [
+          -81.815,
+          29.215
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.85,
+              29.18
+            ],
+            [
+              -81.78,
+              29.18
+            ],
+            [
+              -81.78,
+              29.25
+            ],
+            [
+              -81.85,
+              29.25
+            ],
+            [
+              -81.85,
+              29.18
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "rocky_mountain_subalpine",
+        "name": "Rocky Mountain Subalpine",
+        "description": "High-elevation spruce-fir forest",
+        "state": "CO",
+        "forest_type": "spruce_fir",
+        "expected_max_height_m": 35,
+        "notes": "Near treeline, Engelmann spruce and subalpine fir",
+        "priority": 3,
+        "bbox": [
+          -105.65,
+          40.28,
+          -105.58,
+          40.35
+        ],
+        "center": [
+          -105.61500000000001,
+          40.315
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -105.65,
+              40.28
+            ],
+            [
+              -105.58,
+              40.28
+            ],
+            [
+              -105.58,
+              40.35
+            ],
+            [
+              -105.65,
+              40.35
+            ],
+            [
+              -105.65,
+              40.28
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

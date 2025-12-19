@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "white_mountain_northern",
+        "name": "White Mountain Northern Hardwood",
+        "description": "Classic New England forest",
+        "state": "NH",
+        "forest_type": "northern_hardwood",
+        "expected_max_height_m": 35,
+        "notes": "Sugar maple, beech, yellow birch dominant",
+        "priority": 2,
+        "bbox": [
+          -71.38,
+          44.08,
+          -71.3,
+          44.15
+        ],
+        "center": [
+          -71.34,
+          44.114999999999995
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -71.38,
+              44.08
+            ],
+            [
+              -71.3,
+              44.08
+            ],
+            [
+              -71.3,
+              44.15
+            ],
+            [
+              -71.38,
+              44.15
+            ],
+            [
+              -71.38,
+              44.08
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

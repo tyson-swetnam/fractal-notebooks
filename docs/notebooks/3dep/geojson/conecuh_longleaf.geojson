@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "conecuh_longleaf",
+        "name": "Conecuh Longleaf",
+        "description": "Gulf Coastal Plain longleaf pine",
+        "state": "AL",
+        "forest_type": "longleaf_pine",
+        "expected_max_height_m": 35,
+        "notes": "Red-cockaded woodpecker habitat",
+        "priority": 3,
+        "bbox": [
+          -86.55,
+          31.12,
+          -86.48,
+          31.18
+        ],
+        "center": [
+          -86.515,
+          31.15
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -86.55,
+              31.12
+            ],
+            [
+              -86.48,
+              31.12
+            ],
+            [
+              -86.48,
+              31.18
+            ],
+            [
+              -86.55,
+              31.18
+            ],
+            [
+              -86.55,
+              31.12
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

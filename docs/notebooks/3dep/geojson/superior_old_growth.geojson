@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "superior_old_growth",
+        "name": "Superior Old Growth",
+        "description": "Ancient boreal forest remnants",
+        "state": "MN",
+        "forest_type": "boreal_conifer",
+        "expected_max_height_m": 30,
+        "notes": "Some of the oldest trees in the upper Midwest",
+        "priority": 3,
+        "bbox": [
+          -90.08,
+          47.95,
+          -90.0,
+          48.02
+        ],
+        "center": [
+          -90.03999999999999,
+          47.985
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -90.08,
+              47.95
+            ],
+            [
+              -90.0,
+              47.95
+            ],
+            [
+              -90.0,
+              48.02
+            ],
+            [
+              -90.08,
+              48.02
+            ],
+            [
+              -90.08,
+              47.95
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "tongass_mendenhall",
+        "name": "Tongass Mendenhall Valley",
+        "description": "Largest US national forest",
+        "state": "AK",
+        "forest_type": "temperate_rainforest",
+        "expected_max_height_m": 60,
+        "notes": "Sitka spruce and western hemlock dominant",
+        "priority": 2,
+        "bbox": [
+          -134.6,
+          58.38,
+          -134.5,
+          58.45
+        ],
+        "center": [
+          -134.55,
+          58.415000000000006
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -134.6,
+              58.38
+            ],
+            [
+              -134.5,
+              58.38
+            ],
+            [
+              -134.5,
+              58.45
+            ],
+            [
+              -134.6,
+              58.45
+            ],
+            [
+              -134.6,
+              58.38
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

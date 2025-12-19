@@ -1,0 +1,905 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "sequoia_giant_forest",
+        "name": "Sequoia Giant Forest",
+        "description": "Home to the largest trees on Earth by volume",
+        "state": "CA",
+        "forest_type": "giant_sequoia",
+        "expected_max_height_m": 95,
+        "notes": "Contains General Sherman tree (84m tall, largest by volume)",
+        "priority": 1,
+        "bbox": [
+          -118.77,
+          36.55,
+          -118.72,
+          36.6
+        ],
+        "center": [
+          -118.745,
+          36.575
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -118.77,
+              36.55
+            ],
+            [
+              -118.72,
+              36.55
+            ],
+            [
+              -118.72,
+              36.6
+            ],
+            [
+              -118.77,
+              36.6
+            ],
+            [
+              -118.77,
+              36.55
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "redwood_humboldt",
+        "name": "Humboldt Redwoods",
+        "description": "Old-growth coast redwood forest",
+        "state": "CA",
+        "forest_type": "coast_redwood",
+        "expected_max_height_m": 115,
+        "notes": "Tallest trees on Earth - Hyperion (115.92m) nearby",
+        "priority": 1,
+        "bbox": [
+          -123.98,
+          40.3,
+          -123.9,
+          40.38
+        ],
+        "center": [
+          -123.94,
+          40.34
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.98,
+              40.3
+            ],
+            [
+              -123.9,
+              40.3
+            ],
+            [
+              -123.9,
+              40.38
+            ],
+            [
+              -123.98,
+              40.38
+            ],
+            [
+              -123.98,
+              40.3
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "olympic_hoh",
+        "name": "Olympic Hoh Rainforest",
+        "description": "Temperate rainforest with massive Sitka spruce",
+        "state": "WA",
+        "forest_type": "temperate_rainforest",
+        "expected_max_height_m": 75,
+        "notes": "One of few temperate rainforests in North America",
+        "priority": 2,
+        "bbox": [
+          -123.95,
+          47.82,
+          -123.88,
+          47.88
+        ],
+        "center": [
+          -123.91499999999999,
+          47.85
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -123.95,
+              47.82
+            ],
+            [
+              -123.88,
+              47.82
+            ],
+            [
+              -123.88,
+              47.88
+            ],
+            [
+              -123.95,
+              47.88
+            ],
+            [
+              -123.95,
+              47.82
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "tongass_mendenhall",
+        "name": "Tongass Mendenhall Valley",
+        "description": "Largest US national forest",
+        "state": "AK",
+        "forest_type": "temperate_rainforest",
+        "expected_max_height_m": 60,
+        "notes": "Sitka spruce and western hemlock dominant",
+        "priority": 2,
+        "bbox": [
+          -134.6,
+          58.38,
+          -134.5,
+          58.45
+        ],
+        "center": [
+          -134.55,
+          58.415000000000006
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -134.6,
+              58.38
+            ],
+            [
+              -134.5,
+              58.38
+            ],
+            [
+              -134.5,
+              58.45
+            ],
+            [
+              -134.6,
+              58.45
+            ],
+            [
+              -134.6,
+              58.38
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "yellowstone_lodgepole",
+        "name": "Yellowstone Lodgepole Pine",
+        "description": "Post-1988 fire regeneration study area",
+        "state": "WY",
+        "forest_type": "lodgepole_pine",
+        "expected_max_height_m": 30,
+        "notes": "Regenerating forest after 1988 fires",
+        "priority": 2,
+        "bbox": [
+          -110.45,
+          44.55,
+          -110.38,
+          44.62
+        ],
+        "center": [
+          -110.41499999999999,
+          44.584999999999994
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -110.45,
+              44.55
+            ],
+            [
+              -110.38,
+              44.55
+            ],
+            [
+              -110.38,
+              44.62
+            ],
+            [
+              -110.45,
+              44.62
+            ],
+            [
+              -110.45,
+              44.55
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "rocky_mountain_subalpine",
+        "name": "Rocky Mountain Subalpine",
+        "description": "High-elevation spruce-fir forest",
+        "state": "CO",
+        "forest_type": "spruce_fir",
+        "expected_max_height_m": 35,
+        "notes": "Near treeline, Engelmann spruce and subalpine fir",
+        "priority": 3,
+        "bbox": [
+          -105.65,
+          40.28,
+          -105.58,
+          40.35
+        ],
+        "center": [
+          -105.61500000000001,
+          40.315
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -105.65,
+              40.28
+            ],
+            [
+              -105.58,
+              40.28
+            ],
+            [
+              -105.58,
+              40.35
+            ],
+            [
+              -105.65,
+              40.35
+            ],
+            [
+              -105.65,
+              40.28
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "coconino_ponderosa",
+        "name": "Coconino Ponderosa Pine",
+        "description": "Largest ponderosa pine forest in North America",
+        "state": "AZ",
+        "forest_type": "ponderosa_pine",
+        "expected_max_height_m": 40,
+        "notes": "Open parkland structure, frequent fire regime",
+        "priority": 2,
+        "bbox": [
+          -111.65,
+          35.15,
+          -111.58,
+          35.22
+        ],
+        "center": [
+          -111.61500000000001,
+          35.185
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.65,
+              35.15
+            ],
+            [
+              -111.58,
+              35.15
+            ],
+            [
+              -111.58,
+              35.22
+            ],
+            [
+              -111.65,
+              35.22
+            ],
+            [
+              -111.65,
+              35.15
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "gila_mixed_conifer",
+        "name": "Gila Mixed Conifer",
+        "description": "Sky island forest ecosystem",
+        "state": "NM",
+        "forest_type": "mixed_conifer",
+        "expected_max_height_m": 35,
+        "notes": "Isolated mountain forest ecosystem",
+        "priority": 3,
+        "bbox": [
+          -108.22,
+          33.22,
+          -108.15,
+          33.28
+        ],
+        "center": [
+          -108.185,
+          33.25
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -108.22,
+              33.22
+            ],
+            [
+              -108.15,
+              33.22
+            ],
+            [
+              -108.15,
+              33.28
+            ],
+            [
+              -108.22,
+              33.28
+            ],
+            [
+              -108.22,
+              33.22
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "great_smoky_cove",
+        "name": "Great Smoky Mountains Cove Forest",
+        "description": "Most biodiverse temperate forest in North America",
+        "state": "TN",
+        "forest_type": "mixed_mesophytic",
+        "expected_max_height_m": 55,
+        "notes": "UNESCO World Heritage Site, exceptional biodiversity",
+        "priority": 1,
+        "bbox": [
+          -83.52,
+          35.58,
+          -83.45,
+          35.65
+        ],
+        "center": [
+          -83.485,
+          35.614999999999995
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -83.52,
+              35.58
+            ],
+            [
+              -83.45,
+              35.58
+            ],
+            [
+              -83.45,
+              35.65
+            ],
+            [
+              -83.52,
+              35.65
+            ],
+            [
+              -83.52,
+              35.58
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "mark_twain_ozark",
+        "name": "Mark Twain Ozark Highlands",
+        "description": "Oak-hickory forest of the Ozarks",
+        "state": "MO",
+        "forest_type": "oak_hickory",
+        "expected_max_height_m": 35,
+        "notes": "Central hardwood forest region",
+        "priority": 3,
+        "bbox": [
+          -91.55,
+          37.42,
+          -91.48,
+          37.48
+        ],
+        "center": [
+          -91.515,
+          37.45
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -91.55,
+              37.42
+            ],
+            [
+              -91.48,
+              37.42
+            ],
+            [
+              -91.48,
+              37.48
+            ],
+            [
+              -91.55,
+              37.48
+            ],
+            [
+              -91.55,
+              37.42
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "white_mountain_northern",
+        "name": "White Mountain Northern Hardwood",
+        "description": "Classic New England forest",
+        "state": "NH",
+        "forest_type": "northern_hardwood",
+        "expected_max_height_m": 35,
+        "notes": "Sugar maple, beech, yellow birch dominant",
+        "priority": 2,
+        "bbox": [
+          -71.38,
+          44.08,
+          -71.3,
+          44.15
+        ],
+        "center": [
+          -71.34,
+          44.114999999999995
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -71.38,
+              44.08
+            ],
+            [
+              -71.3,
+              44.08
+            ],
+            [
+              -71.3,
+              44.15
+            ],
+            [
+              -71.38,
+              44.15
+            ],
+            [
+              -71.38,
+              44.08
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "boundary_waters",
+        "name": "Boundary Waters Wilderness",
+        "description": "Boreal-northern hardwood transition",
+        "state": "MN",
+        "forest_type": "boreal_mixed",
+        "expected_max_height_m": 25,
+        "notes": "Red and white pine, paper birch, aspen",
+        "priority": 3,
+        "bbox": [
+          -91.85,
+          48.02,
+          -91.78,
+          48.08
+        ],
+        "center": [
+          -91.815,
+          48.05
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -91.85,
+              48.02
+            ],
+            [
+              -91.78,
+              48.02
+            ],
+            [
+              -91.78,
+              48.08
+            ],
+            [
+              -91.85,
+              48.08
+            ],
+            [
+              -91.85,
+              48.02
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "superior_old_growth",
+        "name": "Superior Old Growth",
+        "description": "Ancient boreal forest remnants",
+        "state": "MN",
+        "forest_type": "boreal_conifer",
+        "expected_max_height_m": 30,
+        "notes": "Some of the oldest trees in the upper Midwest",
+        "priority": 3,
+        "bbox": [
+          -90.08,
+          47.95,
+          -90.0,
+          48.02
+        ],
+        "center": [
+          -90.03999999999999,
+          47.985
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -90.08,
+              47.95
+            ],
+            [
+              -90.0,
+              47.95
+            ],
+            [
+              -90.0,
+              48.02
+            ],
+            [
+              -90.08,
+              48.02
+            ],
+            [
+              -90.08,
+              47.95
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "ocala_longleaf",
+        "name": "Ocala Longleaf Pine",
+        "description": "Florida sandhill longleaf pine ecosystem",
+        "state": "FL",
+        "forest_type": "longleaf_pine",
+        "expected_max_height_m": 35,
+        "notes": "Fire-maintained longleaf pine savanna",
+        "priority": 2,
+        "bbox": [
+          -81.85,
+          29.18,
+          -81.78,
+          29.25
+        ],
+        "center": [
+          -81.815,
+          29.215
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -81.85,
+              29.18
+            ],
+            [
+              -81.78,
+              29.18
+            ],
+            [
+              -81.78,
+              29.25
+            ],
+            [
+              -81.85,
+              29.25
+            ],
+            [
+              -81.85,
+              29.18
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "conecuh_longleaf",
+        "name": "Conecuh Longleaf",
+        "description": "Gulf Coastal Plain longleaf pine",
+        "state": "AL",
+        "forest_type": "longleaf_pine",
+        "expected_max_height_m": 35,
+        "notes": "Red-cockaded woodpecker habitat",
+        "priority": 3,
+        "bbox": [
+          -86.55,
+          31.12,
+          -86.48,
+          31.18
+        ],
+        "center": [
+          -86.515,
+          31.15
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -86.55,
+              31.12
+            ],
+            [
+              -86.48,
+              31.12
+            ],
+            [
+              -86.48,
+              31.18
+            ],
+            [
+              -86.55,
+              31.18
+            ],
+            [
+              -86.55,
+              31.12
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "harvard_forest",
+        "name": "Harvard Forest LTER",
+        "description": "Long-term ecological research site",
+        "state": "MA",
+        "forest_type": "transition_hardwood",
+        "expected_max_height_m": 30,
+        "notes": "NEON site with extensive ground truth data",
+        "priority": 1,
+        "bbox": [
+          -72.2,
+          42.52,
+          -72.16,
+          42.55
+        ],
+        "center": [
+          -72.18,
+          42.535
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.2,
+              42.52
+            ],
+            [
+              -72.16,
+              42.52
+            ],
+            [
+              -72.16,
+              42.55
+            ],
+            [
+              -72.2,
+              42.55
+            ],
+            [
+              -72.2,
+              42.52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "wind_river",
+        "name": "Wind River Experimental Forest",
+        "description": "Old-growth Douglas-fir research site",
+        "state": "WA",
+        "forest_type": "douglas_fir",
+        "expected_max_height_m": 65,
+        "notes": "AmeriFlux tower site with carbon flux data",
+        "priority": 1,
+        "bbox": [
+          -122.0,
+          45.8,
+          -121.93,
+          45.86
+        ],
+        "center": [
+          -121.965,
+          45.83
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.0,
+              45.8
+            ],
+            [
+              -121.93,
+              45.8
+            ],
+            [
+              -121.93,
+              45.86
+            ],
+            [
+              -122.0,
+              45.86
+            ],
+            [
+              -122.0,
+              45.8
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "niwot_ridge",
+        "name": "Niwot Ridge LTER",
+        "description": "Alpine/subalpine research site",
+        "state": "CO",
+        "forest_type": "subalpine",
+        "expected_max_height_m": 20,
+        "notes": "Treeline dynamics and alpine tundra",
+        "priority": 2,
+        "bbox": [
+          -105.6,
+          40.03,
+          -105.55,
+          40.07
+        ],
+        "center": [
+          -105.57499999999999,
+          40.05
+        ]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -105.6,
+              40.03
+            ],
+            [
+              -105.55,
+              40.03
+            ],
+            [
+              -105.55,
+              40.07
+            ],
+            [
+              -105.6,
+              40.07
+            ],
+            [
+              -105.6,
+              40.03
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
