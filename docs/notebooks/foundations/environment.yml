@@ -1,0 +1,36 @@
+name: fractal-foundations
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core Python
+  - python=3.10
+
+  # Scientific computing
+  - numpy>=1.20.0
+  - scipy>=1.7.0
+  - matplotlib>=3.5.0
+
+  # Jupyter and widgets
+  - jupyter
+  - jupyterlab
+  - ipykernel
+  - ipywidgets>=8.0.0
+  - jupyter_contrib_nbextensions
+
+  # Visualization
+  - plotly>=5.0.0
+
+  # Performance optimization
+  - numba>=0.55.0
+
+  # Optional: GPU support (uncomment if CUDA is available)
+  # - cudatoolkit=11.8
+  # - pycuda
+
+  # Pip packages
+  - pip
+  - pip:
+    - opencv-python  # cv2 for image processing in dbc.ipynb
+
+description: Environment for Part 1 Foundations notebooks - fractal mathematics, dimension theory, and fractal generators
