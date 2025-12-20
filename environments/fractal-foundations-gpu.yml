@@ -1,0 +1,64 @@
+# Fractal Foundations Environment with GPU/CUDA Support
+# For Part 1 Foundations notebooks - fractal mathematics, dimension theory, and fractal generators
+#
+# NOTE: This environment targets NVIDIA driver 535.x which supports CUDA 12.2 max.
+#       If your driver is newer, you can update cuda-toolkit and numba versions.
+#       Check driver: nvidia-smi --query-gpu=driver_version --format=csv,noheader
+#
+# Installation:
+#   mamba env create -f fractal-foundations-gpu.yml
+#   mamba activate fractal-foundations-gpu
+#
+# Verification:
+#   python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+#   python -c "from numba import cuda; print(f'Numba CUDA: {cuda.is_available()}')"
+
+name: fractal-foundations-gpu
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Core Python
+  - python=3.10
+  - pip
+
+  # CUDA Toolkit (12.2 compatible with driver 535.x)
+  - cuda-toolkit=12.2
+  - cudnn>=8.9
+
+  # PyTorch with CUDA support
+  - pytorch>=2.2
+  - pytorch-cuda=12.1
+  - torchvision
+  - torchaudio
+
+  # Scientific computing
+  - numpy>=1.20.0
+  - scipy>=1.7.0
+  - matplotlib>=3.5.0
+
+  # Jupyter and widgets
+  - jupyter
+  - jupyterlab>=4.0
+  - ipykernel
+  - ipywidgets>=8.0.0
+  - jupyterlab_widgets>=3.0
+
+  # Visualization
+  - plotly>=5.0.0
+
+  # Performance optimization (numba 0.59 is compatible with CUDA 12.2 / driver 535.x)
+  - numba>=0.59,<0.61
+  - cupy>=12,<13  # GPU-accelerated NumPy, matching CUDA 12.x
+
+  # GPU utilities
+  - pynvml  # NVIDIA GPU monitoring
+
+  # Pip packages
+  - pip:
+    - opencv-python  # cv2 for image processing in dbc.ipynb
+    - pycuda  # CUDA Python bindings
