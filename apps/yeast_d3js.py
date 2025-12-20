@@ -1,7 +1,7 @@
 """
 Yeast Colony Simulation with D3.js Force-Directed Graph
 
-Phase 2: Polar budding, ellipse rendering, and orientation alignment.
+Phase 3: Energy system, growth/shrinkage, cell death and removal.
 Uses D3.js force simulation embedded in Streamlit via components.html().
 """
 
@@ -50,6 +50,20 @@ cell_radius = st.sidebar.slider(
 )
 
 st.sidebar.markdown("---")
+st.sidebar.subheader("Appearance")
+
+color_scheme = st.sidebar.selectbox(
+    "Color Scheme",
+    ["Generation (Viridis)", "Generation (Plasma)", "Age (Warm)", "Energy (Health)", "Depth (Cool)"],
+    help="How cells are colored"
+)
+
+show_energy_bars = st.sidebar.checkbox("Show Energy Bars", value=True)
+show_pole_indicators = st.sidebar.checkbox("Show Pole Indicators", value=is_snowflake)
+high_performance = st.sidebar.checkbox("High Performance Mode", value=False,
+    help="Reduces visual effects for smoother performance with many cells")
+
+st.sidebar.markdown("---")
 st.sidebar.subheader("Cell Dynamics")
 
 division_rate = st.sidebar.slider(
@@ -72,6 +86,29 @@ brownian_strength = st.sidebar.slider(
 )
 
 st.sidebar.markdown("---")
+st.sidebar.subheader("Energy & Death")
+
+enable_death = st.sidebar.checkbox("Enable Cell Death", value=True)
+
+energy_gain_rate = st.sidebar.slider(
+    "Energy Gain Rate",
+    0.1, 2.0, 0.8,
+    help="How fast cells gain energy when uncrowded"
+)
+
+energy_decay_rate = st.sidebar.slider(
+    "Energy Decay Rate",
+    0.01, 0.5, 0.15,
+    help="How fast cells lose energy from age/crowding"
+)
+
+death_threshold = st.sidebar.slider(
+    "Death Threshold",
+    5, 30, 15,
+    help="Energy level below which cells start dying"
+)
+
+st.sidebar.markdown("---")
 st.sidebar.subheader("Simulation Control")
 
 simulation_speed = st.sidebar.slider(
@@ -90,7 +127,15 @@ def generate_d3_html(
     aspect_ratio: float,
     bud_angle_deviation: int,
     brownian_strength: float,
-    simulation_speed: float
+    simulation_speed: float,
+    enable_death: bool,
+    energy_gain_rate: float,
+    energy_decay_rate: float,
+    death_threshold: int,
+    color_scheme: str,
+    show_energy_bars: bool,
+    show_pole_indicators: bool,
+    high_performance: bool
 ) -> str:
     """Generate the complete HTML with D3.js simulation."""
 
@@ -162,21 +207,27 @@ def generate_d3_html(
             border-radius: 4px;
             font-size: 12px;
         }}
+        .stat-label {{
+            color: #aaa;
+        }}
     </style>
 </head>
 <body>
     <div id="container">
         <canvas id="canvas"></canvas>
         <div id="stats">
-            <div>Cells: <span id="cell-count">0</span> / {max_cells}</div>
-            <div>Generation: <span id="max-gen">0</span></div>
-            <div>Tick: <span id="tick-count">0</span></div>
+            <div><span class="stat-label">Cells:</span> <span id="cell-count">0</span> / {max_cells}</div>
+            <div><span class="stat-label">Births:</span> <span id="birth-count">0</span></div>
+            <div><span class="stat-label">Deaths:</span> <span id="death-count">0</span></div>
+            <div><span class="stat-label">Max Gen:</span> <span id="max-gen">0</span></div>
+            <div><span class="stat-label">Avg Energy:</span> <span id="avg-energy">100</span>%</div>
+            <div><span class="stat-label">Oldest:</span> <span id="oldest-age">0</span> ticks</div>
         </div>
         <div id="controls">
             <button id="pause-btn" class="active">Pause</button>
             <button id="reset-btn">Reset</button>
         </div>
-        <div id="mode-label">{"Snowflake Yeast (Polar Budding)" if is_snowflake else "Normal Yeast (Separating)"}</div>
+        <div id="mode-label">{"Snowflake Yeast (Polar Budding)" if is_snowflake else "Normal Yeast (Separating)"} {"+ Death" if enable_death else ""}</div>
     </div>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -189,9 +240,17 @@ def generate_d3_html(
             divisionRate: {division_rate},
             cellRadius: {cell_radius},
             aspectRatio: {aspect_ratio},
-            budAngleDeviation: {bud_angle_deviation} * Math.PI / 180,  // Convert to radians
+            budAngleDeviation: {bud_angle_deviation} * Math.PI / 180,
             brownianStrength: {brownian_strength},
-            simulationSpeed: {simulation_speed}
+            simulationSpeed: {simulation_speed},
+            enableDeath: {str(enable_death).lower()},
+            energyGainRate: {energy_gain_rate},
+            energyDecayRate: {energy_decay_rate},
+            deathThreshold: {death_threshold},
+            colorScheme: "{color_scheme}",
+            showEnergyBars: {str(show_energy_bars).lower()},
+            showPoleIndicators: {str(show_pole_indicators).lower()},
+            highPerformance: {str(high_performance).lower()}
         }};
 
         // Canvas setup
@@ -209,15 +268,36 @@ def generate_d3_html(
         let links = [];
         let nextId = 0;
         let tickCount = 0;
+        let birthCount = 0;
+        let deathCount = 0;
         let isPaused = false;
         let simulation;
 
-        // Track used poles for each cell (for polar budding)
-        const usedPoles = new Map();  // cellId -> Set of used pole angles (0 or PI)
+        // Track used poles for each cell
+        const usedPoles = new Map();
 
-        // Color scales
-        const generationColor = d3.scaleSequential(d3.interpolateViridis).domain([0, 10]);
-        const ageColor = d3.scaleSequential(d3.interpolateYlOrBr).domain([0, 500]);
+        // Color scales for different schemes
+        const colorScales = {{
+            'Generation (Viridis)': d3.scaleSequential(d3.interpolateViridis).domain([0, 10]),
+            'Generation (Plasma)': d3.scaleSequential(d3.interpolatePlasma).domain([0, 10]),
+            'Age (Warm)': d3.scaleSequential(d3.interpolateYlOrBr).domain([0, 500]),
+            'Energy (Health)': d3.scaleSequential(d3.interpolateRdYlGn).domain([0, 100]),
+            'Depth (Cool)': d3.scaleSequential(d3.interpolateCool).domain([0, 10])
+        }};
+        const energyBarColor = d3.scaleSequential(d3.interpolateRdYlGn).domain([0, 100]);
+
+        // Get cell color based on selected scheme
+        function getCellColor(node) {{
+            const scheme = CONFIG.colorScheme;
+            if (scheme === 'Energy (Health)') {{
+                return colorScales[scheme](node.energy);
+            }} else if (scheme === 'Age (Warm)') {{
+                return colorScales[scheme](Math.min(node.age, 500));
+            }} else {{
+                // Generation-based schemes
+                return colorScales[scheme](Math.min(node.generation, 10));
+            }}
+        }}
 
         // Create a new cell
         function createCell(x, y, orientation, parentId = null, generation = 0) {{
@@ -227,20 +307,48 @@ def generate_d3_html(
                 y: y,
                 vx: 0,
                 vy: 0,
-                radius: CONFIG.cellRadius * 0.5,  // Start small (minor axis)
+                radius: CONFIG.cellRadius * 0.4,
                 targetRadius: CONFIG.cellRadius * (0.9 + Math.random() * 0.2),
                 aspectRatio: CONFIG.aspectRatio,
-                orientation: orientation,  // Angle of long axis in radians
+                orientation: orientation,
                 age: 0,
                 generation: generation,
                 parentId: parentId,
                 budsProduced: 0,
                 maxBuds: 4 + Math.floor(Math.random() * 2),
                 state: 'growing',
+                energy: 80 + Math.random() * 20,  // Start with 80-100 energy
+                opacity: 1.0,
                 isSnowflake: CONFIG.isSnowflake
             }};
             usedPoles.set(cell.id, new Set());
             return cell;
+        }}
+
+        // Calculate local density around a cell
+        function getLocalDensity(cell) {{
+            const detectionRadius = CONFIG.cellRadius * CONFIG.aspectRatio * 4;
+            let neighborCount = 0;
+            let totalOverlap = 0;
+
+            for (const other of nodes) {{
+                if (other.id === cell.id || other.state === 'dead') continue;
+
+                const dx = other.x - cell.x;
+                const dy = other.y - cell.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < detectionRadius) {{
+                    neighborCount++;
+                    const minDist = (cell.radius + other.radius) * Math.sqrt(CONFIG.aspectRatio);
+                    if (dist < minDist * 1.5) {{
+                        totalOverlap += 1 - (dist / (minDist * 1.5));
+                    }}
+                }}
+            }}
+
+            // Density is combination of neighbor count and overlap
+            return Math.min(1, (neighborCount / 8) + totalOverlap * 0.5);
         }}
 
         // Initialize simulation
@@ -250,8 +358,9 @@ def generate_d3_html(
             usedPoles.clear();
             nextId = 0;
             tickCount = 0;
+            birthCount = 0;
+            deathCount = 0;
 
-            // Create initial cells
             const centerX = width / 2;
             const centerY = height / 2;
 
@@ -261,20 +370,24 @@ def generate_d3_html(
                 const cell = createCell(
                     centerX + Math.cos(angle) * offset,
                     centerY + Math.sin(angle) * offset,
-                    angle + Math.PI / 2  // Orientation perpendicular to radial
+                    angle + Math.PI / 2
                 );
-                cell.radius = cell.targetRadius;  // Initial cells start mature
+                cell.radius = cell.targetRadius;
                 cell.state = 'mature';
+                cell.energy = 100;
                 nodes.push(cell);
+                birthCount++;
             }}
 
             setupSimulation();
             updateStats();
         }}
 
-        // Get effective collision radius considering ellipse shape
+        // Get effective collision radius
         function getCollisionRadius(node) {{
-            // Use geometric mean of semi-axes for collision
+            if (node.state === 'dying' || node.state === 'dead') {{
+                return node.radius * 0.5;  // Shrinking cells have smaller collision
+            }}
             return node.radius * Math.sqrt(node.aspectRatio) * 1.1;
         }}
 
@@ -295,20 +408,26 @@ def generate_d3_html(
                 .on('tick', onTick);
         }}
 
-        // Custom forces applied each tick
+        // Custom forces
         function applyCustomForces() {{
             const padding = CONFIG.cellRadius * CONFIG.aspectRatio * 2;
 
             for (const node of nodes) {{
+                if (node.state === 'dead') continue;
+
                 // Boundary force
                 if (node.x < padding) node.vx += (padding - node.x) * 0.1;
                 if (node.x > width - padding) node.vx += (width - padding - node.x) * 0.1;
                 if (node.y < padding) node.vy += (padding - node.y) * 0.1;
                 if (node.y > height - padding) node.vy += (height - padding - node.y) * 0.1;
 
-                // Brownian motion (reduced for snowflake attached cells)
+                // Brownian motion (reduced for dying/attached cells)
                 const isAttached = CONFIG.isSnowflake && node.parentId !== null;
-                const brownianFactor = isAttached ? 0.2 : 1.0;
+                const isDying = node.state === 'dying';
+                let brownianFactor = 1.0;
+                if (isAttached) brownianFactor *= 0.2;
+                if (isDying) brownianFactor *= 0.3;
+
                 node.vx += (Math.random() - 0.5) * CONFIG.brownianStrength * brownianFactor;
                 node.vy += (Math.random() - 0.5) * CONFIG.brownianStrength * brownianFactor;
             }}
@@ -316,39 +435,57 @@ def generate_d3_html(
             // Orientation alignment for snowflake links
             if (CONFIG.isSnowflake) {{
                 for (const link of links) {{
-                    const source = link.source;
-                    const target = link.target;
+                    if (link.target.state === 'dead') continue;
 
-                    // Calculate direction from source to target
-                    const dx = target.x - source.x;
-                    const dy = target.y - source.y;
+                    const dx = link.target.x - link.source.x;
+                    const dy = link.target.y - link.source.y;
                     const linkAngle = Math.atan2(dy, dx);
 
-                    // Target orientation: aligned with link direction
-                    // Smoothly rotate toward target orientation
-                    let angleDiff = linkAngle - target.orientation;
-                    // Normalize to [-PI, PI]
+                    let angleDiff = linkAngle - link.target.orientation;
                     while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
                     while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
 
-                    target.orientation += angleDiff * 0.1;
+                    link.target.orientation += angleDiff * 0.1;
                 }}
             }}
         }}
 
-        // Get available pole for budding (0 = forward, PI = backward along orientation)
+        // Update energy for a cell
+        function updateEnergy(cell) {{
+            if (!CONFIG.enableDeath) {{
+                cell.energy = 100;
+                return;
+            }}
+
+            const density = getLocalDensity(cell);
+
+            // Energy gain when uncrowded
+            const spaceBonus = (1 - density) * CONFIG.energyGainRate;
+            cell.energy += spaceBonus;
+
+            // Energy loss from crowding
+            const crowdingPenalty = density * CONFIG.energyDecayRate * 2;
+            cell.energy -= crowdingPenalty;
+
+            // Age penalty (older cells lose energy faster)
+            const agePenalty = (cell.age / 2000) * CONFIG.energyDecayRate;
+            cell.energy -= agePenalty;
+
+            // Clamp energy
+            cell.energy = Math.max(0, Math.min(100, cell.energy));
+        }}
+
+        // Get available pole for budding
         function getAvailablePole(cell) {{
             const used = usedPoles.get(cell.id) || new Set();
 
             if (!used.has(0) && !used.has(Math.PI)) {{
-                // Both available, pick randomly
                 return Math.random() < 0.5 ? 0 : Math.PI;
             }} else if (!used.has(0)) {{
                 return 0;
             }} else if (!used.has(Math.PI)) {{
                 return Math.PI;
             }} else {{
-                // Both used, pick randomly for additional buds
                 return Math.random() < 0.5 ? 0 : Math.PI;
             }}
         }}
@@ -356,42 +493,83 @@ def generate_d3_html(
         // Update cell states
         function updateCells() {{
             const cellsToAdd = [];
+            const cellsToRemove = [];
 
             for (const cell of nodes) {{
+                if (cell.state === 'dead') {{
+                    cellsToRemove.push(cell);
+                    continue;
+                }}
+
                 cell.age++;
+                updateEnergy(cell);
 
-                // Growth
-                if (cell.state === 'growing') {{
-                    cell.radius += (cell.targetRadius - cell.radius) * 0.05;
-                    if (cell.radius >= cell.targetRadius * 0.95) {{
-                        cell.state = 'mature';
-                        cell.radius = cell.targetRadius;
-                    }}
-                }}
+                // State machine
+                switch (cell.state) {{
+                    case 'growing':
+                        // Growth rate influenced by energy
+                        const growthRate = 0.03 + (cell.energy / 100) * 0.04;
+                        cell.radius += (cell.targetRadius - cell.radius) * growthRate;
 
-                // Division check for mature cells
-                if (cell.state === 'mature' &&
-                    cell.budsProduced < cell.maxBuds &&
-                    nodes.length + cellsToAdd.length < CONFIG.maxCells) {{
-
-                    if (Math.random() < CONFIG.divisionRate * CONFIG.simulationSpeed) {{
-                        const daughter = divide(cell);
-                        if (daughter) {{
-                            cellsToAdd.push(daughter);
+                        if (cell.radius >= cell.targetRadius * 0.95) {{
+                            cell.state = 'mature';
+                            cell.radius = cell.targetRadius;
                         }}
-                    }}
+                        break;
+
+                    case 'mature':
+                        // Check for death
+                        if (CONFIG.enableDeath && cell.energy < CONFIG.deathThreshold) {{
+                            cell.state = 'dying';
+                            break;
+                        }}
+
+                        // Division check
+                        if (cell.budsProduced < cell.maxBuds &&
+                            cell.energy > 50 &&
+                            nodes.length + cellsToAdd.length < CONFIG.maxCells) {{
+
+                            const divisionChance = CONFIG.divisionRate * CONFIG.simulationSpeed * (cell.energy / 100);
+                            if (Math.random() < divisionChance) {{
+                                const daughter = divide(cell);
+                                if (daughter) {{
+                                    cellsToAdd.push(daughter);
+                                    // Division costs energy
+                                    cell.energy -= 20;
+                                }}
+                            }}
+                        }}
+                        break;
+
+                    case 'dying':
+                        // Shrink and fade
+                        cell.radius *= 0.97;
+                        cell.opacity -= 0.02;
+                        cell.energy = Math.max(0, cell.energy - 1);
+
+                        if (cell.radius < CONFIG.cellRadius * 0.2 || cell.opacity <= 0.1) {{
+                            cell.state = 'dead';
+                            cell.opacity = 0;
+                            deathCount++;
+                        }}
+                        break;
                 }}
+            }}
+
+            // Remove dead cells
+            for (const cell of cellsToRemove) {{
+                removeCell(cell);
             }}
 
             // Add new cells
             for (const cell of cellsToAdd) {{
                 nodes.push(cell);
+                birthCount++;
                 simulation.nodes(nodes);
 
                 if (CONFIG.isSnowflake && cell.parentId !== null) {{
                     const parent = nodes.find(n => n.id === cell.parentId);
                     if (parent) {{
-                        // Link distance: sum of semi-major axes (end-to-end)
                         const parentSemiMajor = parent.radius * parent.aspectRatio;
                         const childSemiMajor = cell.targetRadius * cell.aspectRatio;
 
@@ -410,47 +588,56 @@ def generate_d3_html(
             simulation.force('collision').radius(d => getCollisionRadius(d));
         }}
 
-        // Cell division with polar budding for snowflake
+        // Remove a dead cell and its links
+        function removeCell(cell) {{
+            // Remove from nodes
+            const nodeIndex = nodes.indexOf(cell);
+            if (nodeIndex > -1) {{
+                nodes.splice(nodeIndex, 1);
+            }}
+
+            // Remove links to/from this cell
+            for (let i = links.length - 1; i >= 0; i--) {{
+                if (links[i].source.id === cell.id || links[i].target.id === cell.id) {{
+                    links.splice(i, 1);
+                }}
+            }}
+
+            // Clean up usedPoles
+            usedPoles.delete(cell.id);
+
+            // Update simulation
+            simulation.nodes(nodes);
+            simulation.force('link').links(links);
+        }}
+
+        // Cell division
         function divide(mother) {{
             let budAngle;
             let daughterOrientation;
 
             if (CONFIG.isSnowflake) {{
-                // Polar budding: bud from pole of mother cell
                 const pole = getAvailablePole(mother);
-
-                // Base angle is along mother's orientation axis
                 const baseAngle = mother.orientation + pole;
-
-                // Add small deviation for branching variety
                 const deviation = (Math.random() - 0.5) * 2 * CONFIG.budAngleDeviation;
                 budAngle = baseAngle + deviation;
-
-                // Daughter orientation continues the chain (aligned end-to-end)
                 daughterOrientation = budAngle;
 
-                // Mark pole as used
                 const used = usedPoles.get(mother.id) || new Set();
                 used.add(pole);
                 usedPoles.set(mother.id, used);
-
             }} else {{
-                // Normal yeast: random budding angle
                 budAngle = Math.random() * 2 * Math.PI;
                 daughterOrientation = Math.random() * 2 * Math.PI;
             }}
 
-            // Calculate separation distance (end-to-end for ellipses)
             const motherSemiMajor = mother.radius * mother.aspectRatio;
-            const daughterRadius = CONFIG.cellRadius * 0.5;  // Starting size
-            const daughterSemiMajor = CONFIG.cellRadius * CONFIG.aspectRatio;  // Target size
-
+            const daughterSemiMajor = CONFIG.cellRadius * CONFIG.aspectRatio;
             const separation = motherSemiMajor + daughterSemiMajor * 0.6;
 
             const newX = mother.x + Math.cos(budAngle) * separation;
             const newY = mother.y + Math.sin(budAngle) * separation;
 
-            // Check bounds
             const margin = CONFIG.cellRadius * CONFIG.aspectRatio;
             if (newX < margin || newX > width - margin ||
                 newY < margin || newY > height - margin) {{
@@ -464,16 +651,17 @@ def generate_d3_html(
                 mother.generation + 1
             );
 
-            // Mark the parent-facing pole as used for daughter
+            // Daughter inherits some energy from mother
+            daughter.energy = mother.energy * 0.6;
+
             if (CONFIG.isSnowflake) {{
                 const daughterUsed = usedPoles.get(daughter.id) || new Set();
-                daughterUsed.add(Math.PI);  // Back pole faces parent
+                daughterUsed.add(Math.PI);
                 usedPoles.set(daughter.id, daughterUsed);
             }}
 
             mother.budsProduced++;
 
-            // Separation impulse for normal yeast
             if (!CONFIG.isSnowflake) {{
                 const impulse = 2.5;
                 daughter.vx = Math.cos(budAngle) * impulse;
@@ -492,7 +680,6 @@ def generate_d3_html(
             tickCount++;
             applyCustomForces();
 
-            // Update cells less frequently for performance
             if (tickCount % 3 === 0) {{
                 updateCells();
             }}
@@ -503,7 +690,6 @@ def generate_d3_html(
                 updateStats();
             }}
 
-            // Keep simulation running
             simulation.alpha(0.3);
         }}
 
@@ -511,11 +697,16 @@ def generate_d3_html(
         function render() {{
             ctx.clearRect(0, 0, width, height);
 
-            // Draw links (for snowflake mode)
+            // Draw links
             if (CONFIG.isSnowflake && links.length > 0) {{
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
                 ctx.lineWidth = 2;
                 for (const link of links) {{
+                    if (link.source.state === 'dead' || link.target.state === 'dead') continue;
+
+                    // Link color based on child energy
+                    const linkEnergy = link.target.energy;
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${{0.1 + (linkEnergy / 100) * 0.2}})`;
+
                     ctx.beginPath();
                     ctx.moveTo(link.source.x, link.source.y);
                     ctx.lineTo(link.target.x, link.target.y);
@@ -523,53 +714,75 @@ def generate_d3_html(
                 }}
             }}
 
-            // Draw cells as ellipses
+            // Draw cells
             for (const node of nodes) {{
-                ctx.save();
+                if (node.state === 'dead') continue;
 
-                // Translate to cell center and rotate
+                ctx.save();
                 ctx.translate(node.x, node.y);
                 ctx.rotate(node.orientation);
 
-                // Color based on mode
+                // Get color from selected scheme
                 let color;
-                if (CONFIG.isSnowflake) {{
-                    color = generationColor(Math.min(node.generation, 10));
+                if (node.state === 'dying') {{
+                    // Dying cells turn grayish
+                    const gray = Math.floor(100 + node.energy);
+                    color = `rgb(${{gray}}, ${{gray * 0.8}}, ${{gray * 0.6}})`;
                 }} else {{
-                    color = ageColor(Math.min(node.age, 500));
+                    color = getCellColor(node);
                 }}
 
-                // Glow effect
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 6;
+                // Glow effect (reduced for dying cells or high-performance mode)
+                if (!CONFIG.highPerformance) {{
+                    ctx.shadowColor = color;
+                    ctx.shadowBlur = node.state === 'dying' ? 2 : 8;
+                }}
 
                 // Draw ellipse
-                const semiMajor = node.radius * node.aspectRatio;  // Along orientation
-                const semiMinor = node.radius;  // Perpendicular
+                const semiMajor = node.radius * node.aspectRatio;
+                const semiMinor = node.radius;
 
                 ctx.fillStyle = color;
-                ctx.globalAlpha = 0.85;
+                ctx.globalAlpha = node.opacity * 0.85;
                 ctx.beginPath();
                 ctx.ellipse(0, 0, semiMajor, semiMinor, 0, 0, 2 * Math.PI);
                 ctx.fill();
 
-                // Border
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.lineWidth = 1;
+                // Border (simplified in high-performance mode)
+                if (!CONFIG.highPerformance) {{
+                    ctx.shadowBlur = 0;
+                }}
+                ctx.strokeStyle = `rgba(255, 255, 255, ${{node.opacity * (CONFIG.highPerformance ? 0.3 : 0.5)}})`;
+                ctx.lineWidth = CONFIG.highPerformance ? 0.5 : 1;
                 ctx.stroke();
 
-                // Pole indicators for snowflake (small dots at ends)
-                if (CONFIG.isSnowflake) {{
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                // Energy bar for living cells (configurable)
+                if (CONFIG.showEnergyBars && CONFIG.enableDeath && node.state !== 'dying') {{
+                    const barWidth = semiMajor * 1.5;
+                    const barHeight = 3;
+                    const barY = semiMinor + 4;
+
+                    ctx.globalAlpha = node.opacity * 0.7;
+                    // Background
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.fillRect(-barWidth / 2, barY, barWidth, barHeight);
+
+                    // Energy fill
+                    const energyWidth = (node.energy / 100) * barWidth;
+                    ctx.fillStyle = energyBarColor(node.energy);
+                    ctx.fillRect(-barWidth / 2, barY, energyWidth, barHeight);
+                }}
+
+                // Pole indicators (configurable)
+                if (CONFIG.showPoleIndicators && node.state !== 'dying') {{
+                    ctx.globalAlpha = node.opacity * 0.6;
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                     const poleOffset = semiMajor * 0.7;
 
-                    // Forward pole
                     ctx.beginPath();
                     ctx.arc(poleOffset, 0, 2, 0, 2 * Math.PI);
                     ctx.fill();
 
-                    // Backward pole
                     ctx.beginPath();
                     ctx.arc(-poleOffset, 0, 2, 0, 2 * Math.PI);
                     ctx.fill();
@@ -581,10 +794,22 @@ def generate_d3_html(
 
         // Update stats display
         function updateStats() {{
-            document.getElementById('cell-count').textContent = nodes.length;
+            const livingCells = nodes.filter(n => n.state !== 'dead');
+            document.getElementById('cell-count').textContent = livingCells.length;
+            document.getElementById('birth-count').textContent = birthCount;
+            document.getElementById('death-count').textContent = deathCount;
             document.getElementById('max-gen').textContent =
-                nodes.length > 0 ? Math.max(...nodes.map(n => n.generation)) : 0;
-            document.getElementById('tick-count').textContent = tickCount;
+                livingCells.length > 0 ? Math.max(...livingCells.map(n => n.generation)) : 0;
+
+            const avgEnergy = livingCells.length > 0
+                ? Math.round(livingCells.reduce((sum, n) => sum + n.energy, 0) / livingCells.length)
+                : 0;
+            document.getElementById('avg-energy').textContent = avgEnergy;
+
+            const oldestAge = livingCells.length > 0
+                ? Math.max(...livingCells.map(n => n.age))
+                : 0;
+            document.getElementById('oldest-age').textContent = oldestAge;
         }}
 
         // Event handlers
@@ -602,7 +827,6 @@ def generate_d3_html(
             init();
         }});
 
-        // Handle resize
         window.addEventListener('resize', function() {{
             width = container.clientWidth;
             canvas.width = width;
@@ -629,7 +853,15 @@ html_content = generate_d3_html(
     aspect_ratio=aspect_ratio,
     bud_angle_deviation=bud_angle_deviation,
     brownian_strength=brownian_strength,
-    simulation_speed=simulation_speed
+    simulation_speed=simulation_speed,
+    enable_death=enable_death,
+    energy_gain_rate=energy_gain_rate,
+    energy_decay_rate=energy_decay_rate,
+    death_threshold=death_threshold,
+    color_scheme=color_scheme,
+    show_energy_bars=show_energy_bars,
+    show_pole_indicators=show_pole_indicators,
+    high_performance=high_performance
 )
 
 components.html(html_content, height=700, scrolling=False)
@@ -642,7 +874,9 @@ This simulation models yeast colony growth using D3.js force-directed graphs.
 
 **Normal Yeast**: Cells divide and separate, diffusing through the medium.
 
-**Snowflake Yeast**: Cells remain attached via **polar budding** (end-to-end), forming fractal-like clusters with aligned orientations.
+**Snowflake Yeast**: Cells remain attached via **polar budding** (end-to-end), forming fractal-like clusters.
 
-*Phase 2: Ellipse rendering, polar budding, orientation alignment*
+**Energy System**: Cells gain energy when uncrowded, lose energy from crowding and age. Low energy triggers death.
+
+*Phase 4: Polish - color schemes, enhanced stats, optimizations*
 """)
