@@ -59,7 +59,7 @@ color_scheme = st.sidebar.selectbox(
 )
 
 show_energy_bars = st.sidebar.checkbox("Show Energy Bars", value=True)
-show_pole_indicators = st.sidebar.checkbox("Show Pole Indicators", value=is_snowflake)
+show_pole_indicators = st.sidebar.checkbox("Show Pole Indicators", value=False)
 high_performance = st.sidebar.checkbox("High Performance Mode", value=False,
     help="Reduces visual effects for smoother performance with many cells")
 
@@ -573,11 +573,12 @@ def generate_d3_html(
                         const parentSemiMajor = parent.radius * parent.aspectRatio;
                         const childSemiMajor = cell.targetRadius * cell.aspectRatio;
 
+                        // Distance so poles touch with slight overlap for junction
                         links.push({{
                             source: parent,
                             target: cell,
-                            distance: (parentSemiMajor + childSemiMajor) * 0.95,
-                            strength: 0.7
+                            distance: parentSemiMajor + childSemiMajor,
+                            strength: 0.9
                         }});
                         simulation.force('link').links(links);
                     }}
@@ -586,6 +587,13 @@ def generate_d3_html(
 
             // Update collision radius
             simulation.force('collision').radius(d => getCollisionRadius(d));
+
+            // Update link distances as cells grow
+            for (const link of links) {{
+                const parentSemiMajor = link.source.radius * link.source.aspectRatio;
+                const childSemiMajor = link.target.radius * link.target.aspectRatio;
+                link.distance = parentSemiMajor + childSemiMajor;
+            }}
         }}
 
         // Remove a dead cell and its links
@@ -631,9 +639,10 @@ def generate_d3_html(
                 daughterOrientation = Math.random() * 2 * Math.PI;
             }}
 
+            // Position daughter at mother's pole - daughter starts small and grows
             const motherSemiMajor = mother.radius * mother.aspectRatio;
-            const daughterSemiMajor = CONFIG.cellRadius * CONFIG.aspectRatio;
-            const separation = motherSemiMajor + daughterSemiMajor * 0.6;
+            const initialDaughterSemiMajor = CONFIG.cellRadius * 0.4 * CONFIG.aspectRatio;
+            const separation = motherSemiMajor + initialDaughterSemiMajor;
 
             const newX = mother.x + Math.cos(budAngle) * separation;
             const newY = mother.y + Math.sin(budAngle) * separation;
@@ -697,20 +706,78 @@ def generate_d3_html(
         function render() {{
             ctx.clearRect(0, 0, width, height);
 
-            // Draw links
+            // Draw pole-to-pole junctions (shared cell walls like sausage links)
             if (CONFIG.isSnowflake && links.length > 0) {{
-                ctx.lineWidth = 2;
                 for (const link of links) {{
                     if (link.source.state === 'dead' || link.target.state === 'dead') continue;
 
-                    // Link color based on child energy
-                    const linkEnergy = link.target.energy;
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${{0.1 + (linkEnergy / 100) * 0.2}})`;
+                    const parent = link.source;
+                    const child = link.target;
 
+                    // Calculate the junction point (where poles meet)
+                    const dx = child.x - parent.x;
+                    const dy = child.y - parent.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 0.1) continue;
+
+                    const ux = dx / dist;  // Unit vector from parent to child
+                    const uy = dy / dist;
+
+                    // Parent's pole position (end of ellipse toward child)
+                    const parentSemiMajor = parent.radius * parent.aspectRatio;
+                    const parentPoleX = parent.x + ux * parentSemiMajor;
+                    const parentPoleY = parent.y + uy * parentSemiMajor;
+
+                    // Child's pole position (end of ellipse toward parent)
+                    const childSemiMajor = child.radius * child.aspectRatio;
+                    const childPoleX = child.x - ux * childSemiMajor;
+                    const childPoleY = child.y - uy * childSemiMajor;
+
+                    // Junction midpoint
+                    const junctionX = (parentPoleX + childPoleX) / 2;
+                    const junctionY = (parentPoleY + childPoleY) / 2;
+
+                    // Junction dimensions - a pinched connection
+                    const junctionLength = Math.max(4, Math.abs(
+                        Math.sqrt((childPoleX - parentPoleX) ** 2 + (childPoleY - parentPoleY) ** 2)
+                    ) + 4);
+                    const junctionWidth = Math.min(parent.radius, child.radius) * 0.7;
+
+                    // Angle of junction (along the link direction)
+                    const junctionAngle = Math.atan2(dy, dx);
+
+                    // Draw the junction as a pinched ellipse (shared cell wall)
+                    ctx.save();
+                    ctx.translate(junctionX, junctionY);
+                    ctx.rotate(junctionAngle);
+
+                    // Blend colors from both cells
+                    const parentColor = parent.state === 'dying'
+                        ? `rgb(${{Math.floor(100 + parent.energy)}}, ${{Math.floor((100 + parent.energy) * 0.8)}}, ${{Math.floor((100 + parent.energy) * 0.6)}})`
+                        : getCellColor(parent);
+                    const childColor = child.state === 'dying'
+                        ? `rgb(${{Math.floor(100 + child.energy)}}, ${{Math.floor((100 + child.energy) * 0.8)}}, ${{Math.floor((100 + child.energy) * 0.6)}})`
+                        : getCellColor(child);
+
+                    // Draw junction as gradient between the two cell colors
+                    const gradient = ctx.createLinearGradient(-junctionLength/2, 0, junctionLength/2, 0);
+                    gradient.addColorStop(0, parentColor);
+                    gradient.addColorStop(1, childColor);
+
+                    ctx.globalAlpha = Math.min(parent.opacity, child.opacity) * 0.85;
+                    ctx.fillStyle = gradient;
+
+                    // Draw pinched junction shape (narrower in middle)
                     ctx.beginPath();
-                    ctx.moveTo(link.source.x, link.source.y);
-                    ctx.lineTo(link.target.x, link.target.y);
+                    ctx.ellipse(0, 0, junctionLength / 2, junctionWidth, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Border
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${{Math.min(parent.opacity, child.opacity) * 0.4}})`;
+                    ctx.lineWidth = CONFIG.highPerformance ? 0.5 : 1;
                     ctx.stroke();
+
+                    ctx.restore();
                 }}
             }}
 
