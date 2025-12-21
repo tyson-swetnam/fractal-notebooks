@@ -176,8 +176,14 @@ def main():
 
     status_placeholder = st.empty()
 
-    # Stats display
+    # Stats display with placeholders for in-place updates
     stats_col1, stats_col2, stats_col3 = st.columns(3)
+    with stats_col1:
+        stats_placeholder1 = st.empty()
+    with stats_col2:
+        stats_placeholder2 = st.empty()
+    with stats_col3:
+        stats_placeholder3 = st.empty()
 
     # Animation loop
     if st.session_state.running:
@@ -219,12 +225,9 @@ def main():
             total_nutrients = st.session_state.nutrients.sum()
             colony_radius = np.sqrt(np.sum(st.session_state.bacteria > 0.1) / np.pi)
 
-            with stats_col1:
-                st.metric("Total Bacterial Mass", f"{total_bacteria:.1f}")
-            with stats_col2:
-                st.metric("Remaining Nutrients", f"{total_nutrients:.1f}")
-            with stats_col3:
-                st.metric("Colony Radius (approx)", f"{colony_radius:.1f}")
+            stats_placeholder1.metric("Total Bacterial Mass", f"{total_bacteria:.1f}")
+            stats_placeholder2.metric("Remaining Nutrients", f"{total_nutrients:.1f}")
+            stats_placeholder3.metric("Colony Radius (approx)", f"{colony_radius:.1f}")
 
             status_placeholder.text(f"Running... Step {st.session_state.step_count}")
 
@@ -255,12 +258,9 @@ def main():
         total_nutrients = st.session_state.nutrients.sum()
         colony_radius = np.sqrt(np.sum(st.session_state.bacteria > 0.1) / np.pi)
 
-        with stats_col1:
-            st.metric("Total Bacterial Mass", f"{total_bacteria:.1f}")
-        with stats_col2:
-            st.metric("Remaining Nutrients", f"{total_nutrients:.1f}")
-        with stats_col3:
-            st.metric("Colony Radius (approx)", f"{colony_radius:.1f}")
+        stats_placeholder1.metric("Total Bacterial Mass", f"{total_bacteria:.1f}")
+        stats_placeholder2.metric("Remaining Nutrients", f"{total_nutrients:.1f}")
+        stats_placeholder3.metric("Colony Radius (approx)", f"{colony_radius:.1f}")
 
         status_placeholder.text(f"Paused at step {st.session_state.step_count}. Click Start to continue.")
 
