@@ -17,6 +17,9 @@ st.set_page_config(
 st.title("Yeast Colony Simulation")
 st.markdown("Interactive D3.js force-directed simulation of yeast growth dynamics")
 
+# Create tabs for simulation and documentation
+tab_sim, tab_docs = st.tabs(["Simulation", "Documentation"])
+
 # Sidebar controls
 st.sidebar.header("Simulation Parameters")
 
@@ -910,7 +913,7 @@ def generate_d3_html(
 '''
 
 
-# Generate and display the simulation
+# Generate the simulation HTML
 html_content = generate_d3_html(
     is_snowflake=is_snowflake,
     initial_cells=initial_cells,
@@ -931,7 +934,166 @@ html_content = generate_d3_html(
     high_performance=high_performance
 )
 
-components.html(html_content, height=700, scrolling=False)
+# Simulation tab
+with tab_sim:
+    components.html(html_content, height=700, scrolling=False)
+
+# Documentation tab
+with tab_docs:
+    st.header("How This Simulation Works")
+
+    st.markdown("""
+    This simulation models the growth dynamics of yeast colonies using a **force-directed graph**
+    powered by D3.js. It was inspired by experimental research on the evolution of multicellularity,
+    particularly the "snowflake yeast" experiments from the Ratcliff Lab at Georgia Tech.
+    """)
+
+    st.subheader("Scientific Background")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("""
+        #### The Snowflake Yeast Experiment
+
+        In 2012, researchers led by William Ratcliff demonstrated that unicellular yeast
+        (*Saccharomyces cerevisiae*) could evolve multicellular "snowflake" clusters in just
+        a few weeks under selective pressure. The key discovery:
+
+        - **Selection for settling**: By repeatedly selecting yeast that settled fastest in
+          liquid culture, researchers selected for cells that stayed attached after division
+        - **Polar budding**: Daughter cells bud from the mother's poles (ends), creating
+          branching tree-like structures
+        - **Cell elongation**: Over ~600 generations, cells evolved from spherical to elongated
+          (aspect ratio ~2.7), increasing cluster size
+        - **Programmed cell death**: Central cells undergo apoptosis, allowing branches to
+          separate and reproduce as new clusters
+        """)
+
+    with col2:
+        st.markdown("""
+        #### Normal vs Snowflake Yeast
+
+        **Normal (Separating) Yeast:**
+        - Daughter cells separate from mother after division
+        - Cells diffuse freely through the medium
+        - Standard laboratory yeast behavior
+        - Random budding direction
+
+        **Snowflake (Attached) Yeast:**
+        - Daughter cells remain attached to mother
+        - Forms fractal-like branching clusters
+        - Polar budding (buds emerge from cell poles)
+        - Cells orient along the cluster branch
+        - Represents early multicellularity
+        """)
+
+    st.divider()
+
+    st.subheader("Parameter Reference")
+
+    st.markdown("### Colony Settings")
+    st.markdown("""
+    | Parameter | Description | Scientific Relevance |
+    |-----------|-------------|---------------------|
+    | **Yeast Type** | Normal (separating) or Snowflake (attached) | Models wild-type vs evolved multicellular yeast |
+    | **Initial Cells** | Number of cells at simulation start (1-10) | Represents founding population size |
+    | **Max Cells** | Population cap (50-500) | Simulates resource/space limitations |
+    """)
+
+    st.markdown("### Cell Morphology")
+    st.markdown("""
+    | Parameter | Description | Scientific Relevance |
+    |-----------|-------------|---------------------|
+    | **Aspect Ratio** | Cell elongation (length/width, 1.0-3.0) | Evolved snowflake yeast reach ~2.7; elongation increases cluster size and settling speed |
+    | **Cell Radius** | Base cell size in pixels (5-20) | Affects visual scale; real yeast are ~5 micrometers |
+    """)
+
+    st.markdown("### Cell Dynamics")
+    st.markdown("""
+    | Parameter | Description | Scientific Relevance |
+    |-----------|-------------|---------------------|
+    | **Division Rate** | Probability of division per tick (0.001-0.05) | Yeast divide every ~90 minutes in ideal conditions |
+    | **Bud Angle Deviation** | Deviation from polar axis (0-180 degrees) | Low values (~15 deg) model strict polar budding in snowflake yeast; 180 deg = random budding |
+    | **Brownian Motion** | Random movement strength (0.0-2.0) | Simulates thermal motion in liquid medium; reduced in attached clusters |
+    """)
+
+    st.markdown("### Energy & Death System")
+    st.markdown("""
+    | Parameter | Description | Scientific Relevance |
+    |-----------|-------------|---------------------|
+    | **Enable Cell Death** | Toggle apoptosis simulation | Central cells in real snowflake clusters undergo programmed death |
+    | **Energy Gain Rate** | Energy recovery when uncrowded (0.1-2.0) | Models nutrient/oxygen access in peripheral cells |
+    | **Energy Decay Rate** | Energy loss from crowding/age (0.01-0.5) | Models metabolic stress in cluster interior |
+    | **Death Threshold** | Energy level triggering death (5-30) | Cells die when resources depleted |
+    """)
+
+    st.markdown("### Appearance Options")
+    st.markdown("""
+    | Parameter | Description |
+    |-----------|-------------|
+    | **Color Scheme** | How cells are colored - by generation, age, energy level, or depth |
+    | **Show Energy Bars** | Display health indicator below each cell |
+    | **Show Pole Indicators** | Mark cell poles (budding sites) with white dots |
+    | **High Performance Mode** | Reduce visual effects for smoother performance with many cells |
+    """)
+
+    st.divider()
+
+    st.subheader("Simulation Mechanics")
+
+    st.markdown("""
+    #### Force-Directed Layout (D3.js)
+
+    The simulation uses D3.js force simulation with several interacting forces:
+
+    1. **Collision Force**: Prevents cells from overlapping; respects elliptical cell shapes
+    2. **Center Force**: Gentle pull toward canvas center to keep colony visible
+    3. **Link Force**: Maintains connections between mother-daughter pairs (snowflake mode)
+    4. **Custom Forces**: Boundary constraints and Brownian motion
+
+    #### Cell Life Cycle
+
+    Each cell progresses through states:
+
+    ```
+    Growing -> Mature -> (Dying -> Dead)
+                 |
+                 v
+            Division (creates daughter)
+    ```
+
+    - **Growing**: Cell starts small, expands to full size
+    - **Mature**: Can divide if energy > 50% and hasn't exceeded max buds
+    - **Dying**: Shrinks and fades when energy falls below threshold
+    - **Dead**: Removed from simulation
+
+    #### Polar Budding Mechanism
+
+    In snowflake mode, cells track which poles have been used for budding:
+    - Each cell has two poles (0 and 180 degrees from orientation)
+    - Daughters preferentially bud from unused poles
+    - Creates the characteristic branching pattern
+    - Daughter cells mark their "birth pole" as used (attached to parent)
+    """)
+
+    st.divider()
+
+    st.subheader("Key Research References")
+
+    st.markdown("""
+    1. **Ratcliff, W.C., et al. (2012)**. "Experimental evolution of multicellularity."
+       *PNAS*, 109(5), 1595-1600. [DOI: 10.1073/pnas.1115323109](https://doi.org/10.1073/pnas.1115323109)
+
+    2. **Ratcliff, W.C., et al. (2015)**. "Origins of multicellular evolvability in snowflake yeast."
+       *Nature Communications*, 6, 6102. [DOI: 10.1038/ncomms7102](https://doi.org/10.1038/ncomms7102)
+
+    3. **Pentz, J.T., et al. (2020)**. "Ecological advantages and evolutionary limitations of
+       aggregative multicellular development." *Current Biology*, 30(21), 4155-4164.
+
+    4. **Bozdag, G.O., et al. (2023)**. "De novo evolution of macroscopic multicellularity."
+       *Nature*, 617, 747-754. [DOI: 10.1038/s41586-023-06052-1](https://doi.org/10.1038/s41586-023-06052-1)
+    """)
 
 # Footer
 st.sidebar.markdown("---")
