@@ -62,6 +62,8 @@ color_scheme = st.sidebar.selectbox(
 )
 
 show_energy_bars = st.sidebar.checkbox("Show Energy Bars", value=True)
+show_nuclei = st.sidebar.checkbox("Show Nuclei", value=True,
+    help="Show nucleus in each cell. Click nucleus to view cell details.")
 show_pole_indicators = st.sidebar.checkbox("Show Pole Indicators", value=False)
 high_performance = st.sidebar.checkbox("High Performance Mode", value=False,
     help="Reduces visual effects for smoother performance with many cells")
@@ -116,7 +118,7 @@ st.sidebar.subheader("Simulation Control")
 
 simulation_speed = st.sidebar.slider(
     "Speed",
-    0.1, 3.0, 1.0,
+    0.1, 10.0, 1.0,
     help="Simulation tick multiplier"
 )
 
@@ -137,6 +139,7 @@ def generate_d3_html(
     death_threshold: int,
     color_scheme: str,
     show_energy_bars: bool,
+    show_nuclei: bool,
     show_pole_indicators: bool,
     high_performance: bool
 ) -> str:
@@ -213,6 +216,53 @@ def generate_d3_html(
         .stat-label {{
             color: #aaa;
         }}
+        #cell-popup {{
+            display: none;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.6;
+            min-width: 180px;
+            max-width: 250px;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }}
+        #cell-popup.visible {{
+            display: block;
+        }}
+        #cell-popup h4 {{
+            margin: 0 0 8px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 13px;
+            color: #4fc3f7;
+        }}
+        #cell-popup .popup-row {{
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+        }}
+        #cell-popup .popup-label {{
+            color: #aaa;
+        }}
+        #cell-popup .popup-value {{
+            color: #fff;
+            font-weight: 500;
+        }}
+        #cell-popup .popup-value.good {{
+            color: #4caf50;
+        }}
+        #cell-popup .popup-value.warning {{
+            color: #ff9800;
+        }}
+        #cell-popup .popup-value.danger {{
+            color: #f44336;
+        }}
     </style>
 </head>
 <body>
@@ -231,6 +281,7 @@ def generate_d3_html(
             <button id="reset-btn">Reset</button>
         </div>
         <div id="mode-label">{"Snowflake Yeast (Polar Budding)" if is_snowflake else "Normal Yeast (Separating)"} {"+ Death" if enable_death else ""}</div>
+        <div id="cell-popup"></div>
     </div>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -252,6 +303,7 @@ def generate_d3_html(
             deathThreshold: {death_threshold},
             colorScheme: "{color_scheme}",
             showEnergyBars: {str(show_energy_bars).lower()},
+            showNuclei: {str(show_nuclei).lower()},
             showPoleIndicators: {str(show_pole_indicators).lower()},
             highPerformance: {str(high_performance).lower()}
         }};
@@ -279,26 +331,45 @@ def generate_d3_html(
         // Track used poles for each cell
         const usedPoles = new Map();
 
-        // Color scales for different schemes
-        const colorScales = {{
-            'Generation (Viridis)': d3.scaleSequential(d3.interpolateViridis).domain([0, 10]),
-            'Generation (Plasma)': d3.scaleSequential(d3.interpolatePlasma).domain([0, 10]),
-            'Age (Warm)': d3.scaleSequential(d3.interpolateYlOrBr).domain([0, 500]),
-            'Energy (Health)': d3.scaleSequential(d3.interpolateRdYlGn).domain([0, 100]),
-            'Depth (Cool)': d3.scaleSequential(d3.interpolateCool).domain([0, 10])
+        // Color scale interpolators (domains will be set dynamically)
+        const colorInterpolators = {{
+            'Generation (Viridis)': d3.interpolateViridis,
+            'Generation (Plasma)': d3.interpolatePlasma,
+            'Age (Warm)': d3.interpolateYlOrBr,
+            'Energy (Health)': d3.interpolateRdYlGn,
+            'Depth (Cool)': d3.interpolateCool
         }};
         const energyBarColor = d3.scaleSequential(d3.interpolateRdYlGn).domain([0, 100]);
 
-        // Get cell color based on selected scheme
+        // Get dynamic max values for color scaling
+        function getMaxGeneration() {{
+            const livingCells = nodes.filter(n => n.state !== 'dead');
+            if (livingCells.length === 0) return 1;
+            return Math.max(1, Math.max(...livingCells.map(n => n.generation)));
+        }}
+
+        function getMaxAge() {{
+            const livingCells = nodes.filter(n => n.state !== 'dead');
+            if (livingCells.length === 0) return 1;
+            return Math.max(1, Math.max(...livingCells.map(n => n.age)));
+        }}
+
+        // Get cell color based on selected scheme (dynamic scaling)
         function getCellColor(node) {{
             const scheme = CONFIG.colorScheme;
+            const interpolator = colorInterpolators[scheme];
+
             if (scheme === 'Energy (Health)') {{
-                return colorScales[scheme](node.energy);
+                // Energy is always 0-100
+                return interpolator(node.energy / 100);
             }} else if (scheme === 'Age (Warm)') {{
-                return colorScales[scheme](Math.min(node.age, 500));
+                // Scale age relative to oldest cell
+                const maxAge = getMaxAge();
+                return interpolator(node.age / maxAge);
             }} else {{
-                // Generation-based schemes
-                return colorScales[scheme](Math.min(node.generation, 10));
+                // Generation-based schemes - scale relative to max generation
+                const maxGen = getMaxGeneration();
+                return interpolator(node.generation / maxGen);
             }}
         }}
 
@@ -321,6 +392,7 @@ def generate_d3_html(
                 maxBuds: 4 + Math.floor(Math.random() * 2),
                 state: 'growing',
                 energy: 80 + Math.random() * 20,  // Start with 80-100 energy
+                energyConsumed: 0,  // Track total energy consumed
                 opacity: 1.0,
                 isSnowflake: CONFIG.isSnowflake
             }};
@@ -461,6 +533,7 @@ def generate_d3_html(
             }}
 
             const density = getLocalDensity(cell);
+            const previousEnergy = cell.energy;
 
             // Energy gain when uncrowded
             const spaceBonus = (1 - density) * CONFIG.energyGainRate;
@@ -476,6 +549,12 @@ def generate_d3_html(
 
             // Clamp energy
             cell.energy = Math.max(0, Math.min(100, cell.energy));
+
+            // Track energy consumed (only count losses, not gains)
+            const energyLost = previousEnergy - cell.energy;
+            if (energyLost > 0) {{
+                cell.energyConsumed += energyLost;
+            }}
         }}
 
         // Get available pole for budding
@@ -858,6 +937,42 @@ def generate_d3_html(
                     ctx.fill();
                 }}
 
+                // Nucleus (configurable, clickable)
+                if (CONFIG.showNuclei && node.state !== 'dying') {{
+                    const nucleusRadius = semiMinor * 0.35;
+
+                    // Store nucleus position for click detection (in world coords)
+                    node.nucleusRadius = nucleusRadius;
+
+                    // Nucleus glow
+                    if (!CONFIG.highPerformance) {{
+                        ctx.shadowColor = 'rgba(200, 180, 255, 0.8)';
+                        ctx.shadowBlur = 4;
+                    }}
+
+                    // Draw nucleus as darker ellipse
+                    ctx.globalAlpha = node.opacity * 0.9;
+                    ctx.fillStyle = 'rgba(60, 40, 80, 0.9)';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, nucleusRadius * 1.2, nucleusRadius, 0, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Nucleus membrane
+                    ctx.strokeStyle = 'rgba(180, 160, 220, 0.7)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Nucleolus (small bright spot)
+                    ctx.fillStyle = 'rgba(220, 200, 255, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(nucleusRadius * 0.3, -nucleusRadius * 0.2, nucleusRadius * 0.25, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    if (!CONFIG.highPerformance) {{
+                        ctx.shadowBlur = 0;
+                    }}
+                }}
+
                 ctx.restore();
             }}
         }}
@@ -905,6 +1020,139 @@ def generate_d3_html(
             }}
         }});
 
+        // Popup element
+        const popup = document.getElementById('cell-popup');
+        let popupTimeout = null;
+
+        // Check if click is on a nucleus
+        function findClickedNucleus(mouseX, mouseY) {{
+            for (const node of nodes) {{
+                if (node.state === 'dead' || node.state === 'dying') continue;
+                if (!CONFIG.showNuclei) continue;
+
+                // Transform mouse coords to cell-local coords
+                const dx = mouseX - node.x;
+                const dy = mouseY - node.y;
+
+                // Rotate point back by cell orientation
+                const cos = Math.cos(-node.orientation);
+                const sin = Math.sin(-node.orientation);
+                const localX = dx * cos - dy * sin;
+                const localY = dx * sin + dy * cos;
+
+                // Check if inside nucleus (ellipse with aspect ~1.2)
+                const nucleusRadius = node.nucleusRadius || (node.radius * 0.35);
+                const normX = localX / (nucleusRadius * 1.2);
+                const normY = localY / nucleusRadius;
+
+                if (normX * normX + normY * normY <= 1) {{
+                    return node;
+                }}
+            }}
+            return null;
+        }}
+
+        // Format time from ticks
+        function formatAge(ticks) {{
+            if (ticks < 60) return `${{ticks}} ticks`;
+            if (ticks < 3600) return `${{Math.floor(ticks / 60)}}m ${{ticks % 60}}t`;
+            return `${{Math.floor(ticks / 3600)}}h ${{Math.floor((ticks % 3600) / 60)}}m`;
+        }}
+
+        // Get energy status class
+        function getEnergyClass(energy) {{
+            if (energy >= 70) return 'good';
+            if (energy >= 40) return 'warning';
+            return 'danger';
+        }}
+
+        // Show popup for a cell
+        function showCellPopup(node, mouseX, mouseY) {{
+            const stateLabels = {{
+                'growing': 'Growing',
+                'mature': 'Mature',
+                'dying': 'Dying'
+            }};
+
+            const energyClass = getEnergyClass(node.energy);
+
+            popup.innerHTML = `
+                <h4>Cell #${{node.id}} (Gen ${{node.generation}})</h4>
+                <div class="popup-row">
+                    <span class="popup-label">State:</span>
+                    <span class="popup-value">${{stateLabels[node.state] || node.state}}</span>
+                </div>
+                <div class="popup-row">
+                    <span class="popup-label">Age:</span>
+                    <span class="popup-value">${{formatAge(node.age)}}</span>
+                </div>
+                <div class="popup-row">
+                    <span class="popup-label">Energy:</span>
+                    <span class="popup-value ${{energyClass}}">${{node.energy.toFixed(1)}}%</span>
+                </div>
+                <div class="popup-row">
+                    <span class="popup-label">Energy Used:</span>
+                    <span class="popup-value">${{node.energyConsumed.toFixed(1)}}</span>
+                </div>
+                <div class="popup-row">
+                    <span class="popup-label">Daughters:</span>
+                    <span class="popup-value">${{node.budsProduced}} / ${{node.maxBuds}}</span>
+                </div>
+                <div class="popup-row">
+                    <span class="popup-label">Parent:</span>
+                    <span class="popup-value">${{node.parentId !== null ? '#' + node.parentId : 'None (founder)'}}</span>
+                </div>
+            `;
+
+            // Position popup near click but within bounds
+            let popupX = mouseX + 15;
+            let popupY = mouseY - 10;
+
+            // Adjust if popup would go off-screen
+            const popupWidth = 200;
+            const popupHeight = 180;
+            if (popupX + popupWidth > width) {{
+                popupX = mouseX - popupWidth - 15;
+            }}
+            if (popupY + popupHeight > height) {{
+                popupY = height - popupHeight - 10;
+            }}
+            if (popupY < 10) {{
+                popupY = 10;
+            }}
+
+            popup.style.left = popupX + 'px';
+            popup.style.top = popupY + 'px';
+            popup.classList.add('visible');
+
+            // Auto-hide after 3 seconds
+            if (popupTimeout) clearTimeout(popupTimeout);
+            popupTimeout = setTimeout(() => {{
+                popup.classList.remove('visible');
+            }}, 3000);
+        }}
+
+        // Canvas click handler for nucleus
+        canvas.addEventListener('click', function(e) {{
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const clickedNode = findClickedNucleus(mouseX, mouseY);
+            if (clickedNode) {{
+                showCellPopup(clickedNode, mouseX, mouseY);
+            }} else {{
+                popup.classList.remove('visible');
+            }}
+        }});
+
+        // Hide popup when clicking elsewhere
+        document.addEventListener('click', function(e) {{
+            if (e.target !== canvas) {{
+                popup.classList.remove('visible');
+            }}
+        }});
+
         // Start simulation
         init();
     </script>
@@ -930,6 +1178,7 @@ html_content = generate_d3_html(
     death_threshold=death_threshold,
     color_scheme=color_scheme,
     show_energy_bars=show_energy_bars,
+    show_nuclei=show_nuclei,
     show_pole_indicators=show_pole_indicators,
     high_performance=high_performance
 )
@@ -1032,8 +1281,9 @@ with tab_docs:
     st.markdown("""
     | Parameter | Description |
     |-----------|-------------|
-    | **Color Scheme** | How cells are colored - by generation, age, energy level, or depth |
+    | **Color Scheme** | How cells are colored - by generation, age, energy level, or depth. Colors scale dynamically to the current population range. |
     | **Show Energy Bars** | Display health indicator below each cell |
+    | **Show Nuclei** | Display nucleus in each cell. **Click on a nucleus to view detailed cell statistics** including age, energy, daughter count, and lineage. |
     | **Show Pole Indicators** | Mark cell poles (budding sites) with white dots |
     | **High Performance Mode** | Reduce visual effects for smoother performance with many cells |
     """)
