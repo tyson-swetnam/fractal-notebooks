@@ -2,9 +2,12 @@
 DLA Gallery Render Script
 
 Renders example images for all DLA presets to showcase different growth patterns.
+Uses the actual DLA simulation from dla_blender_setup.py.
 
 Usage:
-    blender -b -P dla_blender_setup.py -P dla_gallery_render.py -- --output /tmp/dla_gallery/
+    blender -b -P dla_gallery_render.py -- --output /tmp/dla_gallery/
+
+Note: This script loads dla_blender_setup.py automatically - do NOT use -P with both scripts.
 
 Author: Claude (fractal-notebooks project)
 """
@@ -14,10 +17,6 @@ import sys
 import os
 import argparse
 from datetime import datetime
-
-
-# Import functions from dla_blender_setup (already loaded via -P)
-# These are available in the global namespace after running dla_blender_setup.py
 
 
 PRESETS = ['classic', 'spiral', 'tree', 'coral', 'vortex', 'turbulent', 'dense', 'sparse']
@@ -32,6 +31,65 @@ PRESET_DESCRIPTIONS = {
     'dense': 'Dense growth with high duplication',
     'sparse': 'Sparse branching with high deletion',
 }
+
+# Preset-specific material colors (RGBA)
+PRESET_COLORS = {
+    'classic': (0.7, 0.75, 0.85, 1.0),   # Cool gray-blue
+    'spiral': (0.2, 0.4, 0.9, 1.0),       # Deep blue
+    'tree': (0.25, 0.65, 0.25, 1.0),      # Forest green
+    'coral': (0.95, 0.35, 0.25, 1.0),     # Coral red
+    'vortex': (0.6, 0.2, 0.85, 1.0),      # Purple
+    'turbulent': (0.95, 0.55, 0.15, 1.0), # Orange
+    'dense': (0.5, 0.5, 0.55, 1.0),       # Gray
+    'sparse': (0.6, 0.85, 0.95, 1.0),     # Light cyan
+}
+
+# Global namespace for dla_blender_setup functions
+dla_funcs = {}
+
+
+def load_dla_setup():
+    """Load dla_blender_setup.py without running main()."""
+    global dla_funcs
+
+    # Find the script path
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    setup_script = os.path.join(script_dir, 'dla_blender_setup.py')
+
+    if not os.path.exists(setup_script):
+        raise FileNotFoundError(f"Cannot find dla_blender_setup.py at {setup_script}")
+
+    print(f"Loading DLA setup from: {setup_script}")
+
+    # Read and execute the script, but override __name__ so main() doesn't run
+    with open(setup_script, 'r') as f:
+        code = f.read()
+
+    # Execute with __name__ set to something other than "__main__"
+    exec(compile(code, setup_script, 'exec'), {'__name__': 'dla_blender_setup', '__file__': setup_script})
+
+    # The functions are now in the local namespace of exec, we need to get them differently
+    # Re-execute but capture the namespace
+    namespace = {'__name__': 'dla_blender_setup', '__file__': setup_script}
+    exec(compile(code, setup_script, 'exec'), namespace)
+
+    # Extract the functions we need
+    dla_funcs['clear_scene'] = namespace.get('clear_scene')
+    dla_funcs['create_seed_geometry'] = namespace.get('create_seed_geometry')
+    dla_funcs['create_dla_material'] = namespace.get('create_dla_material')
+    dla_funcs['create_geometry_nodes_modifier'] = namespace.get('create_geometry_nodes_modifier')
+    dla_funcs['setup_cycles_render'] = namespace.get('setup_cycles_render')
+    dla_funcs['setup_camera_and_lights'] = namespace.get('setup_camera_and_lights')
+    dla_funcs['setup_animation'] = namespace.get('setup_animation')
+    dla_funcs['apply_preset'] = namespace.get('apply_preset')
+    dla_funcs['create_flow_field_presets'] = namespace.get('create_flow_field_presets')
+
+    # Verify all functions loaded
+    missing = [k for k, v in dla_funcs.items() if v is None]
+    if missing:
+        raise RuntimeError(f"Failed to load functions: {missing}")
+
+    print("DLA setup functions loaded successfully")
 
 
 def parse_args():
@@ -56,105 +114,27 @@ def parse_args():
     return parser.parse_args(argv)
 
 
-def get_preset_params(preset_name):
-    """Get parameter dictionary for a preset."""
-    presets = {
-        'classic': {
-            'Step Size': 0.02,
-            'Rotation Rate': 0.0,
-            'Vertical Bias': 0.0,
-            'Radial Force': 0.0,
-            'Flow Scale': 0.0,
-            'Flow Strength': 0.0,
-        },
-        'spiral': {
-            'Step Size': 0.015,
-            'Rotation Rate': 0.05,
-            'Vertical Bias': 0.002,
-            'Radial Force': -0.001,
-            'Flow Scale': 2.0,
-            'Flow Strength': 0.01,
-        },
-        'tree': {
-            'Step Size': 0.02,
-            'Rotation Rate': 0.01,
-            'Vertical Bias': 0.015,
-            'Radial Force': 0.0,
-            'Flow Scale': 3.0,
-            'Flow Strength': 0.005,
-        },
-        'coral': {
-            'Step Size': 0.018,
-            'Rotation Rate': 0.02,
-            'Vertical Bias': 0.005,
-            'Radial Force': 0.005,
-            'Flow Scale': 1.5,
-            'Flow Strength': 0.015,
-        },
-        'vortex': {
-            'Step Size': 0.01,
-            'Rotation Rate': 0.15,
-            'Vertical Bias': 0.0,
-            'Radial Force': -0.01,
-            'Flow Scale': 1.0,
-            'Flow Strength': 0.02,
-        },
-        'turbulent': {
-            'Step Size': 0.025,
-            'Rotation Rate': 0.03,
-            'Vertical Bias': 0.0,
-            'Radial Force': 0.0,
-            'Flow Scale': 0.5,
-            'Flow Strength': 0.04,
-        },
-        'dense': {
-            'Step Size': 0.015,
-            'Rotation Rate': 0.02,
-            'Vertical Bias': 0.003,
-            'Radial Force': -0.002,
-            'Flow Scale': 2.0,
-            'Flow Strength': 0.01,
-        },
-        'sparse': {
-            'Step Size': 0.03,
-            'Rotation Rate': 0.01,
-            'Vertical Bias': 0.01,
-            'Radial Force': 0.003,
-            'Flow Scale': 4.0,
-            'Flow Strength': 0.008,
-        },
-    }
-    return presets.get(preset_name, presets['classic'])
+def set_material_color(obj, color):
+    """Update the DLA material base color."""
+    if not obj.data.materials:
+        return
 
+    mat = obj.data.materials[0]
+    if not mat.use_nodes:
+        return
 
-def apply_preset_to_modifier(obj, preset_name):
-    """Apply preset parameters to the DLA geometry nodes modifier."""
-    params = get_preset_params(preset_name)
-
-    # Find the geometry nodes modifier
-    modifier = None
-    for mod in obj.modifiers:
-        if mod.type == 'NODES' and mod.node_group:
-            modifier = mod
+    # Find Principled BSDF and update colors
+    for node in mat.node_tree.nodes:
+        if node.type == 'BSDF_PRINCIPLED':
+            node.inputs['Base Color'].default_value = color
             break
 
-    if not modifier:
-        print(f"Warning: No geometry nodes modifier found on {obj.name}")
-        return False
-
-    # Apply parameters
-    for param_name, value in params.items():
-        # Find the input socket by name
-        for item in modifier.node_group.interface.items_tree:
-            if item.item_type == 'SOCKET' and item.in_out == 'INPUT':
-                if item.name == param_name:
-                    try:
-                        modifier[item.identifier] = value
-                        print(f"  Set {param_name} = {value}")
-                    except Exception as e:
-                        print(f"  Warning: Could not set {param_name}: {e}")
-
-    return True
+    # Also find and update the emission Mix RGB node if present
+    for node in mat.node_tree.nodes:
+        if node.type == 'MIX_RGB' or (hasattr(node, 'bl_idname') and 'Mix' in node.bl_idname):
+            # This might be the emission color mix
+            if 'B' in node.inputs:
+                node.inputs['B'].default_value = color
 
 
 def setup_render_settings(args):
@@ -192,7 +172,6 @@ def setup_render_settings(args):
                 for device in prefs.devices:
                     device.use = True
                 scene.cycles.device = 'GPU'
-                print(f"Using GPU rendering with {compute_type}")
                 break
             except:
                 continue
@@ -207,234 +186,93 @@ def bake_simulation(end_frame):
     """Bake simulation up to target frame."""
     scene = bpy.context.scene
 
-    # Bake by stepping through frames
-    print(f"Baking simulation to frame {end_frame}...")
+    print(f"  Baking simulation to frame {end_frame}...", end='', flush=True)
     for frame in range(1, end_frame + 1):
         scene.frame_set(frame)
-        if frame % 25 == 0:
-            print(f"  Frame {frame}/{end_frame}")
-
-    print("Simulation bake complete")
+        if frame % 50 == 0:
+            print(f" {frame}", end='', flush=True)
+    print(" done")
 
 
 def render_preset(preset_name, output_dir, args):
-    """Render a single preset."""
+    """Render a single preset using the full DLA simulation."""
     print(f"\n{'='*60}")
-    print(f"Rendering preset: {preset_name}")
-    print(f"Description: {PRESET_DESCRIPTIONS.get(preset_name, 'N/A')}")
+    print(f"Preset: {preset_name}")
+    print(f"  {PRESET_DESCRIPTIONS.get(preset_name, 'N/A')}")
     print(f"{'='*60}")
 
-    # Clear scene
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+    # Get functions from dla_funcs
+    clear_scene = dla_funcs['clear_scene']
+    create_seed_geometry = dla_funcs['create_seed_geometry']
+    create_dla_material = dla_funcs['create_dla_material']
+    create_geometry_nodes_modifier = dla_funcs['create_geometry_nodes_modifier']
+    setup_camera_and_lights = dla_funcs['setup_camera_and_lights']
+    setup_animation = dla_funcs['setup_animation']
+    apply_preset = dla_funcs['apply_preset']
 
-    # Import and run the setup script's main function
-    # Since dla_blender_setup.py was loaded with -P, its functions are in globals
-    # We need to recreate the scene for each preset
+    # Clear and create fresh scene
+    print("  Setting up scene...")
+    clear_scene()
 
-    # Create basic scene elements manually
-    scene = bpy.context.scene
-
-    # Create seed point cloud
-    mesh = bpy.data.meshes.new("DLA_Seed_Mesh")
-    import mathutils
-    mesh.from_pydata([(0, 0, 0)], [], [])
-    mesh.update()
-
-    seed = bpy.data.objects.new("DLA_Seed", mesh)
-    bpy.context.collection.objects.link(seed)
-
-    # Convert to point cloud
-    bpy.context.view_layer.objects.active = seed
-    seed.select_set(True)
-
-    # Add geometry nodes modifier
-    modifier = seed.modifiers.new(name="DLA_Simulation", type='NODES')
-
-    # Create new node group
-    node_group = bpy.data.node_groups.new('DLA_Geometry_Nodes', 'GeometryNodeTree')
-
-    # Create interface sockets
-    node_group.interface.new_socket('Geometry', in_out='INPUT', socket_type='NodeSocketGeometry')
-    node_group.interface.new_socket('Geometry', in_out='OUTPUT', socket_type='NodeSocketGeometry')
-
-    # Add parameter inputs
-    params = [
-        ('Initial Particles', 'NodeSocketInt', 5000),
-        ('Step Size', 'NodeSocketFloat', 0.02),
-        ('Contact Radius', 'NodeSocketFloat', 0.03),
-        ('Rotation Rate', 'NodeSocketFloat', 0.0),
-        ('Vertical Bias', 'NodeSocketFloat', 0.0),
-        ('Radial Force', 'NodeSocketFloat', 0.0),
-        ('Flow Scale', 'NodeSocketFloat', 2.0),
-        ('Flow Strength', 'NodeSocketFloat', 0.01),
-    ]
-
-    for name, socket_type, default in params:
-        socket = node_group.interface.new_socket(name, in_out='INPUT', socket_type=socket_type)
-        socket.default_value = default
-
-    # Create nodes
-    nodes = node_group.nodes
-    links = node_group.links
-
-    # Group input/output
-    group_input = nodes.new('NodeGroupInput')
-    group_input.location = (-800, 0)
-    group_output = nodes.new('NodeGroupOutput')
-    group_output.location = (800, 0)
-
-    # Mesh to Points
-    mesh_to_points = nodes.new('GeometryNodeMeshToPoints')
-    mesh_to_points.location = (-600, 0)
-
-    # Points node for particle distribution
-    distribute = nodes.new('GeometryNodeDistributePointsOnFaces')
-    distribute.location = (-400, 0)
-    distribute.distribute_method = 'RANDOM'
-
-    # Create an icosphere for better distribution
-    ico = nodes.new('GeometryNodeMeshIcoSphere')
-    ico.location = (-600, 200)
-    ico.inputs['Radius'].default_value = 0.5
-    ico.inputs['Subdivisions'].default_value = 3
-
-    # Simulation zone
-    sim_output = nodes.new('GeometryNodeSimulationOutput')
-    sim_output.location = (400, 0)
-    sim_input = nodes.new('GeometryNodeSimulationInput')
-    sim_input.location = (-200, 0)
-    sim_input.pair_with_output(sim_output)
-
-    # Set Point Radius for visualization
-    set_radius = nodes.new('GeometryNodeSetPointRadius')
-    set_radius.location = (600, 0)
-    set_radius.inputs['Radius'].default_value = 0.015
-
-    # Join geometry (ico + input)
-    join = nodes.new('GeometryNodeJoinGeometry')
-    join.location = (0, 0)
-
-    # Connect nodes
-    links.new(ico.outputs['Mesh'], distribute.inputs['Mesh'])
-    links.new(group_input.outputs['Initial Particles'], distribute.inputs['Density'])
-    links.new(distribute.outputs['Points'], join.inputs['Geometry'])
-    links.new(group_input.outputs['Geometry'], mesh_to_points.inputs['Mesh'])
-    links.new(mesh_to_points.outputs['Points'], join.inputs['Geometry'])
-    links.new(join.outputs['Geometry'], sim_input.inputs['Geometry'])
-    links.new(sim_input.outputs['Geometry'], sim_output.inputs['Geometry'])
-    links.new(sim_output.outputs['Geometry'], set_radius.inputs['Points'])
-    links.new(set_radius.outputs['Points'], group_output.inputs['Geometry'])
-
-    # Assign node group to modifier
-    modifier.node_group = node_group
-
-    # Apply preset parameters
-    print(f"Applying preset parameters for {preset_name}...")
-    preset_params = get_preset_params(preset_name)
-    for param_name, value in preset_params.items():
-        for item in node_group.interface.items_tree:
-            if item.item_type == 'SOCKET' and item.in_out == 'INPUT':
-                if item.name == param_name:
-                    try:
-                        modifier[item.identifier] = value
-                        print(f"  {param_name} = {value}")
-                    except:
-                        pass
+    # Create seed geometry
+    seed = create_seed_geometry()
 
     # Create material
-    mat = bpy.data.materials.new(name="DLA_Material")
-    mat.use_nodes = True
-    mat_nodes = mat.node_tree.nodes
-    mat_links = mat.node_tree.links
+    material = create_dla_material()
+    seed.data.materials.append(material)
 
-    # Clear default nodes
-    mat_nodes.clear()
+    # Create geometry nodes with simulation
+    create_geometry_nodes_modifier(seed)
 
-    # Create material nodes
-    output = mat_nodes.new('ShaderNodeOutputMaterial')
-    output.location = (400, 0)
+    # Apply the preset BEFORE baking
+    print(f"  Applying preset parameters...")
+    apply_preset(seed, preset_name)
 
-    principled = mat_nodes.new('ShaderNodeBsdfPrincipled')
-    principled.location = (0, 0)
+    # Set preset-specific color
+    color = PRESET_COLORS.get(preset_name, (0.8, 0.8, 0.8, 1.0))
+    set_material_color(seed, color)
 
-    # Set color based on preset
-    preset_colors = {
-        'classic': (0.8, 0.8, 0.9, 1.0),
-        'spiral': (0.2, 0.5, 0.9, 1.0),
-        'tree': (0.3, 0.7, 0.3, 1.0),
-        'coral': (0.9, 0.4, 0.3, 1.0),
-        'vortex': (0.6, 0.2, 0.8, 1.0),
-        'turbulent': (0.9, 0.6, 0.2, 1.0),
-        'dense': (0.4, 0.4, 0.5, 1.0),
-        'sparse': (0.7, 0.9, 0.95, 1.0),
-    }
-    color = preset_colors.get(preset_name, (0.8, 0.8, 0.8, 1.0))
-    principled.inputs['Base Color'].default_value = color
-    principled.inputs['Metallic'].default_value = 0.3
-    principled.inputs['Roughness'].default_value = 0.4
+    # Setup camera and lights
+    setup_camera_and_lights()
 
-    mat_links.new(principled.outputs['BSDF'], output.inputs['Surface'])
+    # Setup animation
+    setup_animation()
 
-    # Assign material
-    seed.data.materials.append(mat)
-
-    # Setup camera
-    cam_data = bpy.data.cameras.new("Camera")
-    cam = bpy.data.objects.new("Camera", cam_data)
-    bpy.context.collection.objects.link(cam)
-    scene.camera = cam
-    cam.location = (3, -3, 2)
-    cam.rotation_euler = (1.1, 0, 0.8)
-
-    # Setup lights
-    light_data = bpy.data.lights.new("Key_Light", type='AREA')
-    light_data.energy = 500
-    light_data.size = 3
-    key_light = bpy.data.objects.new("Key_Light", light_data)
-    bpy.context.collection.objects.link(key_light)
-    key_light.location = (3, -2, 4)
-    key_light.rotation_euler = (0.5, 0.3, 0)
-
-    fill_data = bpy.data.lights.new("Fill_Light", type='AREA')
-    fill_data.energy = 200
-    fill_data.size = 2
-    fill_light = bpy.data.objects.new("Fill_Light", fill_data)
-    bpy.context.collection.objects.link(fill_light)
-    fill_light.location = (-2, -3, 2)
-
-    # Set world background
-    world = bpy.data.worlds.new("World")
-    scene.world = world
-    world.use_nodes = True
-    bg = world.node_tree.nodes['Background']
-    bg.inputs['Color'].default_value = (0.02, 0.02, 0.03, 1.0)
-
-    # Configure animation
-    scene.frame_start = 1
-    scene.frame_end = 250
-
-    # Setup render settings
+    # Setup rendering with our settings
     setup_render_settings(args)
 
-    # Bake simulation
+    # Bake simulation to target frame
     bake_simulation(args.frame)
 
-    # Set to target frame
+    # Set to target frame for render
+    scene = bpy.context.scene
     scene.frame_set(args.frame)
 
     # Render
     output_path = os.path.join(output_dir, f"dla_{preset_name}.png")
     scene.render.filepath = output_path
 
-    print(f"Rendering to {output_path}...")
+    print(f"  Rendering...", end='', flush=True)
     bpy.ops.render.render(write_still=True)
-    print(f"Saved: {output_path}")
+    print(f" saved to {output_path}")
 
     return output_path
 
 
 def main():
     args = parse_args()
+
+    print("=" * 60)
+    print("DLA Gallery Renderer")
+    print(f"Started: {datetime.now().isoformat()}")
+    print("=" * 60)
+
+    # Load dla_blender_setup.py functions
+    try:
+        load_dla_setup()
+    except Exception as e:
+        print(f"\nERROR: {e}")
+        return
 
     # Create output directory
     os.makedirs(args.output, exist_ok=True)
@@ -445,24 +283,23 @@ def main():
     else:
         presets_to_render = PRESETS
 
-    print("=" * 60)
-    print("DLA Gallery Renderer")
-    print(f"Started: {datetime.now().isoformat()}")
-    print(f"Output directory: {args.output}")
-    print(f"Frame: {args.frame}")
+    print(f"\nOutput: {args.output}")
+    print(f"Frame: {args.frame}, Samples: {args.samples}")
     print(f"Presets: {', '.join(presets_to_render)}")
-    print("=" * 60)
 
     rendered = []
 
-    for preset in presets_to_render:
+    for i, preset in enumerate(presets_to_render):
         if preset not in PRESETS:
             print(f"Warning: Unknown preset '{preset}', skipping")
             continue
 
+        print(f"\n[{i+1}/{len(presets_to_render)}] ", end='')
+
         try:
             output_path = render_preset(preset, args.output, args)
-            rendered.append((preset, output_path))
+            if output_path:
+                rendered.append((preset, output_path))
         except Exception as e:
             print(f"Error rendering {preset}: {e}")
             import traceback
@@ -470,11 +307,10 @@ def main():
 
     # Summary
     print("\n" + "=" * 60)
-    print("Gallery Render Complete!")
+    print("Gallery Complete!")
     print(f"Finished: {datetime.now().isoformat()}")
-    print(f"Rendered {len(rendered)} presets:")
-    for preset, path in rendered:
-        print(f"  - {preset}: {path}")
+    print(f"Rendered {len(rendered)}/{len(presets_to_render)} presets")
+    print(f"Output: {args.output}")
     print("=" * 60)
 
 
