@@ -8,12 +8,14 @@
 - **Phase 3**: Flow field dynamics for artistic growth patterns
 - **Phase 4**: Particle management with stochastic deletion, duplication, and memory limits
 - **Phase 5**: Material & rendering with growth tip emission, ambient occlusion, GPU performance testing
+- **Phase 7**: Advanced features (multi-seed growth, animated flow fields, collision detection)
 
 ## Files
 
 | File | Description |
 |------|-------------|
 | `dla_blender_setup.py` | Main setup script - creates DLA geometry nodes simulation |
+| `dla_advanced_features.py` | Phase 7 advanced features (multi-seed, animated flow, etc.) |
 | `dla_export.py` | Export point clouds to NumPy, PLY, OBJ, CSV formats |
 | `dla_batch_render.py` | Headless batch rendering for automation |
 | `dla_example_renders.py` | Generate gallery of example renders and animations |
@@ -276,6 +278,86 @@ The simulation automatically prevents memory exhaustion:
 - Branching dendritic structure growing from seed
 - Timepoint coloring shows growth progression
 - Flow field creates artistic patterns (spirals, trees, corals)
+
+## Advanced Features (Phase 7)
+
+After running the basic setup, use `dla_advanced_features.py` for advanced capabilities.
+
+### Multi-Seed Growth
+
+Create multiple competing DLA structures:
+
+```python
+import dla_advanced_features as adv
+
+# Create 4 seeds in a circle arrangement
+adv.create_multi_seed_dla(num_seeds=4, seed_radius=2.0, seed_arrangement='circle')
+
+# Available arrangements:
+# circle, line, random, grid, spiral, vertical, tetrahedron
+```
+
+### Animated Flow Fields
+
+Make flow field parameters animate over time:
+
+```python
+obj = bpy.data.objects['DLA_Seed']
+
+# Apply animation type
+adv.setup_animated_flow_field(obj, animation_type='rotation_sweep')
+
+# Available animations:
+# rotation_sweep   - Rotation sweeps from CCW to CW
+# pulsing_radial   - Radial force pulses in/out
+# wandering_bias   - Vertical bias wanders randomly
+# turbulence_wave  - Flow noise oscillates and builds
+# full_cycle       - All parameters animate together
+# breathing        - Organic breathing-like motion
+```
+
+### Collision Boundaries
+
+Create boundaries that constrain growth:
+
+```python
+# Create spherical boundary
+boundary = adv.create_collision_boundary(shape='sphere', size=3.0)
+
+# Available shapes: sphere, cube, cylinder, plane
+```
+
+### Viewport Optimization
+
+Optimize for real-time preview performance:
+
+```python
+# Set quality level
+adv.optimize_viewport_performance(obj, quality_level='medium')
+
+# Levels:
+# low    - Max performance, 10k particles, solid shading
+# medium - Balanced, 30k particles, material preview
+# high   - Best quality, 100k particles
+
+# Enable viewport denoising
+adv.enable_viewport_denoising(True)
+```
+
+### Advanced Presets
+
+Combined presets for complex effects:
+
+```python
+# Apply advanced preset
+adv.apply_advanced_preset(obj, 'galaxy')
+
+# Available presets:
+# galaxy     - Multi-seed spiral with animated rotation
+# forest     - Multiple tree-like growths
+# coral_reef - Competing coral structures
+# storm      - Turbulent animated flow field
+```
 
 ## Troubleshooting
 

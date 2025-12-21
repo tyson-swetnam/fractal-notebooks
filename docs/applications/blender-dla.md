@@ -219,6 +219,49 @@ blender -b -P dla_blender_setup.py -P dla_batch_render.py -- \
 2. **Increase Deletion Probability** to keep particle count stable
 3. **Decrease Boundary Radius** to remove wandering particles
 
+## Advanced Features (Phase 7)
+
+After basic setup, use `dla_advanced_features.py` for advanced capabilities:
+
+### Multi-Seed Growth
+
+```python
+import dla_advanced_features as adv
+
+# Create multiple competing DLA structures
+adv.create_multi_seed_dla(num_seeds=4, seed_arrangement='circle')
+
+# Arrangements: circle, line, random, grid, spiral, vertical, tetrahedron
+```
+
+### Animated Flow Fields
+
+```python
+# Apply animated flow field
+adv.setup_animated_flow_field(obj, animation_type='rotation_sweep')
+
+# Types: rotation_sweep, pulsing_radial, wandering_bias,
+#        turbulence_wave, full_cycle, breathing
+```
+
+### Viewport Optimization
+
+```python
+# Optimize for real-time preview
+adv.optimize_viewport_performance(obj, quality_level='medium')
+
+# Levels: low (10k particles), medium (30k), high (100k)
+```
+
+### Advanced Presets
+
+```python
+# Combined presets for complex effects
+adv.apply_advanced_preset(obj, 'galaxy')
+
+# Presets: galaxy, forest, coral_reef, storm
+```
+
 ## References
 
 - [BlenderArtists: Exploring DLA in Geometry Nodes](https://blenderartists.org/t/exploring-diffusion-limited-aggregation-in-geometry-nodes/1589322)
