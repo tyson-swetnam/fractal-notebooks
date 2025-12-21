@@ -523,11 +523,11 @@ print(f"Estimated fractal dimension: {dimension:.3f}")
 - [x] Add radial expansion/contraction controls
 - [x] Expose parameters to geometry node interface
 
-### Phase 4: Particle Management
-- [ ] Implement stochastic deletion
-- [ ] Implement particle duplication
-- [ ] Add particle count monitoring
-- [ ] Optimize sampling performance
+### Phase 4: Particle Management ✅
+- [x] Implement stochastic deletion
+- [x] Implement particle duplication
+- [x] Add particle count monitoring
+- [x] Optimize sampling performance
 
 ### Phase 5: Material & Rendering (Partial)
 - [x] Create timepoint-based color ramp material

@@ -7,6 +7,7 @@ using Blender's Geometry Nodes and prepares it for Cycles rendering.
 Features:
 - Phase 2: Basic DLA simulation with brownian motion and contact detection
 - Phase 3: Flow field dynamics with spiral rotation, vertical bias, radial forces
+- Phase 4: Particle management with stochastic deletion, duplication, and count limits
 
 Usage:
     1. Open Blender 4.2+
@@ -18,7 +19,7 @@ Based on techniques from the BlenderArtists DLA exploration thread.
 
 Author: Claude (fractal-notebooks project)
 Created: 2025-12-21
-Updated: 2025-12-21 (Phase 3: Flow Field Enhancement)
+Updated: 2025-12-21 (Phase 4: Particle Management)
 """
 
 import bpy
@@ -121,11 +122,10 @@ def create_geometry_nodes_modifier(obj):
     """
     Create and configure the Geometry Nodes modifier for DLA simulation.
 
-    Includes Phase 3 Flow Field Enhancement:
-    - 3D noise texture for large-scale structure
-    - Z-axis rotation for spiral patterns
-    - Vertical growth bias
-    - Radial expansion/contraction controls
+    Includes:
+    - Phase 2: Basic DLA with brownian motion and contact detection
+    - Phase 3: Flow field enhancement with rotation, vertical bias, radial force
+    - Phase 4: Particle management with deletion, duplication, and limits
     """
     # Add geometry nodes modifier
     modifier = obj.modifiers.new(name="DLA_Simulation", type='NODES')
@@ -158,6 +158,12 @@ def create_geometry_nodes_modifier(obj):
     node_group.interface.new_socket(name="Spawn Radius", in_out='INPUT', socket_type='NodeSocketFloat')
     node_group.interface.new_socket(name="Spawn Rate", in_out='INPUT', socket_type='NodeSocketInt')
 
+    # Particle Management parameters (Phase 4)
+    node_group.interface.new_socket(name="Deletion Probability", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Duplication Probability", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Max Active Particles", in_out='INPUT', socket_type='NodeSocketInt')
+    node_group.interface.new_socket(name="Boundary Radius", in_out='INPUT', socket_type='NodeSocketFloat')
+
     # Set default values - indexed by socket order
     # Socket_2 = Initial Particles, Socket_3 = Step Size, etc.
     modifier["Socket_2"] = 5000       # Initial Particles
@@ -172,70 +178,75 @@ def create_geometry_nodes_modifier(obj):
     modifier["Socket_11"] = 0.03      # Flow Noise Strength
     modifier["Socket_12"] = 2.0       # Spawn Radius
     modifier["Socket_13"] = 100       # Spawn Rate
+    # Phase 4 parameters
+    modifier["Socket_14"] = 0.01      # Deletion Probability (1% per frame)
+    modifier["Socket_15"] = 0.005     # Duplication Probability (0.5% per frame)
+    modifier["Socket_16"] = 50000     # Max Active Particles
+    modifier["Socket_17"] = 5.0       # Boundary Radius (delete particles beyond this)
 
     # Create nodes
     group_input = nodes.new('NodeGroupInput')
-    group_input.location = (-2000, 0)
+    group_input.location = (-2200, 0)
 
     group_output = nodes.new('NodeGroupOutput')
-    group_output.location = (1600, 0)
+    group_output.location = (2000, 0)
 
     # ========== INITIALIZATION SECTION ==========
 
     # Distribute points on the seed mesh
     distribute = nodes.new('GeometryNodeDistributePointsOnFaces')
-    distribute.location = (-1600, 100)
+    distribute.location = (-1800, 100)
     distribute.distribute_method = 'RANDOM'
 
     # Merge by distance to create initial structure
     merge_init = nodes.new('GeometryNodeMergeByDistance')
-    merge_init.location = (-1400, 100)
+    merge_init.location = (-1600, 100)
     merge_init.inputs['Distance'].default_value = 0.01
 
     # Capture initial attributes
     # Random color attribute
     random_val = nodes.new('FunctionNodeRandomValue')
-    random_val.location = (-1600, -150)
+    random_val.location = (-1800, -150)
     random_val.data_type = 'FLOAT'
 
     # Store attribute: color
     store_color = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_color.location = (-1200, 100)
+    store_color.location = (-1400, 100)
     store_color.data_type = 'FLOAT'
     store_color.domain = 'POINT'
     store_color.inputs['Name'].default_value = "color_seed"
 
     # Frame counter for timepoint
     scene_time = nodes.new('GeometryNodeInputSceneTime')
-    scene_time.location = (-1600, -300)
+    scene_time.location = (-1800, -300)
 
     # Store attribute: timepoint
     store_timepoint = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_timepoint.location = (-1000, 100)
+    store_timepoint.location = (-1200, 100)
     store_timepoint.data_type = 'FLOAT'
     store_timepoint.domain = 'POINT'
     store_timepoint.inputs['Name'].default_value = "timepoint"
 
     # Store attribute: active flag (0 = fixed structure, 1 = moving particle)
     store_active = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_active.location = (-800, 100)
+    store_active.location = (-1000, 100)
     store_active.data_type = 'BOOLEAN'
     store_active.domain = 'POINT'
     store_active.inputs['Name'].default_value = "active"
 
     # Create boolean false for initial particles (they start as structure)
     bool_false = nodes.new('FunctionNodeInputBool')
-    bool_false.location = (-1000, -100)
+    bool_false.location = (-1200, -100)
     bool_false.boolean = False  # Initial seed is fixed structure
 
     # ========== SIMULATION ZONE ==========
 
     # Simulation input/output
     sim_input = nodes.new('GeometryNodeSimulationInput')
-    sim_input.location = (-600, 0)
+    sim_input.location = (-800, 0)
 
     sim_output = nodes.new('GeometryNodeSimulationOutput')
-    sim_output.location = (1400, 0)
+    sim_output.location = (1800, 0)
 
     # Link simulation zones
     sim_output.pair_with_input(sim_input)
@@ -244,13 +255,28 @@ def create_geometry_nodes_modifier(obj):
 
     # Separate active from fixed particles
     named_attr_active = nodes.new('GeometryNodeInputNamedAttribute')
-    named_attr_active.location = (-400, -200)
+    named_attr_active.location = (-600, -200)
     named_attr_active.data_type = 'BOOLEAN'
     named_attr_active.inputs['Name'].default_value = "active"
 
     separate = nodes.new('GeometryNodeSeparateGeometry')
-    separate.location = (-200, 0)
+    separate.location = (-400, 0)
     separate.domain = 'POINT'
+
+    # ========== PHASE 4: PARTICLE COUNT MONITORING ==========
+    # Count active particles and compare to max
+
+    # Domain Size node to count active particles
+    domain_size_active = nodes.new('GeometryNodeAttributeDomainSize')
+    domain_size_active.location = (-200, 400)
+    domain_size_active.component = 'POINTCLOUD'
+
+    # Compare count to max
+    compare_count = nodes.new('FunctionNodeCompare')
+    compare_count.location = (0, 400)
+    compare_count.data_type = 'INT'
+    compare_count.operation = 'LESS_THAN'
+    compare_count.label = "Below Max?"
 
     # ========== FLOW FIELD COMPUTATION (Phase 3) ==========
     # Build the combined flow field displacement vector
@@ -366,6 +392,95 @@ def create_geometry_nodes_modifier(obj):
     set_position = nodes.new('GeometryNodeSetPosition')
     set_position.location = (800, 0)
 
+    # ========== PHASE 4: STOCHASTIC DELETION ==========
+    # Delete some active particles randomly to prevent memory overflow
+
+    # Random value for deletion decision
+    random_delete = nodes.new('FunctionNodeRandomValue')
+    random_delete.location = (900, -200)
+    random_delete.data_type = 'FLOAT'
+    random_delete.inputs['Min'].default_value = 0.0
+    random_delete.inputs['Max'].default_value = 1.0
+
+    # Compare random value to deletion probability
+    compare_delete = nodes.new('FunctionNodeCompare')
+    compare_delete.location = (1100, -200)
+    compare_delete.data_type = 'FLOAT'
+    compare_delete.operation = 'GREATER_THAN'
+    compare_delete.label = "Keep Particle?"
+
+    # ========== PHASE 4: BOUNDARY DELETION ==========
+    # Delete particles that go too far from center
+
+    # Get position for boundary check
+    position_boundary = nodes.new('GeometryNodeInputPosition')
+    position_boundary.location = (900, -350)
+
+    # Calculate distance from origin (length of position vector)
+    distance_from_origin = nodes.new('ShaderNodeVectorMath')
+    distance_from_origin.location = (1100, -350)
+    distance_from_origin.operation = 'LENGTH'
+    distance_from_origin.label = "Distance from Center"
+
+    # Compare distance to boundary radius
+    compare_boundary = nodes.new('FunctionNodeCompare')
+    compare_boundary.location = (1300, -350)
+    compare_boundary.data_type = 'FLOAT'
+    compare_boundary.operation = 'LESS_THAN'
+    compare_boundary.label = "Within Boundary?"
+
+    # Combine deletion conditions: keep if (random > delete_prob) AND (within boundary)
+    and_keep = nodes.new('FunctionNodeBooleanMath')
+    and_keep.location = (1400, -250)
+    and_keep.operation = 'AND'
+    and_keep.label = "Keep Conditions"
+
+    # Delete geometry based on combined selection
+    delete_particles = nodes.new('GeometryNodeDeleteGeometry')
+    delete_particles.location = (1000, 0)
+    delete_particles.domain = 'POINT'
+    delete_particles.mode = 'ALL'
+
+    # NOT gate to invert selection (delete where keep=False)
+    not_keep = nodes.new('FunctionNodeBooleanMath')
+    not_keep.location = (1500, -250)
+    not_keep.operation = 'NOT'
+    not_keep.label = "Delete Selection"
+
+    # ========== PHASE 4: PARTICLE DUPLICATION ==========
+    # Duplicate some particles to create denser growth at branch tips
+
+    # Random value for duplication decision
+    random_duplicate = nodes.new('FunctionNodeRandomValue')
+    random_duplicate.location = (1100, -500)
+    random_duplicate.data_type = 'FLOAT'
+    random_duplicate.inputs['Min'].default_value = 0.0
+    random_duplicate.inputs['Max'].default_value = 1.0
+
+    # Compare random value to duplication probability
+    compare_duplicate = nodes.new('FunctionNodeCompare')
+    compare_duplicate.location = (1300, -500)
+    compare_duplicate.data_type = 'FLOAT'
+    compare_duplicate.operation = 'LESS_THAN'
+    compare_duplicate.label = "Duplicate?"
+
+    # Duplicate Elements node
+    duplicate = nodes.new('GeometryNodeDuplicateElements')
+    duplicate.location = (1200, 0)
+    duplicate.domain = 'POINT'
+
+    # Convert boolean to integer for amount (1 if duplicate, 0 if not)
+    bool_to_int = nodes.new('FunctionNodeBooleanMath')
+    bool_to_int.location = (1450, -500)
+    bool_to_int.operation = 'AND'  # Will use this as passthrough
+
+    # Switch for duplication amount: 0 or 1
+    switch_amount = nodes.new('GeometryNodeSwitch')
+    switch_amount.location = (1500, -450)
+    switch_amount.input_type = 'INT'
+    switch_amount.inputs['False'].default_value = 0
+    switch_amount.inputs['True'].default_value = 1
+
     # ========== CONTACT DETECTION ==========
 
     # Sample nearest from fixed structure
@@ -396,7 +511,7 @@ def create_geometry_nodes_modifier(obj):
 
     # Update active attribute based on contact
     store_active_update = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_active_update.location = (1100, 0)
+    store_active_update.location = (1400, 0)
     store_active_update.data_type = 'BOOLEAN'
     store_active_update.domain = 'POINT'
     store_active_update.inputs['Name'].default_value = "active"
@@ -422,6 +537,13 @@ def create_geometry_nodes_modifier(obj):
     # Points node for spawning new particles
     spawn_points = nodes.new('GeometryNodePoints')
     spawn_points.location = (0, -1400)
+
+    # PHASE 4: Conditional spawn based on particle count
+    # Switch spawn count: 0 if at max, spawn_rate if below
+    switch_spawn = nodes.new('GeometryNodeSwitch')
+    switch_spawn.location = (200, 400)
+    switch_spawn.input_type = 'INT'
+    switch_spawn.inputs['False'].default_value = 0  # Don't spawn if at max
 
     # Set random position for new particles (on a sphere shell)
     random_pos = nodes.new('FunctionNodeRandomValue')
@@ -466,7 +588,7 @@ def create_geometry_nodes_modifier(obj):
 
     # Join all geometry: fixed + updated active + newly spawned
     join = nodes.new('GeometryNodeJoinGeometry')
-    join.location = (1300, 0)
+    join.location = (1600, 0)
 
     # ========== LINKING SECTION ==========
 
@@ -494,6 +616,16 @@ def create_geometry_nodes_modifier(obj):
     # Separate active from fixed
     links.new(sim_input.outputs['Geometry'], separate.inputs['Geometry'])
     links.new(named_attr_active.outputs['Attribute'], separate.inputs['Selection'])
+
+    # --- Phase 4: Particle Count Monitoring ---
+    links.new(separate.outputs['Selection'], domain_size_active.inputs['Geometry'])
+    links.new(domain_size_active.outputs['Point Count'], compare_count.inputs['A'])
+    links.new(group_input.outputs['Max Active Particles'], compare_count.inputs['B'])
+
+    # Conditional spawn based on count
+    links.new(compare_count.outputs['Result'], switch_spawn.inputs['Switch'])
+    links.new(group_input.outputs['Spawn Rate'], switch_spawn.inputs['True'])
+    links.new(switch_spawn.outputs['Output'], spawn_points.inputs['Count'])
 
     # --- Flow Field Component Links (Phase 3) ---
 
@@ -541,15 +673,42 @@ def create_geometry_nodes_modifier(obj):
     links.new(add_flow_final.outputs['Vector'], new_position.inputs[1])
     links.new(new_position.outputs['Vector'], set_position.inputs['Position'])
 
+    # --- Phase 4: Stochastic Deletion Links ---
+    links.new(random_delete.outputs['Value'], compare_delete.inputs['A'])
+    links.new(group_input.outputs['Deletion Probability'], compare_delete.inputs['B'])
+
+    # Boundary deletion
+    links.new(position_boundary.outputs['Position'], distance_from_origin.inputs[0])
+    links.new(distance_from_origin.outputs['Value'], compare_boundary.inputs['A'])
+    links.new(group_input.outputs['Boundary Radius'], compare_boundary.inputs['B'])
+
+    # Combine keep conditions
+    links.new(compare_delete.outputs['Result'], and_keep.inputs[0])
+    links.new(compare_boundary.outputs['Result'], and_keep.inputs[1])
+
+    # Invert for delete selection
+    links.new(and_keep.outputs['Boolean'], not_keep.inputs[0])
+
+    # Apply deletion to positioned geometry
+    links.new(set_position.outputs['Geometry'], delete_particles.inputs['Geometry'])
+    links.new(not_keep.outputs['Boolean'], delete_particles.inputs['Selection'])
+
+    # --- Phase 4: Duplication Links ---
+    links.new(random_duplicate.outputs['Value'], compare_duplicate.inputs['A'])
+    links.new(group_input.outputs['Duplication Probability'], compare_duplicate.inputs['B'])
+    links.new(compare_duplicate.outputs['Result'], switch_amount.inputs['Switch'])
+    links.new(delete_particles.outputs['Geometry'], duplicate.inputs['Geometry'])
+    links.new(switch_amount.outputs['Output'], duplicate.inputs['Amount'])
+
     # --- Contact Detection Links ---
     links.new(separate.outputs['Inverted'], sample_nearest.inputs['Geometry'])
-    links.new(set_position.outputs['Geometry'], sample_nearest.inputs['Sample Position'])
+    links.new(duplicate.outputs['Geometry'], sample_nearest.inputs['Sample Position'])
 
     links.new(separate.outputs['Inverted'], sample_index.inputs['Geometry'])
     links.new(sample_nearest.outputs['Index'], sample_index.inputs['Index'])
     links.new(position2.outputs['Position'], sample_index.inputs['Value'])
 
-    links.new(set_position.outputs['Geometry'], distance.inputs[0])
+    links.new(duplicate.outputs['Geometry'], distance.inputs[0])
     links.new(sample_index.outputs['Value'], distance.inputs[1])
 
     links.new(distance.outputs['Value'], compare.inputs['A'])
@@ -560,11 +719,10 @@ def create_geometry_nodes_modifier(obj):
     links.new(named_attr_active2.outputs['Attribute'], and_gate.inputs[0])
     links.new(not_gate.outputs['Boolean'], and_gate.inputs[1])
 
-    links.new(set_position.outputs['Geometry'], store_active_update.inputs['Geometry'])
+    links.new(duplicate.outputs['Geometry'], store_active_update.inputs['Geometry'])
     links.new(and_gate.outputs['Boolean'], store_active_update.inputs['Value'])
 
     # --- Spawn Links ---
-    links.new(group_input.outputs['Spawn Rate'], spawn_points.inputs['Count'])
     links.new(random_pos.outputs['Value'], normalize.inputs[0])
     links.new(normalize.outputs['Vector'], scale_spawn.inputs[0])
     links.new(group_input.outputs['Spawn Radius'], scale_spawn.inputs['Scale'])
@@ -605,6 +763,8 @@ def create_flow_field_presets():
             'Radial Force': 0.0,
             'Flow Noise Scale': 0.5,
             'Flow Noise Strength': 0.0,
+            'Deletion Probability': 0.005,
+            'Duplication Probability': 0.0,
         },
         'spiral': {
             'description': 'Spiral galaxy-like growth pattern',
@@ -615,6 +775,8 @@ def create_flow_field_presets():
             'Radial Force': 0.003,
             'Flow Noise Scale': 0.8,
             'Flow Noise Strength': 0.02,
+            'Deletion Probability': 0.01,
+            'Duplication Probability': 0.005,
         },
         'tree': {
             'description': 'Upward-growing tree-like structure',
@@ -625,6 +787,8 @@ def create_flow_field_presets():
             'Radial Force': -0.005,
             'Flow Noise Scale': 1.0,
             'Flow Noise Strength': 0.015,
+            'Deletion Probability': 0.008,
+            'Duplication Probability': 0.01,  # More duplication for branching
         },
         'coral': {
             'description': 'Coral-like branching with radial expansion',
@@ -635,6 +799,8 @@ def create_flow_field_presets():
             'Radial Force': 0.008,
             'Flow Noise Scale': 0.6,
             'Flow Noise Strength': 0.025,
+            'Deletion Probability': 0.005,
+            'Duplication Probability': 0.008,
         },
         'vortex': {
             'description': 'Strong spiraling vortex pattern',
@@ -645,6 +811,8 @@ def create_flow_field_presets():
             'Radial Force': -0.01,
             'Flow Noise Scale': 0.3,
             'Flow Noise Strength': 0.01,
+            'Deletion Probability': 0.015,
+            'Duplication Probability': 0.002,
         },
         'turbulent': {
             'description': 'Chaotic turbulent flow field',
@@ -655,6 +823,32 @@ def create_flow_field_presets():
             'Radial Force': 0.0,
             'Flow Noise Scale': 2.0,
             'Flow Noise Strength': 0.05,
+            'Deletion Probability': 0.02,
+            'Duplication Probability': 0.01,
+        },
+        'dense': {
+            'description': 'Dense growth with high duplication',
+            'Step Size': 0.015,
+            'Noise Scale': 2.0,
+            'Rotation Rate': 0.0,
+            'Vertical Bias': 0.0,
+            'Radial Force': 0.0,
+            'Flow Noise Scale': 0.5,
+            'Flow Noise Strength': 0.01,
+            'Deletion Probability': 0.002,
+            'Duplication Probability': 0.02,  # High duplication
+        },
+        'sparse': {
+            'description': 'Sparse branching with high deletion',
+            'Step Size': 0.03,
+            'Noise Scale': 3.0,
+            'Rotation Rate': 0.0,
+            'Vertical Bias': 0.0,
+            'Radial Force': 0.0,
+            'Flow Noise Scale': 1.0,
+            'Flow Noise Strength': 0.02,
+            'Deletion Probability': 0.03,  # High deletion
+            'Duplication Probability': 0.0,
         },
     }
     return presets
@@ -697,6 +891,8 @@ def apply_preset(obj, preset_name):
         'Radial Force': 'Socket_9',
         'Flow Noise Scale': 'Socket_10',
         'Flow Noise Strength': 'Socket_11',
+        'Deletion Probability': 'Socket_14',
+        'Duplication Probability': 'Socket_15',
     }
 
     print(f"Applying preset: {preset_name}")
@@ -708,6 +904,53 @@ def apply_preset(obj, preset_name):
             print(f"  {param}: {preset[param]}")
 
     return True
+
+
+def get_particle_stats(obj):
+    """
+    Get current particle statistics from the DLA object.
+
+    Returns dict with total, active, and fixed particle counts.
+    """
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    eval_obj = obj.evaluated_get(depsgraph)
+
+    try:
+        mesh = eval_obj.to_mesh()
+        total = len(mesh.vertices)
+
+        active_count = 0
+        fixed_count = 0
+
+        if 'active' in mesh.attributes:
+            for item in mesh.attributes['active'].data:
+                if item.value:
+                    active_count += 1
+                else:
+                    fixed_count += 1
+        else:
+            fixed_count = total
+
+        eval_obj.to_mesh_clear()
+
+        return {
+            'total': total,
+            'active': active_count,
+            'fixed': fixed_count,
+            'frame': bpy.context.scene.frame_current,
+        }
+    except Exception as e:
+        return {'error': str(e)}
+
+
+def print_particle_stats(obj):
+    """Print current particle statistics."""
+    stats = get_particle_stats(obj)
+    if 'error' in stats:
+        print(f"Error getting stats: {stats['error']}")
+    else:
+        print(f"Frame {stats['frame']}: Total={stats['total']}, "
+              f"Active={stats['active']}, Fixed={stats['fixed']}")
 
 
 def setup_cycles_render():
@@ -795,10 +1038,10 @@ def setup_animation():
 
 
 def main():
-    """Main function to set up the complete DLA scene with flow field."""
+    """Main function to set up the complete DLA scene with all features."""
     print("=" * 60)
     print("DLA Point Cloud Generator for Blender")
-    print("With Flow Field Enhancement (Phase 3)")
+    print("With Flow Field (Phase 3) + Particle Management (Phase 4)")
     print("=" * 60)
 
     # Clear existing scene
@@ -814,8 +1057,8 @@ def main():
     material = create_dla_material()
     seed.data.materials.append(material)
 
-    # Create geometry nodes with flow field
-    print("Setting up Geometry Nodes with Flow Field...")
+    # Create geometry nodes with flow field and particle management
+    print("Setting up Geometry Nodes...")
     create_geometry_nodes_modifier(seed)
 
     # Setup rendering
@@ -838,18 +1081,23 @@ def main():
     print("  2. The DLA structure will grow over 250 frames")
     print("  3. Adjust parameters in the Modifier panel")
     print("")
-    print("Basic Parameters:")
+    print("Basic Parameters (Phase 2):")
     print("  - Initial Particles: Starting point density")
     print("  - Step Size: Brownian motion magnitude")
     print("  - Contact Radius: Distance for particle sticking")
-    print("  - Noise Scale: Spatial frequency of brownian motion")
     print("")
     print("Flow Field Parameters (Phase 3):")
     print("  - Rotation Rate: Z-axis spiral (rad/frame)")
     print("  - Vertical Bias: Upward growth tendency")
     print("  - Radial Force: Expansion (+) / Contraction (-)")
-    print("  - Flow Noise Scale: Large-scale structure frequency")
-    print("  - Flow Noise Strength: Large-scale displacement magnitude")
+    print("")
+    print("Particle Management (Phase 4):")
+    print("  - Deletion Probability: % particles deleted per frame")
+    print("  - Duplication Probability: % particles duplicated per frame")
+    print("  - Max Active Particles: Memory limit for active particles")
+    print("  - Boundary Radius: Delete particles beyond this distance")
+    print("")
+    print("Monitor particles: print_particle_stats(bpy.data.objects['DLA_Seed'])")
     print("")
     print("Available Presets:")
     presets = create_flow_field_presets()

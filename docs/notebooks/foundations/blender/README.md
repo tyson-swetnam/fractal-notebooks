@@ -6,12 +6,13 @@
 
 - **Phase 2**: Basic DLA simulation with brownian motion and contact detection
 - **Phase 3**: Flow field dynamics for artistic growth patterns
+- **Phase 4**: Particle management with stochastic deletion, duplication, and memory limits
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `dla_blender_setup.py` | Main setup script - creates DLA geometry nodes simulation with flow field |
+| `dla_blender_setup.py` | Main setup script - creates DLA geometry nodes simulation |
 | `dla_export.py` | Export point clouds to NumPy, PLY, OBJ, CSV formats |
 | `dla_batch_render.py` | Headless batch rendering for automation |
 | `dla_visualization.ipynb` | Jupyter notebook for analysis and visualization |
@@ -31,7 +32,7 @@ blender
 # 4. Press Space to play animation
 ```
 
-### 2. Apply Flow Field Presets
+### 2. Apply Presets
 
 After running the setup script, apply artistic presets in Blender's Python console:
 
@@ -46,9 +47,19 @@ apply_preset(bpy.data.objects['DLA_Seed'], 'spiral')
 # - coral: Coral-like radial branching
 # - vortex: Strong spiraling vortex
 # - turbulent: Chaotic flow field
+# - dense: High duplication for thick growth
+# - sparse: High deletion for thin branches
 ```
 
-### 3. Headless Rendering
+### 3. Monitor Particles
+
+```python
+# Check current particle statistics
+print_particle_stats(bpy.data.objects['DLA_Seed'])
+# Output: Frame 100: Total=15234, Active=2341, Fixed=12893
+```
+
+### 4. Headless Rendering
 
 ```bash
 # Render single frame
@@ -57,20 +68,6 @@ blender -b -P dla_blender_setup.py -P dla_batch_render.py -- --frame 100 --outpu
 # Render animation
 blender -b -P dla_blender_setup.py -P dla_batch_render.py -- \
     --animation --start 1 --end 250 --output /tmp/dla_frames/
-```
-
-### 4. Export and Analyze
-
-```python
-# In Blender Python console (after running simulation):
-exec(open('dla_export.py').read())
-quick_export('npz', '/tmp/dla_export.npz')
-```
-
-```python
-# In Jupyter (dla_visualization.ipynb):
-dla_data = load_dla_data('/tmp/dla_export.npz')
-fig = visualize_dla_3d(dla_data['positions'], dla_data['timepoints'])
 ```
 
 ## Parameters
@@ -97,19 +94,51 @@ fig = visualize_dla_3d(dla_data['positions'], dla_data['timepoints'])
 | Spawn Radius | 2.0 | 0.5-5.0 | Distance where new particles appear |
 | Spawn Rate | 100 | 10-500 | New particles per frame |
 
-### Flow Field Components
+### Particle Management Parameters (Phase 4)
 
-The flow field combines 5 components:
+| Parameter | Default | Range | Description |
+|-----------|---------|-------|-------------|
+| Deletion Probability | 0.01 | 0.0-0.1 | % of particles deleted per frame |
+| Duplication Probability | 0.005 | 0.0-0.05 | % of particles duplicated per frame |
+| Max Active Particles | 50000 | 1000-500000 | Memory limit (stops spawning when reached) |
+| Boundary Radius | 5.0 | 1.0-20.0 | Delete particles beyond this distance |
+
+## Particle Management System
+
+Phase 4 introduces intelligent particle lifecycle management:
 
 ```
-Final Displacement = Brownian + Flow Noise + Rotation + Vertical + Radial
+┌─────────────────────────────────────────────────────────────┐
+│                    SIMULATION FRAME                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1. COUNT active particles                                   │
+│     └── If count < Max Active → spawn new particles         │
+│     └── If count >= Max Active → skip spawning              │
+│                                                              │
+│  2. MOVE particles via flow field                            │
+│                                                              │
+│  3. DELETE particles if:                                     │
+│     └── random() < Deletion Probability                     │
+│     └── distance from origin > Boundary Radius              │
+│                                                              │
+│  4. DUPLICATE particles if:                                  │
+│     └── random() < Duplication Probability                  │
+│                                                              │
+│  5. CHECK contact with structure                             │
+│     └── If contact → particle becomes fixed                 │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-1. **Brownian Motion**: High-frequency noise for random walk (Step Size × Noise Scale)
-2. **Flow Noise**: Low-frequency noise for large-scale structure (Flow Noise Strength × Flow Noise Scale)
-3. **Z-Axis Rotation**: Spiral pattern around vertical axis (Rotation Rate)
-4. **Vertical Bias**: Constant upward drift (Vertical Bias)
-5. **Radial Force**: Expansion or contraction from center (Radial Force)
+### Deletion vs Duplication Trade-offs
+
+| Scenario | Deletion | Duplication | Effect |
+|----------|----------|-------------|--------|
+| Dense growth | Low (0.002) | High (0.02) | Thick, filled structure |
+| Sparse branching | High (0.03) | Low (0.0) | Thin, wispy branches |
+| Balanced | Medium (0.01) | Medium (0.005) | Natural DLA pattern |
+| Memory constrained | High (0.02) | Low (0.002) | Keeps particle count low |
 
 ## Presets
 
@@ -117,26 +146,37 @@ Final Displacement = Brownian + Flow Noise + Rotation + Vertical + Radial
 |--------|-------------|--------------|
 | `classic` | Traditional DLA | No flow field, pure brownian |
 | `spiral` | Galaxy-like | High rotation, slight expansion |
-| `tree` | Tree growth | Strong vertical bias, contraction |
+| `tree` | Tree growth | Strong vertical bias, high duplication |
 | `coral` | Coral branching | Radial expansion, moderate noise |
 | `vortex` | Tight spiral | Very high rotation, contraction |
 | `turbulent` | Chaotic | High noise strength, low rotation |
+| `dense` | Thick growth | Low deletion, high duplication |
+| `sparse` | Thin branches | High deletion, no duplication |
 
-## Flow Field Visual Guide
+## Performance Optimization
 
-```
-                    Vertical Bias ↑
-                         │
-                         │
-        ←─── Radial Force (negative = inward)
-                         │
-                         ▼
-    Rotation Rate ───→ ○ ←─── Radial Force (positive = outward)
-         (spiral)        │
-                         │
-              Flow Noise (structure)
-              Brownian (randomness)
-```
+### Memory Management
+
+The simulation automatically prevents memory exhaustion:
+
+1. **Max Active Particles**: Stops spawning when limit is reached
+2. **Boundary Radius**: Deletes escaped particles
+3. **Stochastic Deletion**: Continuously removes excess particles
+
+### Recommended Settings by Hardware
+
+| GPU VRAM | Max Active Particles | Spawn Rate |
+|----------|---------------------|------------|
+| 4GB | 20,000 | 50 |
+| 8GB | 50,000 | 100 |
+| 12GB+ | 100,000 | 200 |
+
+### Optimization Tips
+
+1. **Reduce Spawn Rate** if simulation lags
+2. **Increase Deletion Probability** to keep particle count stable
+3. **Decrease Boundary Radius** to remove wandering particles faster
+4. **Use lower Contact Radius** for faster aggregation
 
 ## Requirements
 
@@ -155,17 +195,25 @@ Final Displacement = Brownian + Flow Noise + Rotation + Vertical + Radial
 ## Troubleshooting
 
 ### Simulation runs slowly
-- Reduce `Initial Particles` and `Spawn Rate`
+- Reduce `Spawn Rate` and `Max Active Particles`
+- Increase `Deletion Probability`
 - Increase `Contact Radius` for faster aggregation
+
+### Memory errors / crashes
+- Lower `Max Active Particles` (try 20000)
+- Increase `Deletion Probability` to 0.02+
+- Reduce `Boundary Radius` to 3.0
 
 ### Structure looks too random
 - Reduce `Step Size` and `Noise Scale`
 - Increase `Flow Noise Strength` for more structure
 
-### Structure doesn't grow upward
-- Increase `Vertical Bias` (try 0.02-0.03)
-- Set `Radial Force` to negative for inward pull
+### Structure doesn't grow
+- Check `Deletion Probability` isn't too high
+- Verify `Boundary Radius` isn't too small
+- Increase `Spawn Rate`
 
-### Spiral is too tight/loose
-- Adjust `Rotation Rate` (0.1 = moderate, 0.2 = tight)
-- Combine with `Radial Force` to control arm spacing
+### Particles escaping to infinity
+- Reduce `Boundary Radius`
+- Increase `Radial Force` (negative for inward pull)
+- Increase `Deletion Probability`
