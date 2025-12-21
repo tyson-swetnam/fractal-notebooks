@@ -7,6 +7,7 @@
 - **Phase 2**: Basic DLA simulation with brownian motion and contact detection
 - **Phase 3**: Flow field dynamics for artistic growth patterns
 - **Phase 4**: Particle management with stochastic deletion, duplication, and memory limits
+- **Phase 5**: Material & rendering with growth tip emission, ambient occlusion, GPU performance testing
 
 ## Files
 
@@ -152,6 +153,55 @@ Phase 4 introduces intelligent particle lifecycle management:
 | `turbulent` | Chaotic | High noise strength, low rotation |
 | `dense` | Thick growth | Low deletion, high duplication |
 | `sparse` | Thin branches | High deletion, no duplication |
+
+## Material & Rendering (Phase 5)
+
+### Growth Tip Emission
+
+Recently added particles (timepoint > 85% of max) glow with emission shading:
+
+```python
+# Default settings
+create_dla_material(
+    max_frames=250,        # Simulation length
+    tip_threshold=0.85,    # Particles above this normalized timepoint emit
+    emission_strength=2.0, # Glow intensity
+    ao_distance=0.1,       # Ambient occlusion range
+    ao_factor=0.5          # AO shadow strength
+)
+
+# More visible tips (higher threshold, stronger glow)
+create_dla_material(tip_threshold=0.9, emission_strength=4.0)
+
+# Subtle effect
+create_dla_material(tip_threshold=0.95, emission_strength=1.0)
+```
+
+### Ambient Occlusion
+
+Built-in AO enhances depth perception by darkening crevices and contact points.
+
+### GPU Performance Testing
+
+After setting up the scene, test render performance:
+
+```python
+# Test render speeds at various sample counts (16, 32, 64, 128, 256)
+test_gpu_performance()
+
+# Test with custom sample counts
+test_gpu_performance(sample_counts=[32, 64, 128, 512])
+
+# Benchmark simulation speed (not rendering)
+benchmark_simulation(frames=50)
+```
+
+Output includes:
+- GPU device information
+- Render time per sample count
+- Samples per second efficiency
+- Estimated animation render time
+- Performance log saved to `/tmp/dla_perf_test/`
 
 ## Performance Optimization
 

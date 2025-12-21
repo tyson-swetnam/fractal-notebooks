@@ -8,6 +8,7 @@ Features:
 - Phase 2: Basic DLA simulation with brownian motion and contact detection
 - Phase 3: Flow field dynamics with spiral rotation, vertical bias, radial forces
 - Phase 4: Particle management with stochastic deletion, duplication, and count limits
+- Phase 5: Material & rendering with growth tip emission, ambient occlusion, GPU perf testing
 
 Usage:
     1. Open Blender 4.2+
@@ -15,11 +16,16 @@ Usage:
     3. Load and run this script
     4. Press Play in the timeline to run the simulation
 
+GPU Performance Testing:
+    After running main(), use these functions:
+    - test_gpu_performance()     # Test render times at various sample counts
+    - benchmark_simulation(50)   # Benchmark simulation speed
+
 Based on techniques from the BlenderArtists DLA exploration thread.
 
 Author: Claude (fractal-notebooks project)
 Created: 2025-12-21
-Updated: 2025-12-21 (Phase 4: Particle Management)
+Updated: 2025-12-21 (Phase 5: Material & Rendering)
 """
 
 import bpy
@@ -55,8 +61,24 @@ def create_seed_geometry():
     return seed
 
 
-def create_dla_material():
-    """Create a material for the DLA point cloud with timepoint-based coloring."""
+def create_dla_material(max_frames=250, tip_threshold=0.85, emission_strength=2.0,
+                        ao_distance=0.1, ao_factor=0.5):
+    """
+    Create a material for the DLA point cloud with timepoint-based coloring,
+    emission for growth tips, and ambient occlusion.
+
+    Phase 5 Material Features:
+    - Timepoint-based color ramp (deep blue -> cyan -> green -> yellow -> white)
+    - Emission shader for growth tips (particles with timepoint > threshold glow)
+    - Ambient occlusion for depth perception and shadowing
+
+    Args:
+        max_frames: Maximum simulation frames for normalizing timepoint
+        tip_threshold: Normalized timepoint threshold for emission (0-1)
+        emission_strength: Intensity of growth tip emission
+        ao_distance: Ambient occlusion sampling distance
+        ao_factor: Strength of ambient occlusion darkening
+    """
     mat = bpy.data.materials.new(name="DLA_Material")
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
@@ -65,55 +87,204 @@ def create_dla_material():
     # Clear default nodes
     nodes.clear()
 
-    # Create nodes
+    # ========== OUTPUT ==========
     output = nodes.new('ShaderNodeOutputMaterial')
-    output.location = (600, 0)
+    output.location = (1200, 0)
 
-    principled = nodes.new('ShaderNodeBsdfPrincipled')
-    principled.location = (300, 0)
+    # ========== TIMEPOINT PROCESSING ==========
+    # Attribute node to read timepoint
+    attr = nodes.new('ShaderNodeAttribute')
+    attr.location = (-800, 0)
+    attr.attribute_name = "timepoint"
+    attr.attribute_type = 'INSTANCER'
+    attr.label = "Timepoint Attribute"
 
+    # Divide by max frames to normalize (0-1)
+    divide = nodes.new('ShaderNodeMath')
+    divide.location = (-600, 0)
+    divide.operation = 'DIVIDE'
+    divide.inputs[1].default_value = float(max_frames)
+    divide.label = "Normalize Timepoint"
+
+    # ========== BASE COLOR RAMP ==========
     color_ramp = nodes.new('ShaderNodeValToRGB')
-    color_ramp.location = (0, 0)
+    color_ramp.location = (-400, 0)
     color_ramp.color_ramp.interpolation = 'LINEAR'
+    color_ramp.label = "Age Color Ramp"
 
     # Set up color ramp: deep blue -> cyan -> green -> yellow -> white
     ramp = color_ramp.color_ramp
     ramp.elements[0].position = 0.0
-    ramp.elements[0].color = (0.04, 0.09, 0.16, 1.0)  # Deep blue
+    ramp.elements[0].color = (0.04, 0.09, 0.16, 1.0)  # Deep blue #0a1728
 
     ramp.elements[1].position = 1.0
     ramp.elements[1].color = (1.0, 1.0, 1.0, 1.0)  # White
 
     # Add intermediate colors
     elem = ramp.elements.new(0.3)
-    elem.color = (0.0, 0.83, 1.0, 1.0)  # Cyan
+    elem.color = (0.0, 0.83, 1.0, 1.0)  # Cyan #00d4ff
 
     elem = ramp.elements.new(0.6)
-    elem.color = (0.0, 1.0, 0.53, 1.0)  # Green
+    elem.color = (0.0, 1.0, 0.53, 1.0)  # Green #00ff88
 
     elem = ramp.elements.new(0.9)
-    elem.color = (1.0, 0.87, 0.0, 1.0)  # Yellow
+    elem.color = (1.0, 0.87, 0.0, 1.0)  # Yellow #ffdd00
 
-    # Attribute node to read timepoint
-    attr = nodes.new('ShaderNodeAttribute')
-    attr.location = (-400, 0)
-    attr.attribute_name = "timepoint"
-    attr.attribute_type = 'INSTANCER'
+    # ========== AMBIENT OCCLUSION ==========
+    ao_node = nodes.new('ShaderNodeAmbientOcclusion')
+    ao_node.location = (-400, -250)
+    ao_node.samples = 16
+    ao_node.inside = False
+    ao_node.only_local = False
+    ao_node.inputs['Distance'].default_value = ao_distance
+    ao_node.label = "Ambient Occlusion"
 
-    # Divide by max frames to normalize
-    divide = nodes.new('ShaderNodeMath')
-    divide.location = (-200, 0)
-    divide.operation = 'DIVIDE'
-    divide.inputs[1].default_value = 250.0  # Max frames
+    # Mix base color with AO darkening
+    ao_mix = nodes.new('ShaderNodeMixRGB')
+    ao_mix.location = (-150, 0)
+    ao_mix.blend_type = 'MULTIPLY'
+    ao_mix.inputs['Fac'].default_value = ao_factor
+    ao_mix.label = "Apply AO Darkening"
 
-    # Link nodes
+    # AO shadow color (dark blue-gray)
+    ao_shadow = nodes.new('ShaderNodeRGB')
+    ao_shadow.location = (-400, -400)
+    ao_shadow.outputs['Color'].default_value = (0.1, 0.1, 0.18, 1.0)
+    ao_shadow.label = "AO Shadow Color"
+
+    # Mix shader color based on AO
+    ao_color_mix = nodes.new('ShaderNodeMixRGB')
+    ao_color_mix.location = (-150, -250)
+    ao_color_mix.blend_type = 'MIX'
+    ao_color_mix.label = "AO Color Blend"
+
+    # ========== GROWTH TIP EMISSION ==========
+    # Compare timepoint to threshold - growth tips are recent particles
+    tip_compare = nodes.new('ShaderNodeMath')
+    tip_compare.location = (-400, 200)
+    tip_compare.operation = 'GREATER_THAN'
+    tip_compare.inputs[1].default_value = tip_threshold
+    tip_compare.label = "Is Growth Tip?"
+
+    # Smooth the tip transition
+    tip_smooth = nodes.new('ShaderNodeMath')
+    tip_smooth.location = (-200, 200)
+    tip_smooth.operation = 'SMOOTH_MIN'
+    tip_smooth.inputs[1].default_value = 0.0
+    tip_smooth.inputs[2].default_value = 0.1  # Smoothing distance
+    tip_smooth.label = "Smooth Tip Transition"
+
+    # Calculate emission mask: how much above threshold (0 to ~0.15)
+    tip_subtract = nodes.new('ShaderNodeMath')
+    tip_subtract.location = (-400, 350)
+    tip_subtract.operation = 'SUBTRACT'
+    tip_subtract.inputs[1].default_value = tip_threshold
+    tip_subtract.label = "Above Threshold"
+
+    # Clamp negative values to 0
+    tip_clamp = nodes.new('ShaderNodeClamp')
+    tip_clamp.location = (-200, 350)
+    tip_clamp.inputs['Min'].default_value = 0.0
+    tip_clamp.inputs['Max'].default_value = 1.0
+    tip_clamp.label = "Clamp Emission"
+
+    # Scale emission factor (map 0-0.15 to 0-1 for stronger effect)
+    tip_scale = nodes.new('ShaderNodeMath')
+    tip_scale.location = (0, 350)
+    tip_scale.operation = 'MULTIPLY'
+    tip_scale.inputs[1].default_value = 6.67  # 1.0 / (1.0 - tip_threshold)
+    tip_scale.label = "Scale Emission Factor"
+
+    # Emission color ramp (tip glow: yellow -> orange -> white)
+    emission_ramp = nodes.new('ShaderNodeValToRGB')
+    emission_ramp.location = (0, 200)
+    emission_ramp.color_ramp.interpolation = 'LINEAR'
+    emission_ramp.label = "Emission Color"
+
+    em_ramp = emission_ramp.color_ramp
+    em_ramp.elements[0].position = 0.0
+    em_ramp.elements[0].color = (1.0, 0.7, 0.0, 1.0)  # Yellow-orange
+
+    em_ramp.elements[1].position = 1.0
+    em_ramp.elements[1].color = (1.0, 1.0, 0.9, 1.0)  # Near-white
+
+    # Add hot orange at midpoint
+    em_elem = em_ramp.elements.new(0.5)
+    em_elem.color = (1.0, 0.5, 0.1, 1.0)  # Hot orange
+
+    # Emission shader
+    emission = nodes.new('ShaderNodeEmission')
+    emission.location = (200, 200)
+    emission.inputs['Strength'].default_value = emission_strength
+    emission.label = "Tip Emission"
+
+    # ========== BASE SHADERS ==========
+    # Principled BSDF for non-emitting parts
+    principled = nodes.new('ShaderNodeBsdfPrincipled')
+    principled.location = (200, 0)
+    principled.inputs['Roughness'].default_value = 0.5
+    principled.inputs['Metallic'].default_value = 0.0
+    principled.inputs['IOR'].default_value = 1.45
+    principled.label = "Base BSDF"
+
+    # ========== MIX SHADERS ==========
+    # Mix between base BSDF and emission based on tip factor
+    mix_shader = nodes.new('ShaderNodeMixShader')
+    mix_shader.location = (600, 0)
+    mix_shader.label = "Base/Emission Mix"
+
+    # Add shader to combine (additive blending for emission)
+    add_shader = nodes.new('ShaderNodeAddShader')
+    add_shader.location = (800, 100)
+    add_shader.label = "Add Emission Glow"
+
+    # Secondary principled for additive base
+    principled2 = nodes.new('ShaderNodeBsdfPrincipled')
+    principled2.location = (600, -200)
+    principled2.inputs['Roughness'].default_value = 0.5
+    principled2.label = "Additive Base"
+
+    # Final mix for emission intensity control
+    final_mix = nodes.new('ShaderNodeMixShader')
+    final_mix.location = (1000, 0)
+    final_mix.label = "Final Shader"
+
+    # ========== LINKING ==========
+    # Timepoint processing
     links.new(attr.outputs['Fac'], divide.inputs[0])
     links.new(divide.outputs['Value'], color_ramp.inputs['Fac'])
-    links.new(color_ramp.outputs['Color'], principled.inputs['Base Color'])
-    links.new(principled.outputs['BSDF'], output.inputs['Surface'])
 
-    # Set some emission for the material
-    principled.inputs['Emission Strength'].default_value = 0.1
+    # Ambient Occlusion
+    links.new(color_ramp.outputs['Color'], ao_node.inputs['Color'])
+    links.new(color_ramp.outputs['Color'], ao_color_mix.inputs['Color1'])
+    links.new(ao_shadow.outputs['Color'], ao_color_mix.inputs['Color2'])
+    links.new(ao_node.outputs['AO'], ao_color_mix.inputs['Fac'])
+
+    # Growth tip emission calculation
+    links.new(divide.outputs['Value'], tip_compare.inputs[0])
+    links.new(divide.outputs['Value'], tip_subtract.inputs[0])
+    links.new(tip_subtract.outputs['Value'], tip_clamp.inputs['Value'])
+    links.new(tip_clamp.outputs['Result'], tip_scale.inputs[0])
+    links.new(tip_clamp.outputs['Result'], emission_ramp.inputs['Fac'])
+
+    # Emission shader
+    links.new(emission_ramp.outputs['Color'], emission.inputs['Color'])
+
+    # Base BSDF with AO-modified color
+    links.new(ao_color_mix.outputs['Color'], principled.inputs['Base Color'])
+    links.new(ao_color_mix.outputs['Color'], principled2.inputs['Base Color'])
+
+    # Emission color to principled emission input (subtle base emission)
+    links.new(emission_ramp.outputs['Color'], principled.inputs['Emission Color'])
+    links.new(tip_scale.outputs['Value'], principled.inputs['Emission Strength'])
+
+    # Mix shaders: base BSDF mixed with emission based on tip factor
+    links.new(tip_scale.outputs['Value'], mix_shader.inputs['Fac'])
+    links.new(principled.outputs['BSDF'], mix_shader.inputs[1])
+    links.new(emission.outputs['Emission'], mix_shader.inputs[2])
+
+    # Output
+    links.new(mix_shader.outputs['Shader'], output.inputs['Surface'])
 
     return mat
 
@@ -1037,11 +1208,281 @@ def setup_animation():
     scene.render.fps = 24
 
 
+def test_gpu_performance(output_dir="/tmp/dla_perf_test", sample_counts=None):
+    """
+    Test GPU rendering performance with various sample counts.
+
+    Phase 5: GPU Performance Testing
+
+    Measures render times and estimates optimal settings for the DLA scene.
+    Outputs timing data and renders test images at different quality levels.
+
+    Args:
+        output_dir: Directory to save test renders and performance log
+        sample_counts: List of sample counts to test (default: [16, 32, 64, 128, 256])
+
+    Returns:
+        dict: Performance results with timings and recommendations
+    """
+    import os
+    import time
+
+    if sample_counts is None:
+        sample_counts = [16, 32, 64, 128, 256]
+
+    scene = bpy.context.scene
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    results = {
+        'tests': [],
+        'gpu_info': {},
+        'scene_info': {},
+    }
+
+    # ========== Gather GPU Info ==========
+    prefs = bpy.context.preferences.addons['cycles'].preferences
+
+    # Get compute device type
+    results['gpu_info']['compute_type'] = prefs.compute_device_type
+
+    # Get active devices
+    active_devices = []
+    for device in prefs.devices:
+        if device.use:
+            active_devices.append({
+                'name': device.name,
+                'type': device.type,
+            })
+    results['gpu_info']['active_devices'] = active_devices
+
+    # ========== Gather Scene Info ==========
+    # Get particle count
+    dla_obj = bpy.data.objects.get("DLA_Seed")
+    if dla_obj:
+        stats = get_particle_stats(dla_obj)
+        results['scene_info']['particle_count'] = stats.get('total', 'unknown')
+        results['scene_info']['active_particles'] = stats.get('active', 'unknown')
+        results['scene_info']['fixed_particles'] = stats.get('fixed', 'unknown')
+
+    results['scene_info']['resolution'] = (scene.render.resolution_x,
+                                            scene.render.resolution_y)
+    results['scene_info']['frame'] = scene.frame_current
+
+    print("=" * 60)
+    print("DLA GPU Performance Test")
+    print("=" * 60)
+    print(f"Compute Device: {results['gpu_info']['compute_type']}")
+    print(f"Active GPUs: {len(active_devices)}")
+    for dev in active_devices:
+        print(f"  - {dev['name']} ({dev['type']})")
+    print(f"Resolution: {results['scene_info']['resolution']}")
+    print(f"Particles: {results['scene_info'].get('particle_count', 'unknown')}")
+    print("")
+
+    # ========== Run Performance Tests ==========
+    # Store original settings
+    original_samples = scene.cycles.samples
+    original_filepath = scene.render.filepath
+
+    print("Running render tests...")
+    print("-" * 40)
+
+    for samples in sample_counts:
+        scene.cycles.samples = samples
+        scene.render.filepath = os.path.join(output_dir, f"test_{samples}spp.png")
+
+        print(f"Testing {samples} samples...", end=" ", flush=True)
+
+        # Time the render
+        start_time = time.time()
+        bpy.ops.render.render(write_still=True)
+        elapsed = time.time() - start_time
+
+        result = {
+            'samples': samples,
+            'time_seconds': round(elapsed, 2),
+            'samples_per_second': round(samples / elapsed, 1),
+            'output_file': scene.render.filepath,
+        }
+        results['tests'].append(result)
+
+        print(f"{elapsed:.2f}s ({result['samples_per_second']} spp/s)")
+
+    # Restore original settings
+    scene.cycles.samples = original_samples
+    scene.render.filepath = original_filepath
+
+    # ========== Analysis ==========
+    print("-" * 40)
+    print("Performance Analysis:")
+
+    # Find optimal quality/speed tradeoff
+    if len(results['tests']) >= 2:
+        # Calculate efficiency (samples per second)
+        best_efficiency = max(results['tests'], key=lambda x: x['samples_per_second'])
+        results['recommendation'] = {
+            'optimal_samples': best_efficiency['samples'],
+            'reason': 'Highest samples per second',
+        }
+
+        # Estimate time for full animation
+        frames = scene.frame_end - scene.frame_start + 1
+        for test in results['tests']:
+            test['estimated_animation_time'] = round(test['time_seconds'] * frames, 1)
+            test['estimated_animation_time_formatted'] = format_time(
+                test['time_seconds'] * frames
+            )
+
+        print(f"  Best efficiency: {best_efficiency['samples']} samples "
+              f"({best_efficiency['samples_per_second']} spp/s)")
+
+        # Find quality sweet spot (64-128 samples typically)
+        quality_tests = [t for t in results['tests'] if 64 <= t['samples'] <= 128]
+        if quality_tests:
+            quality_pick = min(quality_tests, key=lambda x: x['time_seconds'])
+            print(f"  Quality/speed balance: {quality_pick['samples']} samples "
+                  f"({quality_pick['time_seconds']}s per frame)")
+            print(f"    Full animation ({frames} frames): "
+                  f"{quality_pick['estimated_animation_time_formatted']}")
+
+    # ========== Save Results ==========
+    log_path = os.path.join(output_dir, "performance_log.txt")
+    with open(log_path, 'w') as f:
+        f.write("DLA GPU Performance Test Results\n")
+        f.write("=" * 50 + "\n\n")
+
+        f.write("GPU Configuration:\n")
+        f.write(f"  Compute Type: {results['gpu_info']['compute_type']}\n")
+        for dev in results['gpu_info']['active_devices']:
+            f.write(f"  Device: {dev['name']} ({dev['type']})\n")
+        f.write("\n")
+
+        f.write("Scene Info:\n")
+        f.write(f"  Resolution: {results['scene_info']['resolution']}\n")
+        f.write(f"  Particles: {results['scene_info'].get('particle_count', 'N/A')}\n")
+        f.write(f"  Frame: {results['scene_info']['frame']}\n")
+        f.write("\n")
+
+        f.write("Render Tests:\n")
+        f.write("-" * 50 + "\n")
+        f.write(f"{'Samples':<10} {'Time (s)':<12} {'SPP/s':<10} {'Anim Est.':<15}\n")
+        f.write("-" * 50 + "\n")
+        for test in results['tests']:
+            f.write(f"{test['samples']:<10} {test['time_seconds']:<12} "
+                    f"{test['samples_per_second']:<10} "
+                    f"{test.get('estimated_animation_time_formatted', 'N/A'):<15}\n")
+        f.write("\n")
+
+        if 'recommendation' in results:
+            f.write(f"Recommendation: {results['recommendation']['optimal_samples']} samples\n")
+            f.write(f"Reason: {results['recommendation']['reason']}\n")
+
+    print("")
+    print(f"Results saved to: {log_path}")
+    print("=" * 60)
+
+    return results
+
+
+def format_time(seconds):
+    """Format seconds into human-readable time string."""
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    elif seconds < 3600:
+        minutes = seconds / 60
+        return f"{minutes:.1f}m"
+    else:
+        hours = seconds / 3600
+        return f"{hours:.1f}h"
+
+
+def benchmark_simulation(frames=50):
+    """
+    Benchmark the DLA simulation performance.
+
+    Measures how long it takes to compute simulation frames (not rendering).
+
+    Args:
+        frames: Number of frames to simulate
+
+    Returns:
+        dict: Benchmark results
+    """
+    import time
+
+    scene = bpy.context.scene
+    dla_obj = bpy.data.objects.get("DLA_Seed")
+
+    if not dla_obj:
+        print("Error: DLA_Seed object not found")
+        return None
+
+    print("=" * 60)
+    print("DLA Simulation Benchmark")
+    print("=" * 60)
+
+    # Store original frame
+    original_frame = scene.frame_current
+    scene.frame_current = 1
+
+    # Force evaluation
+    bpy.context.view_layer.update()
+
+    results = {
+        'frames': [],
+        'total_time': 0,
+        'particles_over_time': [],
+    }
+
+    print(f"Simulating {frames} frames...")
+
+    start_total = time.time()
+
+    for frame in range(1, frames + 1):
+        frame_start = time.time()
+
+        scene.frame_current = frame
+        bpy.context.view_layer.update()
+
+        frame_time = time.time() - frame_start
+
+        # Get particle stats
+        stats = get_particle_stats(dla_obj)
+
+        results['frames'].append({
+            'frame': frame,
+            'time': round(frame_time, 3),
+            'particles': stats.get('total', 0),
+            'active': stats.get('active', 0),
+            'fixed': stats.get('fixed', 0),
+        })
+
+        if frame % 10 == 0 or frame == frames:
+            print(f"  Frame {frame}: {frame_time:.3f}s, "
+                  f"{stats.get('total', '?')} particles")
+
+    results['total_time'] = round(time.time() - start_total, 2)
+    results['avg_frame_time'] = round(results['total_time'] / frames, 3)
+
+    # Restore frame
+    scene.frame_current = original_frame
+
+    print("-" * 40)
+    print(f"Total time: {results['total_time']}s")
+    print(f"Average per frame: {results['avg_frame_time']}s")
+    print(f"Estimated for 250 frames: {format_time(results['avg_frame_time'] * 250)}")
+    print("=" * 60)
+
+    return results
+
+
 def main():
     """Main function to set up the complete DLA scene with all features."""
     print("=" * 60)
     print("DLA Point Cloud Generator for Blender")
-    print("With Flow Field (Phase 3) + Particle Management (Phase 4)")
+    print("Phases 2-5: Flow Field + Particles + Material & Rendering")
     print("=" * 60)
 
     # Clear existing scene
@@ -1052,8 +1493,8 @@ def main():
     print("Creating seed geometry...")
     seed = create_seed_geometry()
 
-    # Create material
-    print("Creating DLA material...")
+    # Create material with Phase 5 features (emission, AO)
+    print("Creating DLA material (with emission + AO)...")
     material = create_dla_material()
     seed.data.materials.append(material)
 
@@ -1096,6 +1537,16 @@ def main():
     print("  - Duplication Probability: % particles duplicated per frame")
     print("  - Max Active Particles: Memory limit for active particles")
     print("  - Boundary Radius: Delete particles beyond this distance")
+    print("")
+    print("Material & Rendering (Phase 5):")
+    print("  - Growth tip emission: Recent particles (>85% timepoint) glow")
+    print("  - Ambient occlusion: Depth shading for visual depth")
+    print("  - Modify in Shader Editor or recreate with:")
+    print("    create_dla_material(tip_threshold=0.9, emission_strength=3.0)")
+    print("")
+    print("GPU Performance Testing (Phase 5):")
+    print("  test_gpu_performance()      # Render speed at various sample counts")
+    print("  benchmark_simulation(50)    # Simulation speed benchmark")
     print("")
     print("Monitor particles: print_particle_stats(bpy.data.objects['DLA_Seed'])")
     print("")
