@@ -4,6 +4,10 @@ DLA Point Cloud Generator for Blender with Geometry Nodes
 This script creates a complete Diffusion-Limited Aggregation (DLA) simulation
 using Blender's Geometry Nodes and prepares it for Cycles rendering.
 
+Features:
+- Phase 2: Basic DLA simulation with brownian motion and contact detection
+- Phase 3: Flow field dynamics with spiral rotation, vertical bias, radial forces
+
 Usage:
     1. Open Blender 4.2+
     2. Open the Scripting workspace
@@ -14,6 +18,7 @@ Based on techniques from the BlenderArtists DLA exploration thread.
 
 Author: Claude (fractal-notebooks project)
 Created: 2025-12-21
+Updated: 2025-12-21 (Phase 3: Flow Field Enhancement)
 """
 
 import bpy
@@ -113,7 +118,15 @@ def create_dla_material():
 
 
 def create_geometry_nodes_modifier(obj):
-    """Create and configure the Geometry Nodes modifier for DLA simulation."""
+    """
+    Create and configure the Geometry Nodes modifier for DLA simulation.
+
+    Includes Phase 3 Flow Field Enhancement:
+    - 3D noise texture for large-scale structure
+    - Z-axis rotation for spiral patterns
+    - Vertical growth bias
+    - Radial expansion/contraction controls
+    """
     # Add geometry nodes modifier
     modifier = obj.modifiers.new(name="DLA_Simulation", type='NODES')
 
@@ -124,87 +137,105 @@ def create_geometry_nodes_modifier(obj):
     nodes = node_group.nodes
     links = node_group.links
 
+    # ========== INTERFACE SETUP ==========
     # Create interface (inputs/outputs)
     node_group.interface.new_socket(name="Geometry", in_out='INPUT', socket_type='NodeSocketGeometry')
     node_group.interface.new_socket(name="Geometry", in_out='OUTPUT', socket_type='NodeSocketGeometry')
 
-    # Add parameter inputs
+    # Basic DLA parameters (Phase 2)
     node_group.interface.new_socket(name="Initial Particles", in_out='INPUT', socket_type='NodeSocketInt')
     node_group.interface.new_socket(name="Step Size", in_out='INPUT', socket_type='NodeSocketFloat')
     node_group.interface.new_socket(name="Contact Radius", in_out='INPUT', socket_type='NodeSocketFloat')
     node_group.interface.new_socket(name="Noise Scale", in_out='INPUT', socket_type='NodeSocketFloat')
     node_group.interface.new_socket(name="Seed", in_out='INPUT', socket_type='NodeSocketInt')
 
-    # Set default values
-    modifier["Socket_2"] = 5000      # Initial Particles
-    modifier["Socket_3"] = 0.02      # Step Size
-    modifier["Socket_4"] = 0.03      # Contact Radius
-    modifier["Socket_5"] = 2.0       # Noise Scale
-    modifier["Socket_6"] = 42        # Seed
+    # Flow Field parameters (Phase 3)
+    node_group.interface.new_socket(name="Rotation Rate", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Vertical Bias", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Radial Force", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Flow Noise Scale", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Flow Noise Strength", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Spawn Radius", in_out='INPUT', socket_type='NodeSocketFloat')
+    node_group.interface.new_socket(name="Spawn Rate", in_out='INPUT', socket_type='NodeSocketInt')
+
+    # Set default values - indexed by socket order
+    # Socket_2 = Initial Particles, Socket_3 = Step Size, etc.
+    modifier["Socket_2"] = 5000       # Initial Particles
+    modifier["Socket_3"] = 0.02       # Step Size
+    modifier["Socket_4"] = 0.03       # Contact Radius
+    modifier["Socket_5"] = 2.0        # Noise Scale
+    modifier["Socket_6"] = 42         # Seed
+    modifier["Socket_7"] = 0.05       # Rotation Rate (radians per frame)
+    modifier["Socket_8"] = 0.01       # Vertical Bias
+    modifier["Socket_9"] = 0.005      # Radial Force (positive = expand, negative = contract)
+    modifier["Socket_10"] = 0.5       # Flow Noise Scale (large-scale)
+    modifier["Socket_11"] = 0.03      # Flow Noise Strength
+    modifier["Socket_12"] = 2.0       # Spawn Radius
+    modifier["Socket_13"] = 100       # Spawn Rate
 
     # Create nodes
     group_input = nodes.new('NodeGroupInput')
-    group_input.location = (-1600, 0)
+    group_input.location = (-2000, 0)
 
     group_output = nodes.new('NodeGroupOutput')
-    group_output.location = (1200, 0)
+    group_output.location = (1600, 0)
 
     # ========== INITIALIZATION SECTION ==========
 
     # Distribute points on the seed mesh
     distribute = nodes.new('GeometryNodeDistributePointsOnFaces')
-    distribute.location = (-1200, 100)
+    distribute.location = (-1600, 100)
     distribute.distribute_method = 'RANDOM'
 
     # Merge by distance to create initial structure
     merge_init = nodes.new('GeometryNodeMergeByDistance')
-    merge_init.location = (-1000, 100)
+    merge_init.location = (-1400, 100)
     merge_init.inputs['Distance'].default_value = 0.01
 
     # Capture initial attributes
     # Random color attribute
     random_val = nodes.new('FunctionNodeRandomValue')
-    random_val.location = (-1200, -150)
+    random_val.location = (-1600, -150)
     random_val.data_type = 'FLOAT'
 
     # Store attribute: color
     store_color = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_color.location = (-800, 100)
+    store_color.location = (-1200, 100)
     store_color.data_type = 'FLOAT'
     store_color.domain = 'POINT'
     store_color.inputs['Name'].default_value = "color_seed"
 
     # Frame counter for timepoint
     scene_time = nodes.new('GeometryNodeInputSceneTime')
-    scene_time.location = (-1200, -300)
+    scene_time.location = (-1600, -300)
 
     # Store attribute: timepoint
     store_timepoint = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_timepoint.location = (-600, 100)
+    store_timepoint.location = (-1000, 100)
     store_timepoint.data_type = 'FLOAT'
     store_timepoint.domain = 'POINT'
     store_timepoint.inputs['Name'].default_value = "timepoint"
 
     # Store attribute: active flag (0 = fixed structure, 1 = moving particle)
     store_active = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_active.location = (-400, 100)
+    store_active.location = (-800, 100)
     store_active.data_type = 'BOOLEAN'
     store_active.domain = 'POINT'
     store_active.inputs['Name'].default_value = "active"
 
-    # Create boolean true for initial particles (they start as structure)
+    # Create boolean false for initial particles (they start as structure)
     bool_false = nodes.new('FunctionNodeInputBool')
-    bool_false.location = (-600, -100)
+    bool_false.location = (-1000, -100)
     bool_false.boolean = False  # Initial seed is fixed structure
 
     # ========== SIMULATION ZONE ==========
 
     # Simulation input/output
     sim_input = nodes.new('GeometryNodeSimulationInput')
-    sim_input.location = (-200, 0)
+    sim_input.location = (-600, 0)
 
     sim_output = nodes.new('GeometryNodeSimulationOutput')
-    sim_output.location = (1000, 0)
+    sim_output.location = (1400, 0)
 
     # Link simulation zones
     sim_output.pair_with_input(sim_input)
@@ -213,50 +244,123 @@ def create_geometry_nodes_modifier(obj):
 
     # Separate active from fixed particles
     named_attr_active = nodes.new('GeometryNodeInputNamedAttribute')
-    named_attr_active.location = (0, -200)
+    named_attr_active.location = (-400, -200)
     named_attr_active.data_type = 'BOOLEAN'
     named_attr_active.inputs['Name'].default_value = "active"
 
     separate = nodes.new('GeometryNodeSeparateGeometry')
-    separate.location = (200, 0)
+    separate.location = (-200, 0)
     separate.domain = 'POINT'
 
-    # ========== ACTIVE PARTICLE PROCESSING ==========
+    # ========== FLOW FIELD COMPUTATION (Phase 3) ==========
+    # Build the combined flow field displacement vector
 
-    # Get position for displacement
+    # Get position for all calculations
     position = nodes.new('GeometryNodeInputPosition')
-    position.location = (200, -400)
+    position.location = (-200, -500)
 
-    # Noise texture for brownian motion
-    noise = nodes.new('ShaderNodeTexNoise')
-    noise.location = (400, -300)
-    noise.noise_dimensions = '3D'
+    # --- Component 1: Brownian Motion (Noise Texture) ---
+    noise_brownian = nodes.new('ShaderNodeTexNoise')
+    noise_brownian.location = (0, -400)
+    noise_brownian.noise_dimensions = '3D'
+    noise_brownian.label = "Brownian Noise"
 
-    # Multiply noise by step size
-    noise_multiply = nodes.new('ShaderNodeVectorMath')
-    noise_multiply.location = (600, -300)
-    noise_multiply.operation = 'MULTIPLY'
+    # Scale brownian noise by step size
+    brownian_scale = nodes.new('ShaderNodeVectorMath')
+    brownian_scale.location = (200, -400)
+    brownian_scale.operation = 'SCALE'
+    brownian_scale.label = "Scale Brownian"
 
-    # Add some randomness per frame
-    frame_random = nodes.new('FunctionNodeRandomValue')
-    frame_random.location = (400, -500)
-    frame_random.data_type = 'FLOAT_VECTOR'
+    # --- Component 2: Large-Scale Flow Noise (Phase 3) ---
+    noise_flow = nodes.new('ShaderNodeTexNoise')
+    noise_flow.location = (0, -600)
+    noise_flow.noise_dimensions = '3D'
+    noise_flow.label = "Flow Field Noise"
 
-    # Combine displacement
-    add_displacement = nodes.new('ShaderNodeVectorMath')
-    add_displacement.location = (600, -450)
-    add_displacement.operation = 'ADD'
+    # Subtract 0.5 to center noise around 0 (-0.5 to 0.5)
+    flow_center = nodes.new('ShaderNodeVectorMath')
+    flow_center.location = (200, -600)
+    flow_center.operation = 'SUBTRACT'
+    flow_center.inputs[1].default_value = (0.5, 0.5, 0.5)
+    flow_center.label = "Center Flow"
 
-    # Scale combined displacement
-    scale_displacement = nodes.new('ShaderNodeVectorMath')
-    scale_displacement.location = (800, -400)
-    scale_displacement.operation = 'SCALE'
-    scale_displacement.inputs['Scale'].default_value = 0.02
+    # Scale flow noise by strength
+    flow_scale = nodes.new('ShaderNodeVectorMath')
+    flow_scale.location = (400, -600)
+    flow_scale.operation = 'SCALE'
+    flow_scale.label = "Scale Flow"
 
-    # Add to position
+    # --- Component 3: Z-Axis Rotation (Phase 3) ---
+    # Vector Rotate around Z axis
+    vector_rotate = nodes.new('ShaderNodeVectorRotate')
+    vector_rotate.location = (0, -800)
+    vector_rotate.rotation_type = 'AXIS_ANGLE'
+    vector_rotate.label = "Spiral Rotation"
+
+    # Z axis vector
+    z_axis = nodes.new('FunctionNodeInputVector')
+    z_axis.location = (-200, -900)
+    z_axis.vector = (0, 0, 1)
+
+    # Subtract original position to get rotation displacement
+    rotation_diff = nodes.new('ShaderNodeVectorMath')
+    rotation_diff.location = (200, -800)
+    rotation_diff.operation = 'SUBTRACT'
+    rotation_diff.label = "Rotation Displacement"
+
+    # --- Component 4: Vertical Bias (Phase 3) ---
+    vertical_bias_vec = nodes.new('FunctionNodeCombineXYZ')
+    vertical_bias_vec.location = (0, -1000)
+    vertical_bias_vec.inputs['X'].default_value = 0.0
+    vertical_bias_vec.inputs['Y'].default_value = 0.0
+    vertical_bias_vec.label = "Vertical Bias"
+
+    # --- Component 5: Radial Force (Phase 3) ---
+    # Normalize position to get direction from center
+    radial_normalize = nodes.new('ShaderNodeVectorMath')
+    radial_normalize.location = (0, -1200)
+    radial_normalize.operation = 'NORMALIZE'
+    radial_normalize.label = "Radial Direction"
+
+    # Scale by radial force parameter
+    radial_scale = nodes.new('ShaderNodeVectorMath')
+    radial_scale.location = (200, -1200)
+    radial_scale.operation = 'SCALE'
+    radial_scale.label = "Radial Force"
+
+    # ========== COMBINE ALL FLOW FIELD COMPONENTS ==========
+
+    # Add brownian + flow noise
+    add_flow1 = nodes.new('ShaderNodeVectorMath')
+    add_flow1.location = (600, -450)
+    add_flow1.operation = 'ADD'
+    add_flow1.label = "Brownian + Flow"
+
+    # Add rotation displacement
+    add_flow2 = nodes.new('ShaderNodeVectorMath')
+    add_flow2.location = (800, -500)
+    add_flow2.operation = 'ADD'
+    add_flow2.label = "+ Rotation"
+
+    # Add vertical bias
+    add_flow3 = nodes.new('ShaderNodeVectorMath')
+    add_flow3.location = (1000, -550)
+    add_flow3.operation = 'ADD'
+    add_flow3.label = "+ Vertical"
+
+    # Add radial force (final combined displacement)
+    add_flow_final = nodes.new('ShaderNodeVectorMath')
+    add_flow_final.location = (1200, -600)
+    add_flow_final.operation = 'ADD'
+    add_flow_final.label = "Final Flow Field"
+
+    # ========== APPLY DISPLACEMENT ==========
+
+    # Add displacement to current position
     new_position = nodes.new('ShaderNodeVectorMath')
     new_position.location = (600, -150)
     new_position.operation = 'ADD'
+    new_position.label = "New Position"
 
     # Set new position
     set_position = nodes.new('GeometryNodeSetPosition')
@@ -289,11 +393,10 @@ def create_geometry_nodes_modifier(obj):
     compare.location = (850, 200)
     compare.data_type = 'FLOAT'
     compare.operation = 'LESS_THAN'
-    compare.inputs['B'].default_value = 0.03  # Contact radius
 
     # Update active attribute based on contact
     store_active_update = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_active_update.location = (1000, 0)
+    store_active_update.location = (1100, 0)
     store_active_update.data_type = 'BOOLEAN'
     store_active_update.domain = 'POINT'
     store_active_update.inputs['Name'].default_value = "active"
@@ -311,52 +414,50 @@ def create_geometry_nodes_modifier(obj):
 
     # AND gate: active AND NOT(contact) = still active
     and_gate = nodes.new('FunctionNodeBooleanMath')
-    and_gate.location = (950, 100)
+    and_gate.location = (1000, 100)
     and_gate.operation = 'AND'
 
     # ========== SPAWN NEW PARTICLES ==========
 
     # Points node for spawning new particles
     spawn_points = nodes.new('GeometryNodePoints')
-    spawn_points.location = (200, -600)
-    spawn_points.inputs['Count'].default_value = 100  # Spawn rate per frame
+    spawn_points.location = (0, -1400)
 
     # Set random position for new particles (on a sphere shell)
     random_pos = nodes.new('FunctionNodeRandomValue')
-    random_pos.location = (350, -650)
+    random_pos.location = (200, -1450)
     random_pos.data_type = 'FLOAT_VECTOR'
     random_pos.inputs['Min'].default_value = (-1, -1, -1)
     random_pos.inputs['Max'].default_value = (1, 1, 1)
 
     # Normalize to sphere
     normalize = nodes.new('ShaderNodeVectorMath')
-    normalize.location = (500, -650)
+    normalize.location = (400, -1450)
     normalize.operation = 'NORMALIZE'
 
     # Scale to spawn radius
     scale_spawn = nodes.new('ShaderNodeVectorMath')
-    scale_spawn.location = (650, -650)
+    scale_spawn.location = (600, -1450)
     scale_spawn.operation = 'SCALE'
-    scale_spawn.inputs['Scale'].default_value = 2.0  # Spawn radius
 
     # Set position for spawned particles
     set_spawn_pos = nodes.new('GeometryNodeSetPosition')
-    set_spawn_pos.location = (800, -600)
+    set_spawn_pos.location = (800, -1400)
 
     # Store active=True for spawned particles
     store_spawn_active = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_spawn_active.location = (950, -600)
+    store_spawn_active.location = (1000, -1400)
     store_spawn_active.data_type = 'BOOLEAN'
     store_spawn_active.domain = 'POINT'
     store_spawn_active.inputs['Name'].default_value = "active"
 
     bool_true = nodes.new('FunctionNodeInputBool')
-    bool_true.location = (800, -750)
+    bool_true.location = (850, -1550)
     bool_true.boolean = True
 
     # Store timepoint for spawned
     store_spawn_time = nodes.new('GeometryNodeStoreNamedAttribute')
-    store_spawn_time.location = (1100, -600)
+    store_spawn_time.location = (1200, -1400)
     store_spawn_time.data_type = 'FLOAT'
     store_spawn_time.domain = 'POINT'
     store_spawn_time.inputs['Name'].default_value = "timepoint"
@@ -365,13 +466,11 @@ def create_geometry_nodes_modifier(obj):
 
     # Join all geometry: fixed + updated active + newly spawned
     join = nodes.new('GeometryNodeJoinGeometry')
-    join.location = (1200, 0)
-
-    # Update timepoint for particles that just became fixed
-    # (we'll use a simpler approach - just keep the timepoint from spawn)
+    join.location = (1300, 0)
 
     # ========== LINKING SECTION ==========
 
+    # --- Initialization Links ---
     # Input -> Distribute
     links.new(group_input.outputs['Geometry'], distribute.inputs['Mesh'])
     links.new(group_input.outputs['Initial Particles'], distribute.inputs['Density'])
@@ -391,21 +490,58 @@ def create_geometry_nodes_modifier(obj):
     # Initial geometry -> Simulation
     links.new(store_active.outputs['Geometry'], sim_input.inputs['Geometry'])
 
-    # Simulation zone internal connections
+    # --- Simulation Zone Internal ---
+    # Separate active from fixed
     links.new(sim_input.outputs['Geometry'], separate.inputs['Geometry'])
     links.new(named_attr_active.outputs['Attribute'], separate.inputs['Selection'])
 
-    # Active particle displacement
+    # --- Flow Field Component Links (Phase 3) ---
+
+    # Component 1: Brownian Motion
+    links.new(position.outputs['Position'], noise_brownian.inputs['Vector'])
+    links.new(group_input.outputs['Noise Scale'], noise_brownian.inputs['Scale'])
+    links.new(noise_brownian.outputs['Color'], brownian_scale.inputs[0])
+    links.new(group_input.outputs['Step Size'], brownian_scale.inputs['Scale'])
+
+    # Component 2: Large-Scale Flow Noise
+    links.new(position.outputs['Position'], noise_flow.inputs['Vector'])
+    links.new(group_input.outputs['Flow Noise Scale'], noise_flow.inputs['Scale'])
+    links.new(noise_flow.outputs['Color'], flow_center.inputs[0])
+    links.new(flow_center.outputs['Vector'], flow_scale.inputs[0])
+    links.new(group_input.outputs['Flow Noise Strength'], flow_scale.inputs['Scale'])
+
+    # Component 3: Z-Axis Rotation
+    links.new(position.outputs['Position'], vector_rotate.inputs['Vector'])
+    links.new(z_axis.outputs['Vector'], vector_rotate.inputs['Axis'])
+    links.new(group_input.outputs['Rotation Rate'], vector_rotate.inputs['Angle'])
+    links.new(vector_rotate.outputs['Vector'], rotation_diff.inputs[0])
+    links.new(position.outputs['Position'], rotation_diff.inputs[1])
+
+    # Component 4: Vertical Bias
+    links.new(group_input.outputs['Vertical Bias'], vertical_bias_vec.inputs['Z'])
+
+    # Component 5: Radial Force
+    links.new(position.outputs['Position'], radial_normalize.inputs[0])
+    links.new(radial_normalize.outputs['Vector'], radial_scale.inputs[0])
+    links.new(group_input.outputs['Radial Force'], radial_scale.inputs['Scale'])
+
+    # Combine all flow field components
+    links.new(brownian_scale.outputs['Vector'], add_flow1.inputs[0])
+    links.new(flow_scale.outputs['Vector'], add_flow1.inputs[1])
+    links.new(add_flow1.outputs['Vector'], add_flow2.inputs[0])
+    links.new(rotation_diff.outputs['Vector'], add_flow2.inputs[1])
+    links.new(add_flow2.outputs['Vector'], add_flow3.inputs[0])
+    links.new(vertical_bias_vec.outputs['Vector'], add_flow3.inputs[1])
+    links.new(add_flow3.outputs['Vector'], add_flow_final.inputs[0])
+    links.new(radial_scale.outputs['Vector'], add_flow_final.inputs[1])
+
+    # Apply combined displacement
     links.new(separate.outputs['Selection'], set_position.inputs['Geometry'])
-    links.new(position.outputs['Position'], noise.inputs['Vector'])
-    links.new(group_input.outputs['Noise Scale'], noise.inputs['Scale'])
-    links.new(noise.outputs['Color'], noise_multiply.inputs[0])
-    links.new(group_input.outputs['Step Size'], noise_multiply.inputs['Scale'])
     links.new(position.outputs['Position'], new_position.inputs[0])
-    links.new(noise_multiply.outputs['Vector'], new_position.inputs[1])
+    links.new(add_flow_final.outputs['Vector'], new_position.inputs[1])
     links.new(new_position.outputs['Vector'], set_position.inputs['Position'])
 
-    # Contact detection
+    # --- Contact Detection Links ---
     links.new(separate.outputs['Inverted'], sample_nearest.inputs['Geometry'])
     links.new(set_position.outputs['Geometry'], sample_nearest.inputs['Sample Position'])
 
@@ -427,9 +563,11 @@ def create_geometry_nodes_modifier(obj):
     links.new(set_position.outputs['Geometry'], store_active_update.inputs['Geometry'])
     links.new(and_gate.outputs['Boolean'], store_active_update.inputs['Value'])
 
-    # Spawn new particles
+    # --- Spawn Links ---
+    links.new(group_input.outputs['Spawn Rate'], spawn_points.inputs['Count'])
     links.new(random_pos.outputs['Value'], normalize.inputs[0])
     links.new(normalize.outputs['Vector'], scale_spawn.inputs[0])
+    links.new(group_input.outputs['Spawn Radius'], scale_spawn.inputs['Scale'])
     links.new(spawn_points.outputs['Geometry'], set_spawn_pos.inputs['Geometry'])
     links.new(scale_spawn.outputs['Vector'], set_spawn_pos.inputs['Position'])
     links.new(set_spawn_pos.outputs['Geometry'], store_spawn_active.inputs['Geometry'])
@@ -437,7 +575,7 @@ def create_geometry_nodes_modifier(obj):
     links.new(store_spawn_active.outputs['Geometry'], store_spawn_time.inputs['Geometry'])
     links.new(scene_time.outputs['Frame'], store_spawn_time.inputs['Value'])
 
-    # Join all geometry
+    # --- Join and Output ---
     links.new(separate.outputs['Inverted'], join.inputs['Geometry'])  # Fixed structure
     links.new(store_active_update.outputs['Geometry'], join.inputs['Geometry'])  # Updated active
     links.new(store_spawn_time.outputs['Geometry'], join.inputs['Geometry'])  # New spawned
@@ -449,6 +587,127 @@ def create_geometry_nodes_modifier(obj):
     links.new(sim_output.outputs['Geometry'], group_output.inputs['Geometry'])
 
     return modifier
+
+
+def create_flow_field_presets():
+    """
+    Create preset configurations for different DLA growth patterns.
+
+    Returns a dictionary of presets that can be applied to the modifier.
+    """
+    presets = {
+        'classic': {
+            'description': 'Classic DLA with pure brownian motion',
+            'Step Size': 0.02,
+            'Noise Scale': 2.0,
+            'Rotation Rate': 0.0,
+            'Vertical Bias': 0.0,
+            'Radial Force': 0.0,
+            'Flow Noise Scale': 0.5,
+            'Flow Noise Strength': 0.0,
+        },
+        'spiral': {
+            'description': 'Spiral galaxy-like growth pattern',
+            'Step Size': 0.015,
+            'Noise Scale': 3.0,
+            'Rotation Rate': 0.1,
+            'Vertical Bias': 0.005,
+            'Radial Force': 0.003,
+            'Flow Noise Scale': 0.8,
+            'Flow Noise Strength': 0.02,
+        },
+        'tree': {
+            'description': 'Upward-growing tree-like structure',
+            'Step Size': 0.02,
+            'Noise Scale': 2.5,
+            'Rotation Rate': 0.02,
+            'Vertical Bias': 0.025,
+            'Radial Force': -0.005,
+            'Flow Noise Scale': 1.0,
+            'Flow Noise Strength': 0.015,
+        },
+        'coral': {
+            'description': 'Coral-like branching with radial expansion',
+            'Step Size': 0.018,
+            'Noise Scale': 4.0,
+            'Rotation Rate': 0.0,
+            'Vertical Bias': 0.01,
+            'Radial Force': 0.008,
+            'Flow Noise Scale': 0.6,
+            'Flow Noise Strength': 0.025,
+        },
+        'vortex': {
+            'description': 'Strong spiraling vortex pattern',
+            'Step Size': 0.01,
+            'Noise Scale': 1.5,
+            'Rotation Rate': 0.2,
+            'Vertical Bias': 0.0,
+            'Radial Force': -0.01,
+            'Flow Noise Scale': 0.3,
+            'Flow Noise Strength': 0.01,
+        },
+        'turbulent': {
+            'description': 'Chaotic turbulent flow field',
+            'Step Size': 0.025,
+            'Noise Scale': 5.0,
+            'Rotation Rate': 0.05,
+            'Vertical Bias': 0.0,
+            'Radial Force': 0.0,
+            'Flow Noise Scale': 2.0,
+            'Flow Noise Strength': 0.05,
+        },
+    }
+    return presets
+
+
+def apply_preset(obj, preset_name):
+    """
+    Apply a flow field preset to the DLA object.
+
+    Args:
+        obj: The DLA object with geometry nodes modifier
+        preset_name: Name of the preset to apply
+    """
+    presets = create_flow_field_presets()
+
+    if preset_name not in presets:
+        print(f"Unknown preset: {preset_name}")
+        print(f"Available presets: {list(presets.keys())}")
+        return False
+
+    preset = presets[preset_name]
+
+    # Find the modifier
+    modifier = None
+    for mod in obj.modifiers:
+        if mod.type == 'NODES' and mod.node_group and 'DLA' in mod.node_group.name:
+            modifier = mod
+            break
+
+    if not modifier:
+        print("No DLA geometry nodes modifier found")
+        return False
+
+    # Socket mapping (based on interface order)
+    socket_map = {
+        'Step Size': 'Socket_3',
+        'Noise Scale': 'Socket_5',
+        'Rotation Rate': 'Socket_7',
+        'Vertical Bias': 'Socket_8',
+        'Radial Force': 'Socket_9',
+        'Flow Noise Scale': 'Socket_10',
+        'Flow Noise Strength': 'Socket_11',
+    }
+
+    print(f"Applying preset: {preset_name}")
+    print(f"  {preset['description']}")
+
+    for param, socket in socket_map.items():
+        if param in preset:
+            modifier[socket] = preset[param]
+            print(f"  {param}: {preset[param]}")
+
+    return True
 
 
 def setup_cycles_render():
@@ -536,9 +795,10 @@ def setup_animation():
 
 
 def main():
-    """Main function to set up the complete DLA scene."""
+    """Main function to set up the complete DLA scene with flow field."""
     print("=" * 60)
     print("DLA Point Cloud Generator for Blender")
+    print("With Flow Field Enhancement (Phase 3)")
     print("=" * 60)
 
     # Clear existing scene
@@ -554,8 +814,8 @@ def main():
     material = create_dla_material()
     seed.data.materials.append(material)
 
-    # Create geometry nodes
-    print("Setting up Geometry Nodes for DLA simulation...")
+    # Create geometry nodes with flow field
+    print("Setting up Geometry Nodes with Flow Field...")
     create_geometry_nodes_modifier(seed)
 
     # Setup rendering
@@ -578,12 +838,26 @@ def main():
     print("  2. The DLA structure will grow over 250 frames")
     print("  3. Adjust parameters in the Modifier panel")
     print("")
-    print("Parameters:")
+    print("Basic Parameters:")
     print("  - Initial Particles: Starting point density")
     print("  - Step Size: Brownian motion magnitude")
     print("  - Contact Radius: Distance for particle sticking")
-    print("  - Noise Scale: Spatial frequency of displacement")
-    print("  - Seed: Random seed for reproducibility")
+    print("  - Noise Scale: Spatial frequency of brownian motion")
+    print("")
+    print("Flow Field Parameters (Phase 3):")
+    print("  - Rotation Rate: Z-axis spiral (rad/frame)")
+    print("  - Vertical Bias: Upward growth tendency")
+    print("  - Radial Force: Expansion (+) / Contraction (-)")
+    print("  - Flow Noise Scale: Large-scale structure frequency")
+    print("  - Flow Noise Strength: Large-scale displacement magnitude")
+    print("")
+    print("Available Presets:")
+    presets = create_flow_field_presets()
+    for name, preset in presets.items():
+        print(f"  - {name}: {preset['description']}")
+    print("")
+    print("To apply a preset:")
+    print("  apply_preset(bpy.data.objects['DLA_Seed'], 'spiral')")
     print("=" * 60)
 
 
