@@ -105,12 +105,27 @@ def setup_render_settings(args):
     scene.cycles.use_adaptive_sampling = True
     scene.cycles.adaptive_threshold = 0.01
 
-    # Denoiser
+    # Denoiser - check available options first (varies by Blender build)
     if args.denoiser == 'NONE':
         scene.cycles.use_denoising = False
     else:
-        scene.cycles.use_denoising = True
-        scene.cycles.denoiser = args.denoiser
+        # Check if denoiser property exists and has options
+        denoiser_prop = scene.cycles.bl_rna.properties.get('denoiser')
+        if denoiser_prop and denoiser_prop.enum_items:
+            available = [item.identifier for item in denoiser_prop.enum_items]
+            if args.denoiser in available:
+                scene.cycles.use_denoising = True
+                scene.cycles.denoiser = args.denoiser
+            elif available:
+                scene.cycles.use_denoising = True
+                scene.cycles.denoiser = available[0]
+                print(f"Denoiser {args.denoiser} not available, using {available[0]}")
+            else:
+                scene.cycles.use_denoising = False
+                print("No denoiser options available, disabling denoising")
+        else:
+            scene.cycles.use_denoising = False
+            print("Denoiser not supported in this Blender build")
 
     # Try to use GPU
     prefs = bpy.context.preferences.addons.get('cycles')

@@ -419,8 +419,8 @@ def create_geometry_nodes_modifier(obj):
     sim_output = nodes.new('GeometryNodeSimulationOutput')
     sim_output.location = (1800, 0)
 
-    # Link simulation zones
-    sim_output.pair_with_input(sim_input)
+    # Link simulation zones (Blender 4.0+: use pair_with_output on input node)
+    sim_input.pair_with_output(sim_output)
 
     # ========== INSIDE SIMULATION ZONE ==========
 
@@ -506,7 +506,7 @@ def create_geometry_nodes_modifier(obj):
     rotation_diff.label = "Rotation Displacement"
 
     # --- Component 4: Vertical Bias (Phase 3) ---
-    vertical_bias_vec = nodes.new('FunctionNodeCombineXYZ')
+    vertical_bias_vec = nodes.new('ShaderNodeCombineXYZ')
     vertical_bias_vec.location = (0, -1000)
     vertical_bias_vec.inputs['X'].default_value = 0.0
     vertical_bias_vec.inputs['Y'].default_value = 0.0
@@ -1142,8 +1142,20 @@ def setup_cycles_render():
     # Scene settings
     scene.cycles.device = 'GPU'
     scene.cycles.samples = 128
-    scene.cycles.use_denoising = True
-    scene.cycles.denoiser = 'OPENIMAGEDENOISE'
+    # Set denoising if available (varies by Blender build)
+    denoiser_prop = scene.cycles.bl_rna.properties.get('denoiser')
+    if denoiser_prop and denoiser_prop.enum_items:
+        available = [item.identifier for item in denoiser_prop.enum_items]
+        if 'OPENIMAGEDENOISE' in available:
+            scene.cycles.use_denoising = True
+            scene.cycles.denoiser = 'OPENIMAGEDENOISE'
+        elif available:
+            scene.cycles.use_denoising = True
+            scene.cycles.denoiser = available[0]
+        else:
+            scene.cycles.use_denoising = False
+    else:
+        scene.cycles.use_denoising = False
 
     # Performance
     scene.cycles.use_adaptive_sampling = True
