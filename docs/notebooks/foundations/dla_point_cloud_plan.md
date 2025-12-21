@@ -536,12 +536,12 @@ print(f"Estimated fractal dimension: {dimension:.3f}")
 - [x] Set up Cycles render settings
 - [x] Test GPU rendering performance (test_gpu_performance(), benchmark_simulation())
 
-### Phase 6: Export & Integration (Partial)
+### Phase 6: Export & Integration ✅
 - [x] Write Python export script for PLY/NumPy
 - [x] Create Jupyter notebook for visualization
 - [x] Implement fractal dimension analysis
-- [ ] Add to fractal-notebooks documentation
-- [ ] Create example renders and animations
+- [x] Add to fractal-notebooks documentation (mkdocs nav, applications page)
+- [x] Create example renders and animations (dla_example_renders.py)
 
 ### Phase 7: Advanced Features (Optional)
 - [ ] Multi-seed growth patterns

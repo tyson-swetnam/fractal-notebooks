@@ -24,6 +24,12 @@ This section provides access to interactive tools and demonstrations for explori
 | [L-System Trees](react-apps.md#l-system-trees) | React | Lindenmayer system-based tree generation |
 | [3D Tree/Root Visualization](tree-roots-3d.md) | React | Three-dimensional branching network visualization |
 
+### 3D Simulation & Rendering
+
+| Application | Framework | Description |
+|------------|-----------|-------------|
+| [Blender DLA](blender-dla.md) | Blender/Python | 3D DLA simulation with Geometry Nodes and Cycles rendering |
+
 ### Analysis Tools
 
 | Application | Framework | Description |
@@ -91,8 +97,14 @@ graph TB
         P2[Jupyter Notebooks] --> NumPy
     end
 
+    subgraph Blender["Blender Applications"]
+        B1[DLA Simulation] --> GeometryNodes
+        B2[Cycles Rendering] --> GPU2[GPU Rendering]
+    end
+
     WebGL --> GPU[GPU Acceleration]
     Canvas2D --> CPU[CPU Rendering]
+    GeometryNodes --> GPU2
 ```
 
 ## Contributing

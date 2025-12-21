@@ -69,6 +69,7 @@ nav:
     - Streamlit Apps: applications/streamlit-apps.md
     - Box-Counting Tool: applications/dbc.md
     - 3D Visualization: applications/tree-roots-3d.md
+    - Blender DLA: applications/blender-dla.md
 
   - Part VII - Notebooks:
     - Overview: notebooks/index.md

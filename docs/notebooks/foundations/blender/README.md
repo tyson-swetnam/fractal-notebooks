@@ -16,6 +16,7 @@
 | `dla_blender_setup.py` | Main setup script - creates DLA geometry nodes simulation |
 | `dla_export.py` | Export point clouds to NumPy, PLY, OBJ, CSV formats |
 | `dla_batch_render.py` | Headless batch rendering for automation |
+| `dla_example_renders.py` | Generate gallery of example renders and animations |
 | `dla_visualization.ipynb` | Jupyter notebook for analysis and visualization |
 
 ## Quick Start
@@ -202,6 +203,40 @@ Output includes:
 - Samples per second efficiency
 - Estimated animation render time
 - Performance log saved to `/tmp/dla_perf_test/`
+
+## Example Renders & Gallery
+
+Generate a gallery of example renders showcasing all presets:
+
+```bash
+# Generate all examples (presets + animations)
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --all --output /path/to/gallery
+
+# Generate specific preset renders
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --presets spiral tree coral
+
+# Generate turntable animation (360° rotation)
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --turntable
+
+# Generate growth animation
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --growth
+
+# Generate high-resolution poster (4K)
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --poster
+
+# Dry run (see what would be generated without rendering)
+blender -b -P dla_blender_setup.py -P dla_example_renders.py -- --all --dry-run
+```
+
+### Generated Outputs
+
+| Output | Description | Location |
+|--------|-------------|----------|
+| Preset renders | 8 preset examples at full resolution | `gallery/presets/` |
+| Thumbnails | 512x512 preview images | `gallery/thumbnails/` |
+| Turntable | 120-frame 360° rotation animation | `gallery/turntable/` |
+| Growth | Full simulation growth animation | `gallery/growth/` |
+| Poster | 4096x4096 high-resolution render | `gallery/poster/` |
 
 ## Performance Optimization
 
