@@ -25,6 +25,10 @@ nav:
     - Mathematical Foundations: foundations/mathematics.md
     - Fractal Dimensionality: foundations/dimensionality.md
     - Glossary & Equations: foundations/glossary.md
+    - Notebooks:
+      - History: notebooks/foundations/1_history.ipynb
+      - Mathematics: notebooks/foundations/2_mathematics.ipynb
+      - Dimensionality: notebooks/foundations/3_dimensionality.ipynb
 
   - Part II - Metabolic Scaling:
     - Abstract: metabolic-scaling/abstract.md
