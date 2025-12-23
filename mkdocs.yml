@@ -29,6 +29,7 @@ nav:
       - History: notebooks/foundations/1_history.ipynb
       - Mathematics: notebooks/foundations/2_mathematics.ipynb
       - Dimensionality: notebooks/foundations/3_dimensionality.ipynb
+      - Zeta Space: notebooks/foundations/4_zeta_space.ipynb
 
   - Part II - Metabolic Scaling:
     - Abstract: metabolic-scaling/abstract.md
