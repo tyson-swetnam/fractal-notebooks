@@ -12,16 +12,6 @@ sites:
   # PACIFIC NORTHWEST - Temperate Rainforests
   # ============================================================================
 
-  sequoia_giant_forest:
-    name: "Sequoia Giant Forest"
-    description: "Home to the largest trees on Earth by volume"
-    state: "CA"
-    forest_type: "giant_sequoia"
-    bbox: [-118.77, 36.55, -118.72, 36.60]
-    expected_max_height_m: 95
-    notes: "Contains General Sherman tree (84m tall, largest by volume)"
-    priority: 1
-
   redwood_humboldt:
     name: "Humboldt Redwoods"
     description: "Old-growth coast redwood forest"
@@ -196,16 +186,6 @@ sites:
     notes: "NEON site with extensive ground truth data"
     priority: 1
 
-  wind_river:
-    name: "Wind River Experimental Forest"
-    description: "Old-growth Douglas-fir research site"
-    state: "WA"
-    forest_type: "douglas_fir"
-    bbox: [-122.00, 45.80, -121.93, 45.86]
-    expected_max_height_m: 65
-    notes: "AmeriFlux tower site with carbon flux data"
-    priority: 1
-
   niwot_ridge:
     name: "Niwot Ridge LTER"
     description: "Alpine/subalpine research site"
@@ -214,6 +194,16 @@ sites:
     bbox: [-105.60, 40.03, -105.55, 40.07]
     expected_max_height_m: 20
     notes: "Treeline dynamics and alpine tundra"
+    priority: 2
+
+  monument_canyon_rna:
+    name: "Monument Canyon RNA"
+    description: "Research Natural Area in Santa Fe National Forest"
+    state: "NM"
+    forest_type: "mixed_conifer"
+    bbox: [-106.6427, 35.7925, -106.6172, 35.8139]
+    expected_max_height_m: 30
+    notes: "Ponderosa pine and mixed conifer, used for template testing"
     priority: 2
 
 # Processing configuration
@@ -244,20 +234,16 @@ groups:
   all_priority_1:
     description: "High-priority sites with ground truth or exceptional characteristics"
     sites:
-      - sequoia_giant_forest
       - redwood_humboldt
       - great_smoky_cove
       - harvard_forest
-      - wind_river
 
   pacific_northwest:
     description: "Pacific Northwest temperate rainforests"
     sites:
-      - sequoia_giant_forest
       - redwood_humboldt
       - olympic_hoh
       - tongass_mendenhall
-      - wind_river
 
   eastern_forests:
     description: "Eastern deciduous and mixed forests"
@@ -271,8 +257,8 @@ groups:
     description: "Sites with existing LTER/NEON infrastructure"
     sites:
       - harvard_forest
-      - wind_river
       - niwot_ridge
+      - monument_canyon_rna
 
   fire_ecology:
     description: "Fire-maintained or post-fire ecosystems"
@@ -281,3 +267,10 @@ groups:
       - coconino_ponderosa
       - ocala_longleaf
       - conecuh_longleaf
+
+  southwest:
+    description: "Southwest mixed conifer and ponderosa forests"
+    sites:
+      - coconino_ponderosa
+      - gila_mixed_conifer
+      - monument_canyon_rna

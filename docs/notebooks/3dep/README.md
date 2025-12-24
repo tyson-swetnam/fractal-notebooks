@@ -10,19 +10,19 @@ This directory contains Jupyter notebook workflows for generating Canopy Height 
 - **Adaptive Resolution:** 0.333m for high-density lidar (>=12 pts/m²), 0.5m for standard density
 - **Direct CHM Calculation:** Simple subtraction (DSM - DTM) with no smoothing or interpolation
 - **Cloud-Optimized GeoTIFFs:** All outputs include internal overviews for efficient web visualization
-- **18 US Forest Sites:** Diverse forest types from coast redwoods to boreal forests
+- **17 US Forest Sites:** Diverse forest types from coast redwoods to boreal forests (all with verified 3DEP coverage)
 
 ## Directory Structure
 
 ```
 3dep/
 ├── README.md                    # This file
-├── forest_sites.yaml            # Site configuration (18 US forests)
+├── forest_sites.yaml            # Site configuration (17 US forests)
 ├── geojson/                     # Site boundary files
 │   ├── all_sites.geojson
-│   ├── sequoia_giant_forest.geojson
 │   ├── redwood_humboldt.geojson
-│   └── ... (18 site files)
+│   ├── monument_canyon_rna.geojson
+│   └── ... (17 site files)
 ├── original/                    # Unmodified OpenTopography notebooks
 │   ├── 01_3DEP_Generate_DEM_User_AOI.ipynb
 │   ├── 02_3DEP_Generate_DEM_USGS_7.5_Quadrangles.ipynb
@@ -43,22 +43,23 @@ This directory contains Jupyter notebook workflows for generating Canopy Height 
     │   ├── validate_cogs.py           # COG validation script
     │   └── update_notebooks_cog.py    # Notebook update utilities
     └── sites/                         # Site-specific notebooks
-        ├── sequoia_giant_forest/
-        │   ├── chm_sequoia_giant_forest.ipynb
-        │   └── fractal_sequoia_giant_forest.ipynb
         ├── redwood_humboldt/
         │   ├── chm_redwood_humboldt.ipynb
         │   └── fractal_redwood_humboldt.ipynb
-        └── ... (18 site directories)
+        ├── monument_canyon_rna/
+        │   ├── chm_monument_canyon_rna.ipynb
+        │   └── fractal_monument_canyon_rna.ipynb
+        └── ... (17 site directories)
 ```
 
-## Forest Sites (18 total)
+## Forest Sites (17 total)
+
+All sites have verified 3DEP lidar coverage.
 
 ### Pacific Northwest - Temperate Rainforests
 
 | Site ID | Name | State | Forest Type | Max Height |
 |---------|------|-------|-------------|------------|
-| `sequoia_giant_forest` | Sequoia Giant Forest | CA | Giant Sequoia | ~95m |
 | `redwood_humboldt` | Humboldt Redwoods | CA | Coast Redwood | ~115m |
 | `olympic_hoh` | Olympic Hoh Rainforest | WA | Temperate Rainforest | ~75m |
 | `tongass_mendenhall` | Tongass Mendenhall | AK | Temperate Rainforest | ~60m |
@@ -70,12 +71,13 @@ This directory contains Jupyter notebook workflows for generating Canopy Height 
 | `yellowstone_lodgepole` | Yellowstone Lodgepole | WY | Lodgepole Pine | ~30m |
 | `rocky_mountain_subalpine` | Rocky Mountain Subalpine | CO | Spruce-Fir | ~35m |
 
-### Southwest - Ponderosa Pine
+### Southwest - Ponderosa Pine & Mixed Conifer
 
 | Site ID | Name | State | Forest Type | Max Height |
 |---------|------|-------|-------------|------------|
 | `coconino_ponderosa` | Coconino Ponderosa | AZ | Ponderosa Pine | ~40m |
 | `gila_mixed_conifer` | Gila Mixed Conifer | NM | Mixed Conifer | ~35m |
+| `monument_canyon_rna` | Monument Canyon RNA | NM | Mixed Conifer | ~30m |
 
 ### Eastern Deciduous - Hardwood Forests
 
@@ -104,7 +106,6 @@ This directory contains Jupyter notebook workflows for generating Canopy Height 
 | Site ID | Name | State | Forest Type | Max Height |
 |---------|------|-------|-------------|------------|
 | `harvard_forest` | Harvard Forest LTER | MA | Transition Hardwood | ~30m |
-| `wind_river` | Wind River Exp. Forest | WA | Douglas-fir | ~65m |
 | `niwot_ridge` | Niwot Ridge LTER | CO | Subalpine | ~20m |
 
 ## Modified Notebooks
@@ -113,7 +114,7 @@ This directory contains Jupyter notebook workflows for generating Canopy Height 
 
 | Notebook | Description |
 |----------|-------------|
-| `1_forest_sites_map.ipynb` | Interactive Leaflet map displaying all 18 forest sites with 3DEP lidar coverage boundaries |
+| `1_forest_sites_map.ipynb` | Interactive Leaflet map displaying all 17 forest sites with 3DEP lidar coverage boundaries |
 | `2_chm_user_aoi.ipynb` | Template for CHM generation - downloads point clouds, generates DSM/DTM, calculates CHM |
 | `3_chm_fractal_analysis.ipynb` | Template for fractal dimension analysis of CHM surfaces using box-counting method |
 | `chm_forest_sites.ipynb` | Batch processing workflow for multiple sites from `forest_sites.yaml` |
