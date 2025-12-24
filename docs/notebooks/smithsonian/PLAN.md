@@ -16,22 +16,24 @@ Analyze Airborne Laser Scanning (ALS) data from **Barro Colorado Island, Panama*
 
 ### Pre-computed Products (Whole-Island GeoTIFFs)
 
-| Product | Filename | Size | URL |
-|---------|----------|------|-----|
-| **CHM** | `BCI_whole_2023_05_26_chm.tif` | 1.1 GB | `07_Canopy_Height_Model/TIFF/` |
-| **DTM** | `BCI_whole_2023_05_26_dtm.tif` | 1.1 GB | `04_Digital_Terrain_Model/TIFF/` |
-| **DSM** | `BCI_whole_2023_05_26_dsm.tif` | 1.1 GB | `06_Digital_Surface_Model/TIFF/` |
+| Product | Filename | Size | Resolution | Status |
+|---------|----------|------|------------|--------|
+| **CHM** | `BCI_whole_2023_05_26_chm.tif` | 1.1 GB | **0.5m** | Downloaded |
+| **DTM** | `BCI_whole_2023_05_26_dtm.tif` | 1.1 GB | 0.5m | Downloaded |
+| **DSM** | `BCI_whole_2023_05_26_dsm.tif` | 1.1 GB | 0.5m | Downloaded |
+
+**Note:** The CHM is already at 0.5m resolution, which matches the 3DEP framework's standard resolution. This allows direct use with the existing `chm_` analysis notebooks without resampling.
 
 ### Point Cloud Data (LAZ Format)
 
-| Directory | Contents | Count |
-|-----------|----------|-------|
-| `02_LAZ_Unclassified/` | Raw point clouds | ~127 tiles |
-| `03_LAZ_Classified/` | Classified point clouds | 127 tiles |
+| Directory | Contents | Count | Status |
+|-----------|----------|-------|--------|
+| `02_LAZ_Unclassified/` | Raw point clouds | ~127 tiles | Not downloaded |
+| `03_LAZ_Classified/` | Classified point clouds | 113 tiles | **Downloaded (7.0 GB)** |
 
 **Tile naming convention:** `BCI_2023_<easting>_<northing>.laz`
 **Tile size:** 500m x 500m tiles
-**File sizes:** Range from 1KB to 154MB per tile
+**File sizes:** Range from 20KB to 154MB per tile
 
 ### Additional Products
 
@@ -266,7 +268,23 @@ Based on tropical forest structure:
 | Species Diversity | High | Low | Low |
 | Expected Fractal D | Higher | Medium | Lower |
 
-## Timeline & Milestones
+## Download Status (Completed)
+
+**Total Downloaded: 11 GB**
+
+```
+~/data-store/data/output/smithsonian/raw/
+├── chm/
+│   └── BCI_whole_2023_05_26_chm.tif     (1.1 GB)
+├── dtm/
+│   └── BCI_whole_2023_05_26_dtm.tif     (1.1 GB)
+├── dsm/
+│   └── BCI_whole_2023_05_26_dsm.tif     (1.1 GB)
+└── laz/
+    └── 113 LAZ files                     (7.0 GB)
+```
+
+## Milestones
 
 1. **Data Acquisition:** Download and validate all GeoTIFFs
 2. **Initial Exploration:** Load, visualize, and assess CHM quality
