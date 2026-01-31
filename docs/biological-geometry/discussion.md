@@ -1,5 +1,7 @@
 # Discussion: The Mathematical Heart of Biological Geometry
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 The synthesis of observations from vascular networks, non-vascular organisms, canopy dynamics, and root foraging leads to a profound conclusion: biological growth is a physical realization of complex analysis and number theory.
 
 ## 4.1 Complex Dimensions and Log-Periodic Oscillations

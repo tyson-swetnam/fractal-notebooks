@@ -1,5 +1,7 @@
 # Fractal Notebooks
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 A comprehensive collection of Python applications and Jupyter notebooks for simulating self-affine fractals, combining mathematical visualization, interactive applications, and scientific documentation to explore fractal geometry.
 
 ## 🌐 Live Applications
@@ -94,11 +96,11 @@ If you use this work in your research, please cite:
 @misc{fractal-notebooks,
   title={Fractal Notebooks: Interactive Platform for Self-Affine Fractal Analysis},
   author={Swetnam, Tyson},
-  year={2024},
+  year={2026},
   url={https://github.com/tyson-swetnam/fractal-notebooks}
 }
 ```
 
 ## 📝 License
 
-This project is open source and available under the MIT License.
+This project is open source and available under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).

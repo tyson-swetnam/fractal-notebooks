@@ -1,5 +1,7 @@
 # Discussion
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## The Forest as an Energy Field
 
 The framework presented here views the forest not merely as a collection of trees, but as a **thermodynamic machine** designed to maximize the capture of solar flux. When forests are understood as "Energy Fields" or "Solar Capacitors," the Fractal Dimension and Zeta distributions become solutions to an engineering optimization problem.

@@ -1,5 +1,7 @@
 # Abstract
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 **Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework**
 
 This chapter presents a formal preregistration framework for investigating whether old-growth forests at "Self-Organized Criticality" (SOC) exhibit distinct geometric and spectral signatures compared to disturbed or managed forests. By treating the Canopy Height Model (CHM) as a stochastic surface, we propose that optimal space packing and metabolic scaling result in specific Fractal Dimensions (\(D\)) and Lacunarity (\(\Lambda\)) curves. Furthermore, we test the hypothesis that the spatial repulsion of dominant tree crowns in steady-state systems follows "Universal Laws of Repulsion" (random matrix statistics) akin to the spacing of Riemann Zeta zeros, rather than simple Poissonian randomness.

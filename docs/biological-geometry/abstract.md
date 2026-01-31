@@ -1,5 +1,7 @@
 # Abstract
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling
 
 Biological organisms face an existential geometric problem: maximize the capture of diffuse resources while minimizing the metabolic cost of tissue construction. This chapter examines how evolution has solved this optimization through self-affine fractal architectures rather than simple self-similar structures. We extend the West-Brown-Enquist (WBE) model of allometric scaling to incorporate complex dimensions arising from finite-scale fractality, demonstrating that the anisotropic scaling of vascular networks---where radial dimensions scale as \( \beta_r = n^{-1/2} \) and longitudinal dimensions as \( \beta_l = n^{-1/3} \)---represents the geometric solution to competing demands of hydraulic efficiency and mechanical stability.

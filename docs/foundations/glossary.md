@@ -1,5 +1,7 @@
 # Chapter 4: Glossary and Equations
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 This reference guide provides definitions of key terms in fractal geometry, self-similarity, and scaling theory, along with a summary of the essential mathematical equations used throughout this work.
 
 ---

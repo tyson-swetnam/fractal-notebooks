@@ -1,5 +1,7 @@
 # Conclusion
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 The main points of this paper are to establish:
 
 1. **Natural fractals are mostly self-affine and require special descriptors**: Many fractals found in nature, particularly in biological systems, are self-affine rather than self-similar. This distinction is crucial for accurately measuring and understanding their scaling properties.

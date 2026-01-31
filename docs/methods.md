@@ -1,5 +1,7 @@
 # Methods
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 Today, there are numerous numerical and analytical tools for evaluating fractal dimensions. Fractal dimension can be evaluated in binary (e.g., presence vs. absence) or continuous values (e.g., grayscale). An important implication of evaluating organisms, specifically their hierarchical branching networks, is that their distribution of mass is expected to scale anisotropically across their various branching orders.
 
 ### Metabolic Scaling Theory

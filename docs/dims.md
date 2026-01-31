@@ -1,5 +1,7 @@
 ## 1D, 2D, 3D, and 4D fractal-like patterns
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 Fractals are intricate patterns that repeat themselves at different scales. They can exist in various dimensions. This introduction provides a brief overview of fractals in one-dimensional (1D), two-dimensional (2D), three-dimensional (3D), and four-dimensional (4D) spaces, along with examples of self-similar and self-affine fractals in each dimension.
 
 ### 1D Fractals

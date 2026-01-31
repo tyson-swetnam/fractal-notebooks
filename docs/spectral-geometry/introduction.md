@@ -1,5 +1,7 @@
 # Introduction: The Geometry of Complexity
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## Spectral Duality as a Unifying Principle
 
 The convergence of analytic number theory, fractal geometry, and the analysis of algorithms represents one of the most profound syntheses in modern mathematics and computer science. At the heart of this convergence lies a singular, unifying concept: **spectral duality**. This is the notion that the geometric properties of a space---whether it is a physical drum, a fractal coastline, or a database of multidimensional points---are encoded in the spectrum of a differential or difference operator defined upon it.

@@ -1,5 +1,7 @@
 # Fractal Patterns in Nature: Self-Affinity vs Self-Similarity
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 Welcome to the Fractal Notebooks project—an interdisciplinary exploration of fractal geometry in biological systems, from the mathematics of Mandelbrot to the metabolic scaling theory of vascular organisms.
 
 ---
@@ -181,10 +183,10 @@ These results may help reveal when communities of individuals have maximized the
 If you use this work, please cite:
 
 ```bibtex
-@misc{swetnam2024fractals,
+@misc{swetnam2026fractals,
   author = {Swetnam, Tyson Lee and Pelletier, Jon D and Enquist, Brian J},
   title = {Fractal Patterns in Nature: Self-Affinity vs Self-Similarity},
-  year = {2024},
+  year = {2026},
   publisher = {GitHub},
   url = {https://github.com/tyson-swetnam/fractal-notebooks}
 }
@@ -194,4 +196,4 @@ If you use this work, please cite:
 
 ## License
 
-This project is released under the MIT License. See [LICENSE](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/LICENSE) for details.
+This project is released under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). See [LICENSE](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/LICENSE) for details.

@@ -1,5 +1,7 @@
 # Introduction: The Geometric Imperative of Biological Existence
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## 1.1 The Fundamental Optimization Problem
 
 Life, in its most fundamental physical aspect, is a struggle against the constraints of Euclidean space. Organisms are thermodynamic machines that must maximize the capture of diffuse, limiting resources---sunlight, carbon dioxide, water, and dissolved nutrients---while minimizing the metabolic cost of constructing the tissues required to reach them. This optimization problem, played out over millions of years of evolutionary history, has not resulted in simple geometric solids. A sphere, while minimizing surface area for a given volume, is the worst possible shape for an organism dependent on surface fluxes for survival. Instead, biology has converged upon a geometry of roughness, maximizing surface area within a finite volume through hierarchical branching, folding, and reticulation. This is the domain of fractal geometry.

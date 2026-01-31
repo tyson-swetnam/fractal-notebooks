@@ -1,5 +1,7 @@
 # Conclusion
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## Summary of the Preregistration Framework
 
 This chapter has presented a formal preregistration framework for investigating whether old-growth forests exhibit distinct geometric and spectral signatures that connect them to fundamental mathematical structures---the Riemann Zeta function, Random Matrix Theory, and Fractal String theory.

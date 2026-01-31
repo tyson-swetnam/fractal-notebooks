@@ -1,5 +1,7 @@
 # Abstract
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 **Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing**
 
 This chapter presents a comprehensive analysis of the relationship between fractal self-affinity and the Riemann zeta distribution within the context of sorting algorithms and two-dimensional packing problems. We demonstrate that real-world data---ranging from word frequencies in natural language corpora to spatial distributions of geographic features---rarely conforms to classical uniformity assumptions. Instead, such data follows Zipfian (zeta) distributions and exhibits fractal self-affinity, properties that fundamentally alter algorithmic behavior.

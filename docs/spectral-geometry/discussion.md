@@ -1,5 +1,7 @@
 # Discussion: R-Trees, Spectral Chirality, and the Fractal Riemann Hypothesis
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## R-Tree Performance on Fractal Data
 
 The theoretical insights from Apollonian packings find concrete application in Spatial Database Systems, specifically in the performance analysis of R-trees. The R-tree is the industry standard for indexing multi-dimensional data (e.g., in PostGIS, Oracle Spatial, SQLite).

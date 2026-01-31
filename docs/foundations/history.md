@@ -1,5 +1,7 @@
 # Chapter 1: History of Fractal Mathematics
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 The history of fractal mathematics spans over a century, from the "mathematical monsters" of the late nineteenth century to the sophisticated theories of complex dimensions emerging in the twenty-first. This chapter traces the intellectual lineage of fractal geometry, emphasizing the conceptual developments that made it possible to recognize self-similarity and self-affinity as fundamental properties of natural phenomena.
 
 ---

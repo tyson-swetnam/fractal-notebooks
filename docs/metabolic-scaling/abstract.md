@@ -1,5 +1,7 @@
 # Part II: Metabolic Scaling Theory and Biological Fractals
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## Abstract
 
 Much of the scientific literature describes the fractal-like hierarchical branching networks of vascular organisms as 'self-similar'. Here we examine papers where fractal-like self-similarity is incorrectly described. We also link why the hierarchical branching networks in vascular organisms are 'self-affine' rather than self-similar by linking metabolic scaling theory to these structural traits. Last, we propose a mechanistic theory of fractal dimensions for single cell through multicellular life forms.

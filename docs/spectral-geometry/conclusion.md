@@ -1,5 +1,7 @@
 # Conclusion
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## Summary of Key Findings
 
 This chapter has traversed the landscape from the zeros of the Riemann zeta function to the disk access patterns of spatial databases. The relationship between fractal self-affinity and the Riemann zeta distribution in the context of sorting and packing is defined by **spectral duality**.

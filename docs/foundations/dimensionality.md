@@ -1,5 +1,7 @@
 # Chapter 3: Fractal Dimensionality (1D through 4D)
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 Fractals manifest across all spatial dimensions, from one-dimensional signals to four-dimensional spacetime structures. This chapter provides a systematic treatment of fractal geometry in each dimensional context, emphasizing the mathematical foundations, characteristic properties, and practical applications that unify these diverse phenomena.
 
 The concept of fractal dimension extends the familiar notion of topological dimension to capture the scaling complexity of irregular objects. While a smooth curve has dimension 1 and a flat surface has dimension 2, fractals typically possess non-integer dimensions that quantify how completely they fill the space they inhabit.

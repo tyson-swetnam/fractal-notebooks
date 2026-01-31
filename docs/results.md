@@ -1,5 +1,7 @@
 # Results
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 Images of different computer-generated Lindenmayer systems (i.e., fractal trees) were analyzed using the open-source image analysis software **FracLac**. First, the fractal dimension was calculated using regular box-counting, and then with the differential box-count technique. The box-count analysis estimated the objects to have fractal dimensions between \( 1.81 \pm 0.056 < D_B < 1.90 \pm 0.66 \); however, the differential box-count mass dimension was found to be lower on average, with \( D_M = 1.60 \pm 0.10 \) (Table 1).
 
 In Tables 1-X and Figures X-X, the observed mass dimensions of x-ray leaves, branches, and roots are statistically indistinguishable from the MST and fractional Brownian motion (fBm) predictions of \( \alpha = 3/2 \).

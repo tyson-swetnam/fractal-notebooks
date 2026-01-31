@@ -1,5 +1,7 @@
 # Methods: Mathematical Frameworks for Biological Fractals
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## 2.1 The West-Brown-Enquist Model and Anisotropic Branching
 
 The West-Brown-Enquist (WBE) model revolutionized theoretical biology by proposing that the quarter-power scaling laws of metabolism (\( B \propto M^{3/4} \)) arise from the fractal geometry of nutrient transport networks. The model posits that evolution has optimized these networks to be space-filling (\( D \approx 3 \)) while minimizing hydrodynamic resistance and transport time.

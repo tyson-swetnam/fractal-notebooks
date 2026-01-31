@@ -1,5 +1,7 @@
 # Results: Fractal Signatures in Biological Systems
 
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
 ## 3.1 Deviations and "Wiggles": The Signature of Complex Dimensions
 
 Empirical data on metabolic scaling often show systematic deviations from the predicted \( 3/4 \) power law. These deviations appear as log-periodic oscillations or "wiggles" around the regression line. Rather than dismissing these as noise, the theory of complex fractal dimensions interprets them as the intrinsic signature of discrete self-similarity.
