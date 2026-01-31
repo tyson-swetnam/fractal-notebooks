@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(cat:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebFetch(domain:rockyweb.usgs.gov)",
+      "Bash(tree:*)"
     ]
   }
 }
