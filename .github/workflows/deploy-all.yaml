@@ -56,8 +56,6 @@ jobs:
       - name: Build React app
         working-directory: ./react
         run: npm run build
-        env:
-          PUBLIC_URL: /fractal-notebooks/react
           
       # Combine both builds
       - name: Combine MkDocs and React builds

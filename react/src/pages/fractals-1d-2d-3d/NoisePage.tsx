@@ -143,7 +143,6 @@ export const NoisePage: React.FC = () => {
     } catch (error) {
       console.error('Error generating noise data:', error);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
   const generateAnimationFrames = useCallback((brownian: NoiseSignal, pink: NoiseSignal, white: NoiseSignal, red: NoiseSignal) => {

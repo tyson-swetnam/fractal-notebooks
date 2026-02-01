@@ -35,3 +35,10 @@ pids
 
 # OS
 Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Vite generated files
+vite.config.js
+vite.config.d.ts

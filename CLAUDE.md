@@ -35,15 +35,15 @@ python -m mkdocs serve          # Local dev server at http://localhost:8000
 mkdocs build --site-dir site    # Production build
 ```
 
-### React Application
+### React Application (Vite)
 ```bash
 cd react
 npm ci                          # Install dependencies
 npm start                       # Dev server at http://localhost:33000
 npm run build                   # Production build
+npm run preview                 # Preview production build
 npm run type-check              # TypeScript type checking
 npm run lint                    # ESLint
-npm run test                    # Run Jest tests
 ```
 
 ### Streamlit Applications
@@ -93,11 +93,11 @@ docker run -p 8501:8501 fractal-app
 
 GitHub Actions deploys both MkDocs and React to GitHub Pages on push to `main`:
 - MkDocs builds to root
-- React builds to `/react` subdirectory with `PUBLIC_URL=/fractal-notebooks/react`
+- React (Vite) builds to `/react` subdirectory with base path configured in `vite.config.ts`
 - PR checks run type-check and lint for React, build test for MkDocs
 
 ## Key Dependencies
 
-**React:** React 18, MUI 5, D3 7, Plotly, react-router-dom 6, TypeScript 4.9, KaTeX
+**React:** React 18, Vite 7, MUI 5, D3 7, Plotly, react-router-dom 6, TypeScript 5, KaTeX, ESLint 9
 **Python (docs):** mkdocs-material, mkdocs-jupyter, mkdocstrings, pymdown-extensions
 **Python (apps):** streamlit, numpy, matplotlib, plotly, scipy, numba, pillow, imageio
