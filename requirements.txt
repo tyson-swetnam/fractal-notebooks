@@ -15,6 +15,7 @@ mkdocs-git-revision-date-plugin
 mkdocs-jupyter 
 mkdocs-material 
 mkdocs-pdf-export-plugin
+weasyprint>=68.0
 mkdocstrings 
 mkdocstrings-crystal
 mkdocstrings-python-legacy
