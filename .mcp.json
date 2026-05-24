@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fractal-rag": {
+      "command": "fractal-rag",
+      "args": ["serve"],
+      "env": {}
+    }
+  }
+}

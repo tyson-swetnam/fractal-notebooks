@@ -25,6 +25,28 @@ Fractal Notebooks is a collection of fractal visualization tools with three main
 - **MkDocs documentation** (`docs/`) - Published to GitHub Pages
 - **React web applications** (`react/`) - TypeScript/React fractal visualizers deployed to `/react` subdirectory
 - **Streamlit Python apps** (`apps/`) - Interactive fractal generators using scientific Python stack
+- **Fractal RAG stack** (`fractal_rag/`) - Weaviate-backed retrieval + MCP server. Design spec at `docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md`.
+
+## Using the fractal-explorer subagent
+
+This repo ships a custom subagent (`.claude/agents/fractal-explorer.md`) and an MCP wiring (`.mcp.json`) that connects Claude Code to a local Weaviate index over the Constellate JSONL corpus, Jupyter notebooks, and MkDocs markdown.
+
+Bring it up:
+```bash
+# 1. K3s manifests under k3s-deployment/ define Weaviate 1.35 + a
+#    text2vec-transformers (Arctic-embed-l-v2.0) GPU sidecar.
+kubectl apply -f k3s-deployment/
+
+# 2. Install + bootstrap the RAG package
+cd fractal_rag && pip install -e ".[dev,parsers]"
+fractal-rag schema bootstrap
+fractal-rag pull            # gocmd-backed iRODS sync (one-time, ~30 GB)
+fractal-rag ingest --source all
+
+# 3. In Claude Code, ask questions; the `fractal-explorer` agent will
+#    pick up the .mcp.json wiring automatically and answer with citations.
+```
+The agent is read-only by design — it only retrieves and synthesizes.
 
 ## Common Commands
 
