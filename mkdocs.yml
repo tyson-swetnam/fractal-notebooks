@@ -76,6 +76,17 @@ nav:
     - 3D Visualization: applications/tree-roots-3d.md
     - Blender DLA: applications/blender-dla.md
 
+  - Fractal RAG:
+    - Overview: fractal-rag/index.md
+    - Local Setup: fractal-rag/local-setup.md
+    - Hosted VM (K3s): fractal-rag/hosted-vm.md
+    - Using the Agent: fractal-rag/using-the-agent.md
+    - Troubleshooting: fractal-rag/troubleshooting.md
+    - Notebooks:
+      - Quickstart: fractal-rag/notebooks/01_quickstart.ipynb
+      - Hybrid Search: fractal-rag/notebooks/02_hybrid_search.ipynb
+      - Concept Ontology: fractal-rag/notebooks/03_concept_ontology.ipynb
+
   - Part VII - Notebooks:
     - Overview: notebooks/index.md
     - DLA: notebooks/old_dla.ipynb
