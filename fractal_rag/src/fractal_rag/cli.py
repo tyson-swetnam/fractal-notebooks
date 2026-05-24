@@ -131,9 +131,10 @@ def status() -> None:
 
 @main.command()
 def serve() -> None:
-    """Run the MCP server on stdio transport (Phase F)."""
-    click.echo("[stub] serve — implemented in Phase F", err=True)
-    sys.exit(2)
+    """Run the MCP server on stdio transport."""
+    from .server.mcp import serve_stdio
+
+    serve_stdio()
 
 
 @main.command()
