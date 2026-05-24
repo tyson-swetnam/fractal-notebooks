@@ -59,19 +59,59 @@ def concepts_validate() -> None:
 
 
 @main.command()
-@click.option("--source", type=click.Choice(["json", "notebooks", "docs", "pdfs", "all"]),
-              default="all")
-def ingest(source: str) -> None:
-    """Parse, chunk, enrich, and batch-import the corpus (Phase E)."""
-    click.echo(f"[stub] ingest source={source} — implemented in Phase E", err=True)
-    sys.exit(2)
+@click.option(
+    "--source",
+    type=click.Choice(["json", "notebooks", "docs", "pdfs", "all"]),
+    default="all",
+)
+@click.option("--limit", type=int, default=None, help="Cap docs per source (for smoke tests).")
+@click.option("--dry-run", is_flag=True, help="Don't touch Weaviate; print would-be totals.")
+def ingest(source: str, limit: int | None, dry_run: bool) -> None:
+    """Parse, chunk, enrich, and batch-import the corpus."""
+    from .ingest import DryRunWriter, WeaviateWriter, run_ingest
+
+    sources = ["json", "notebooks", "docs", "pdfs"] if source == "all" else [source]
+
+    if dry_run:
+        writer = DryRunWriter()
+        report = run_ingest(sources, writer, limit_per_source=limit)
+        click.echo(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "concepts": len(writer.concepts),
+                    "artifacts": len(writer.artifacts),
+                    "report": report.to_dict(),
+                },
+                indent=2,
+            )
+        )
+        return
+
+    with client_session() as client:
+        writer = WeaviateWriter(client)
+        report = run_ingest(sources, writer, limit_per_source=limit)
+    click.echo(json.dumps(report.to_dict(), indent=2))
 
 
-@main.command()
-def pull() -> None:
-    """Pull the corpus from iRODS using gocmd (Phase C)."""
-    click.echo("[stub] pull — implemented in Phase C", err=True)
-    sys.exit(2)
+@main.command("pull")
+@click.option("--force", is_flag=True, help="Re-download files even if checksum matches.")
+@click.option("--dry-run", is_flag=True, help="Print the gocmd command without running it.")
+def pull_cmd(force: bool, dry_run: bool) -> None:
+    """Pull the corpus from iRODS using gocmd."""
+    from .pull import pull as do_pull
+
+    result = do_pull(force=force, dry_run=dry_run)
+    click.echo(
+        json.dumps(
+            {
+                "irods_root": result.irods_root,
+                "local_root": str(result.local_root),
+                "returncode": result.returncode,
+            },
+            indent=2,
+        )
+    )
 
 
 @main.command()
