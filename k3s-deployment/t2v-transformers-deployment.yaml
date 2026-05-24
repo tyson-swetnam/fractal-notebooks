@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t2v-transformers
+  namespace: ai-workloads
+  labels:
+    app: t2v-transformers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t2v-transformers
+  template:
+    metadata:
+      labels:
+        app: t2v-transformers
+    spec:
+      containers:
+        - name: t2v-transformers
+          image: cr.weaviate.io/semitechnologies/transformers-inference:snowflake-snowflake-arctic-embed-l-v2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENABLE_CUDA
+              value: "1"
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          readinessProbe:
+            httpGet:
+              path: /.well-known/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /.well-known/live
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "2"
+              memory: "8Gi"
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8"
+              memory: "24Gi"
+              nvidia.com/gpu: 1

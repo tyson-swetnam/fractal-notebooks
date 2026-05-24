@@ -17,12 +17,11 @@ spec:
     spec:
       containers:
         - name: weaviate
-          image: semitechnologies/weaviate:1.27.0
+          image: semitechnologies/weaviate:1.35.0
           imagePullPolicy: IfNotPresent
-          # Use default entrypoint and command
           ports:
             - containerPort: 8080
-            - containerPort: 50051 
+            - containerPort: 50051
           env:
             - name: QUERY_DEFAULTS_LIMIT
               value: "100"
@@ -38,7 +37,12 @@ spec:
               value: "600"
             - name: GOGC
               value: "100"
-            # Add additional environment variables if needed
+            - name: ENABLE_MODULES
+              value: "text2vec-transformers"
+            - name: DEFAULT_VECTORIZER_MODULE
+              value: "text2vec-transformers"
+            - name: TRANSFORMERS_INFERENCE_API
+              value: "http://t2v-transformers:8080"
           volumeMounts:
             - name: weaviate-data
               mountPath: /var/lib/weaviate
@@ -62,13 +66,12 @@ spec:
             failureThreshold: 3
           resources:
             requests:
-              cpu: "1"
-              memory: "2Gi"
+              cpu: "2"
+              memory: "4Gi"
             limits:
-              cpu: "4"
-              memory: "8Gi"
+              cpu: "8"
+              memory: "16Gi"
       volumes:
         - name: weaviate-data
           persistentVolumeClaim:
             claimName: weaviate-pvc
-
