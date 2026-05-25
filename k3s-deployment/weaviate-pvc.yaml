@@ -3,12 +3,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: weaviate-pvc
   namespace: ai-workloads
-  annotations:
-    volume.kubernetes.io/selected-node: gpu06.cyverse.org
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 50Gi
-  storageClassName: "local-storage" # Corrected
+  storageClassName: "local-path"
