@@ -429,7 +429,7 @@ export const TreePage: React.FC = () => {
                 onClick={toggleAnimation}
                 startIcon={isAnimating ? <Pause /> : <PlayArrow />}
                 fullWidth
-                sx={{ backgroundColor: '#228B22' }}
+                sx={{ backgroundColor: '#2e7d32' }}
               >
                 {isAnimating ? 'Pause' : 'Animate'} Growth
               </Button>

@@ -49,9 +49,21 @@ const fractalCategories = [
   },
   {
     title: 'Branching Architectures',
-    description: 'Nature-inspired fractal structures using recursive algorithms and iterated function systems.',
+    description: 'Nature-inspired fractal structures using recursive algorithms, L-systems, and iterated function systems — from bryophytes to woody trees.',
     color: '#34a853',
     applications: [
+      {
+        title: 'Plant Architecture Lab',
+        description: 'Grow nine botanically-informed 3D forms from L-systems: liverworts, hornworts, mosses, ferns, fruticose lichens, herbaceous plants, shrubs, and trees.',
+        path: '/plant-lab',
+        color: '#2e7d32'
+      },
+      {
+        title: 'Fern Frond 3D',
+        description: 'Watch a bipinnate fern frond unroll from its coiled fiddlehead (circinate vernation), base to tip, with full control over pinnae and coil.',
+        path: '/fern-frond-3d',
+        color: '#4c9a2a'
+      },
       {
         title: 'Diffusion-Limited Aggregation',
         description: 'Vector-field guided particle aggregation creating dendritic growth patterns. Models lightning, coral, and river networks.',

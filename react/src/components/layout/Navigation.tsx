@@ -38,14 +38,16 @@ const navItems: NavItem[] = [
       { path: '/zeta-3d-visualization', label: '3D Zeta Visualization' },
     ]
   },
-  { 
+  {
     label: 'Branching Architectures',
     items: [
+      { path: '/plant-lab', label: 'Plant Architecture Lab' },
+      { path: '/fern-frond-3d', label: 'Fern Frond 3D' },
+      { path: '/tree-roots-3d', label: '3D Tree with Roots' },
       { path: '/dla', label: 'Diffusion-Limited Aggregation' },
       { path: '/ferns', label: 'Barnsley Ferns' },
       { path: '/trees', label: 'Fractal Trees' },
       { path: '/pythagoras', label: 'Pythagoras Tree' },
-      { path: '/tree-roots-3d', label: '3D Tree with Roots' },
     ]
   }
 ];
