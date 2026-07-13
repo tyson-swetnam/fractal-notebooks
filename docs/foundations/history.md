@@ -40,6 +40,8 @@ $$
 
 This non-integer dimension---between a point (dimension 0) and a line (dimension 1)---was one of the first hints that classical topology could not fully characterize geometric complexity.
 
+> **On rigor.** The formula $D = \log N/\log(1/r)$ gives the *similarity dimension*. It coincides with the Hausdorff dimension only when the pieces do not overlap too much---formally, when the generating maps satisfy the **open set condition** (Moran 1946; Hutchinson 1981). Every self-similar construction in this chapter satisfies that condition, so the values quoted here are genuine Hausdorff dimensions. Step-by-step derivations, with machine-checked arithmetic and each assumption flagged, are collected in the [proof appendix](#appendix-verified-proofs).
+
 ### Helge von Koch and the Koch Snowflake (1904)
 
 Swedish mathematician Helge von Koch constructed his eponymous curve in 1904 to demonstrate a continuous curve that is **nowhere differentiable**. Unlike the Cantor set, which removes material, the Koch construction adds structure at each iteration:
@@ -51,7 +53,7 @@ Swedish mathematician Helge von Koch constructed his eponymous curve in 1904 to 
 The resulting **Koch snowflake** has several striking properties:
 
 - **Infinite perimeter**: Each iteration multiplies the perimeter by $4/3$, so the limiting curve has infinite length.
-- **Finite area**: The area converges to $\frac{8}{5}$ times the original triangle's area.
+- **Finite area**: A single Koch *curve* bounds no area, but the closed **Koch snowflake** built on a triangle does: its area converges to $\frac{8}{5}$ times the original triangle's area. An infinite boundary thus encloses a finite region.
 - **Exact self-similarity**: Any small portion of the boundary, magnified appropriately, is identical to the whole.
 
 The Koch curve's fractal dimension is:
@@ -92,9 +94,25 @@ $$
 
 Sierpinski's constructions provided early examples of sets whose dimension could be precisely calculated from their recursive structure.
 
+### Karl Menger and the Menger Sponge (1926)
+
+Karl Menger carried the Cantor–Sierpinski idea into three dimensions. Beginning with a solid cube, subdivide it into a $3\times3\times3$ grid of $27$ sub-cubes and remove the central cube together with the six face-centre cubes, leaving $20$; repeat on each remaining cube *ad infinitum*. The resulting **Menger sponge** has dimension
+
+$$
+D_{\text{Menger}} = \frac{\log 20}{\log 3} \approx 2.727
+$$
+
+Each face of the sponge is a Sierpinski carpet, and each straight cross-section through the axes is a Cantor set, so the sponge unifies the two lower-dimensional constructions. Menger also proved it is a **universal curve**: despite living in space, it has topological dimension $1$ and contains a homeomorphic copy of *every* compact curve. (See the [proof appendix](#appendix-verified-proofs).)
+
+### Felix Hausdorff and the Measure of Dimension (1918)
+
+The constructions above all beg the same question: in what precise sense does a set have dimension $\log 2/\log 3$? The rigorous answer came from **Felix Hausdorff**, who in 1918 defined what is now called **Hausdorff measure** and **Hausdorff dimension**—the infimum of exponents $d$ for which the $d$-dimensional measure of a set vanishes. Hausdorff's definition, refined by **Abram Besicovitch** through the 1920s and 1930s into a full theory of measure and rectifiability, is what turns the heuristic "similarity dimension" $\log N/\log(1/r)$ into a theorem. It is the reason Mandelbrot would later name his defining quantity the *Hausdorff–Besicovitch dimension*.
+
+The fractals so far are all built by an explicit geometric recipe---remove a third, add a bump, delete a center. The next family arises differently: not from a construction rule but from the *dynamics* of repeatedly applying a single function, where the fractal is the boundary between orbits that stay bounded and orbits that escape to infinity.
+
 ### Gaston Julia and Julia Sets (1918)
 
-French mathematician Gaston Julia, together with Pierre Fatou, studied the iteration of rational functions in the complex plane during 1918-1919. Julia published his 199-page memoir "Memoire sur l'iteration des fonctions rationnelles" in 1918, for which he received the Grand Prix of the French Academy of Sciences.
+French mathematician Gaston Julia and, independently and nearly simultaneously, **Pierre Fatou** studied the iteration of rational functions in the complex plane around 1917–1920. The two arrived at the core results by different routes and not without rivalry: Julia published his 199-page memoir "Mémoire sur l'itération des fonctions rationnelles" in 1918, for which he received the Grand Prix of the French Academy of Sciences, while Fatou developed an equally foundational theory in his 1919–1920 papers. Modern terminology honours both—the **Julia set** is the locus of chaotic dynamics, and its complement, where iteration is well-behaved, is the **Fatou set**. Earlier still, **Paul Lévy** studied self-similar curves such as the Lévy C curve, bridging the nineteenth-century "monsters" and the probabilistic fractals to come.
 
 For a complex polynomial $f(z) = z^2 + c$, Julia defined the **filled Julia set** $K_c$ as the set of complex numbers $z$ whose iterates remain bounded:
 
@@ -108,7 +126,7 @@ Julia and Fatou proved that these sets exhibit remarkable complexity:
 
 - For some values of $c$, $J_c$ is a connected, intricate fractal.
 - For other values, $J_c$ is totally disconnected (Cantor-like dust).
-- The Julia set is precisely self-similar under the dynamics of $f$.
+- The Julia set is invariant under the dynamics of $f$ (it maps onto itself), and near repelling periodic points it is *dynamically* self-similar. This is scale invariance under iteration—not, in general, the exact geometric self-similarity of an iterated function system.
 
 However, without computers, Julia could only glimpse the structure of these sets through mathematical analysis. The visual beauty of Julia sets would not be revealed until the advent of computer graphics in the 1970s.
 
@@ -120,7 +138,7 @@ $$
 W(x) = \sum_{n=0}^{\infty} a^n \cos(b^n \pi x)
 $$
 
-where $0 < a < 1$, $b$ is an odd integer, and $ab > 1 + \frac{3\pi}{2}$. This function is continuous everywhere but differentiable nowhere.
+where $0 < a < 1$, $b$ is an odd integer, and $ab > 1 + \frac{3\pi}{2}$. This function is continuous everywhere (the series converges uniformly by the Weierstrass $M$-test) but differentiable nowhere. The threshold $1 + \tfrac{3\pi}{2} \approx 5.71$ is an artifact of Weierstrass's 1872 proof technique, not a fundamental barrier: **G. H. Hardy** (1916) showed the sharp condition is simply $ab \ge 1$, and dropped the requirement that $b$ be an odd integer. The graph of $W$ is itself a fractal, with box-counting dimension $2 + \log a/\log b$.
 
 These pathological functions, far from being mere curiosities, would prove essential to modeling natural phenomena. As Mandelbrot later emphasized, the smooth curves of classical calculus are the exception rather than the rule in nature.
 
@@ -140,7 +158,7 @@ This definition captured the essential property that fractals occupy "fractional
 
 Mandelbrot's magnum opus, *The Fractal Geometry of Nature* (1982), synthesized decades of scattered mathematical results into a unified vision. The book demonstrated that fractal geometry could describe:
 
-- **Coastlines and boundaries**: The famous question "How long is the coast of Britain?" has no definitive answer; the measured length depends on the ruler's scale, following a power law.
+- **Coastlines and boundaries**: The famous question "How long is the coast of Britain?" has no definitive answer; the measured length depends on the ruler's scale, following a power law. Mandelbrot's 1967 paper on this question built directly on the empirical work of **Lewis Fry Richardson**, who a decade earlier had measured how national border and coastline lengths grow as the measuring stride shrinks—the data Mandelbrot reinterpreted as a fractal dimension.
 - **Mountains and clouds**: Terrain roughness and cloud boundaries exhibit statistical self-similarity across scales.
 - **Turbulence**: Fluid turbulence displays fractal intermittency.
 - **Biological structures**: Blood vessels, bronchial trees, and neuronal networks branch hierarchically with fractal characteristics.
@@ -162,10 +180,14 @@ That is, $c \in \mathcal{M}$ if and only if the Julia set $J_c$ is connected.
 
 The Mandelbrot set has extraordinary properties:
 
-- **Self-similarity**: The boundary of $\mathcal{M}$ contains infinitely many scaled copies of the whole set.
-- **Infinite complexity**: Zooming into the boundary reveals ever-new structures at every scale.
-- **Connectivity**: Despite its intricate boundary, $\mathcal{M}$ is a connected set.
+- **Quasi-self-similarity**: The boundary of $\mathcal{M}$ contains infinitely many small copies of the whole set. These "baby Mandelbrots" are *approximate*, homeomorphic copies with controlled distortion (Douady–Hubbard), not exact affine rescalings—$\mathcal{M}$ is not strictly self-similar in the sense of an iterated function system.
+- **Infinite complexity**: Zooming into the boundary reveals ever-new structures at every scale. In fact the boundary is maximally rough: its Hausdorff dimension is $2$ (Shishikura 1998; see the [proof appendix](#appendix-verified-proofs)).
+- **Connectivity**: Despite its intricate boundary, $\mathcal{M}$ is a connected set (Douady–Hubbard 1982).
 - **Universal structure**: The Mandelbrot set appears in the parameter spaces of many other dynamical systems.
+
+The rigorous theory of $\mathcal{M}$ was established by **Adrien Douady and John Hubbard** in the early 1980s. Their work proved the set connected, explained the baby-Mandelbrot copies through the theory of *quadratic-like maps* and *renormalization*, and supplied the parameter–dynamics correspondence that links each $c$ to the shape of its Julia set—filling the sixty-year gap between Julia and Fatou's analysis and Mandelbrot's computer images.
+
+What made these images computable is a simple escape criterion: if any iterate of $0$ ever exceeds modulus $2$, the orbit is guaranteed to diverge, so $c \notin \mathcal{M}$. This radius-$2$ bailout, proved in the [appendix](#appendix-verified-proofs), turns membership in $\mathcal{M}$ into a finite test and underlies every Mandelbrot renderer.
 
 The first computer visualizations of the Mandelbrot set, produced by Mandelbrot and colleagues at IBM in 1980, captivated both mathematicians and the public. The set's visual complexity, emerging from the simple iteration $z \mapsto z^2 + c$, became an icon of chaos theory and the mathematics of complexity.
 
@@ -195,11 +217,13 @@ $$
 
 where each $T_i$ scales by the same factor in all directions.
 
-For self-similar sets, the box-counting dimension equals the Hausdorff dimension, and both can be computed from the scaling ratios:
+For self-similar sets that satisfy the **open set condition** (the copies overlap negligibly), the box-counting dimension equals the Hausdorff dimension, and both can be computed from the scaling ratios:
 
 $$
 D = \frac{\log N}{\log(1/r)}
 $$
+
+Without a separation condition this equality can fail—overlapping systems can have box dimension strictly larger than Hausdorff dimension—which is why the formula is a theorem about *well-separated* self-similar sets rather than a definition.
 
 Examples of exactly self-similar fractals include:
 
@@ -216,7 +240,7 @@ $$
 f(x) \stackrel{d}{=} \lambda^{-H} f(\lambda x)
 $$
 
-where $\stackrel{d}{=}$ denotes equality in distribution and $H$ is the **Hurst exponent** ($0 < H < 1$).
+where $\stackrel{d}{=}$ denotes equality in distribution and $H$ is the **Hurst exponent** ($0 < H < 1$). The exponent is named for **Harold Edwin Hurst**, a British hydrologist who, studying eight centuries of Nile flood records while planning the Aswan High Dam, found in 1951 that reservoir capacity scaled with record length faster than independent-increment statistics predicted. This *long-range dependence*—later christened the "Hurst phenomenon"—is the empirical seed of the whole self-affinity discussion.
 
 The Hurst exponent characterizes the roughness of self-affine processes:
 
@@ -275,7 +299,35 @@ This universality suggested that self-affinity, rather than self-similarity, is 
 
 ---
 
-## 1.4 Fractals Enter Biology: Sernetz, West, Brown, Enquist
+## 1.4 Random and Generative Fractals
+
+The fractals of §1.1 follow a fixed geometric recipe, and the self-affine traces of §1.3 arise from stochastic processes. Between these lie further routes to fractal structure—iterated function systems, random spatial growth, and formal rewriting grammars—that the classical narrative often skips but that dominate the applied literature.
+
+### Iterated Function Systems and the Barnsley Fern (1988)
+
+**Michael Barnsley** reframed self-similar fractals as the attractors of *iterated function systems* (IFS): a finite set of contraction maps whose unique invariant set is the fractal. Assigning a probability to each map and iterating a single point—the "chaos game"—paints the attractor point by point. His **Barnsley fern** uses just four affine maps to render a structure indistinguishable from a real *Asplenium* frond. Because those maps shear and overlap (they are not similarities and violate the open set condition), the fern has no closed-form similarity dimension; its box-counting dimension is measured numerically at $D \approx 1.83$ (see the [proof appendix](#appendix-verified-proofs)). This insight—that a lifelike form can be compressed into a handful of affine coefficients—became the basis of **fractal image compression**.
+
+### L-Systems (Lindenmayer, 1968)
+
+Biologist **Aristid Lindenmayer** introduced **L-systems**: parallel string-rewriting grammars in which every symbol is replaced simultaneously at each step, the output then interpreted as turtle-graphics drawing commands. Originally a model of filamentous plant growth, L-systems generate Koch curves, Sierpinski shapes, and, with branching rules, realistic trees and inflorescences. They provide a *generative* rather than *geometric* or *dynamical* definition of a fractal and are the workhorse of procedural botany in computer graphics.
+
+### Diffusion-Limited Aggregation (Witten–Sander, 1981)
+
+**Thomas Witten and Leonard Sander** introduced **diffusion-limited aggregation** (DLA): particles undergo random walks and stick irreversibly upon contacting a growing cluster. The result is a branched, tenuous structure with fractal dimension $\approx 1.71$ in the plane. DLA models a strikingly broad range of physical growth—electrodeposition, mineral dendrites, viscous fingering, dielectric breakdown—and, unlike the deterministic classics, its fractality is an emergent statistical property with no exact dimension formula.
+
+### Fractional Brownian Motion (Mandelbrot–Van Ness, 1968)
+
+The self-affine traces discussed in §1.3 have a canonical mathematical model: **fractional Brownian motion** (fBm), introduced by **Mandelbrot and John Van Ness** in 1968. fBm generalizes ordinary Brownian motion with the Hurst exponent $H$, so that increments are positively correlated ($H>\tfrac12$), independent ($H=\tfrac12$), or anti-correlated ($H<\tfrac12$). The graph of an fBm trace is a self-affine fractal of box-counting dimension $2-H$—exactly the "local dimension" that appears in Mandelbrot's crossover analysis above.
+
+## 1.5 Fractals Enter Biology: Sernetz, West, Brown, Enquist
+
+If self-affinity is the dominant fractal signature of nature, living systems
+should display it most vividly---and they do. The branching of blood vessels,
+airways, and plant vasculature turns the abstract scaling laws of the previous
+sections into concrete predictions about metabolism, lifespan, and growth. This
+section traces how fractal geometry moved from describing coastlines to
+explaining the quarter-power laws that organize life across twenty-one orders of
+magnitude in body mass.
 
 ### Early Biological Applications (1980s)
 
@@ -325,6 +377,8 @@ $$
 
 The exponent $3/4$ emerges from the geometric constraints on space-filling networks, not from surface-to-volume ratios (which would predict $2/3$).
 
+The derivation is elegant but not purely geometric: the step from network structure to *metabolic rate* also assumes that terminal units (capillaries) are size-invariant across species, that the network minimizes the energy dissipated in circulation, and that impedance is matched to suppress reflected pulse waves. The $3/4$ exponent follows once these physiological premises are granted; the [proof appendix](#appendix-verified-proofs) verifies the algebra and flags exactly which premises are assumed rather than derived.
+
 ### Quarter-Power Scaling Laws
 
 MST predicted and explained numerous quarter-power scaling relationships:
@@ -351,7 +405,14 @@ These observations suggest that vascular systems are **self-affine** rather than
 
 ---
 
-## 1.5 Modern Developments: Complex Dimensions and Spectral Geometry
+## 1.6 Modern Developments: Complex Dimensions and Spectral Geometry
+
+A single real number---the fractal dimension---captures how a set fills space,
+but it discards information. Two fractals can share a dimension yet scale in
+visibly different ways, one smoothly and one in rhythmic bursts. The modern
+theory recovers that lost information by promoting dimension from a real number
+to a discrete set of *complex* numbers, whose imaginary parts encode the
+periodic oscillations that a single real dimension cannot see.
 
 ### Lapidus and van Frankenhuijsen: Theory of Complex Dimensions
 
@@ -437,12 +498,72 @@ The history of fractal mathematics traces an arc from pathological counterexampl
 
 | Era | Key Figures | Contribution |
 |-----|-------------|--------------|
-| 1883-1920 | Cantor, Koch, Sierpinski, Julia | Discovery of "mathematical monsters" |
+| 1872-1926 | Weierstrass, Cantor, Koch, Sierpinski, Menger, Julia, Fatou | Discovery of "mathematical monsters" |
+| 1918-1938 | Hausdorff, Besicovitch, Lévy | Rigorous measure and dimension theory |
+| 1961-1975 | Richardson, Mandelbrot | Coastline power laws; coining of "fractal" |
+| 1968-1988 | Lindenmayer, Mandelbrot & Van Ness, Witten & Sander, Barnsley | Generative, random, and IFS fractals |
 | 1975-1985 | Mandelbrot | Synthesis into fractal geometry; self-affinity vs. self-similarity |
+| 1982-1998 | Douady, Hubbard, Shishikura | Rigorous theory of the Mandelbrot set |
 | 1985-2000 | Sernetz, West, Brown, Enquist | Application to biological scaling |
 | 1990-present | Lapidus, van Frankenhuijsen | Complex dimensions and spectral geometry |
 
 The progression from recognizing fractal patterns to understanding their spectral structure mirrors the broader development of modern mathematics: from observation to classification to deep structural theory. Fractal geometry has proven to be not a curiosity but a fundamental language for describing the rough, irregular, hierarchical structures that pervade nature.
+
+---
+
+## Appendix: Verified Proofs
+
+Each quantitative result stated in this chapter has a companion proof document in
+the project's OKF proof bundle (`okf/proofs/`). Every document states the theorem,
+its assumptions, numbered proof steps, and---critically---an explicit
+**verification status** distinguishing steps checked by symbolic or numerical
+computation (`[verified]`) from steps asserted on the authority of a named,
+cited theorem (`[asserted]`). This separation is deliberate: it records exactly
+which claims a machine confirmed and which rest on results proved elsewhere in
+the literature.
+
+All checkable quantitative claims in this chapter were confirmed with SymPy and
+NumPy before capture, including the Menger sponge dimension ($\log 20/\log 3$)
+and a numerical box-counting estimate for the Barnsley fern ($\approx 1.83$).
+The load-bearing external theorems---the open-set-condition dimension identity
+(Moran/Hutchinson), Hardy's nowhere-differentiability result, the Fatou–Julia
+dichotomy, and Shishikura's $\dim_H\partial\mathcal{M}=2$---are cited but not
+re-derived, and are flagged as such.
+
+| Result in this chapter | Value | Proof document | Status |
+|---|---|---|---|
+| Cantor set dimension | $D = \log 2/\log 3 \approx 0.6309$ | `okf/proofs/cantor-set-dimension.md` | verified |
+| Cantor set measure zero | $\lambda(\mathcal{C}) = 0$ | `okf/proofs/cantor-set-dimension.md` | verified |
+| Cantor set uncountable | $\mathfrak{c} = 2^{\aleph_0}$ | `okf/proofs/cantor-set-dimension.md` | verified |
+| Koch curve dimension | $D = \log 4/\log 3 \approx 1.2619$ | `okf/proofs/koch-curve-dimension.md` | verified |
+| Koch perimeter / snowflake area | $\infty$ / $\tfrac{8}{5}A_0$ | `okf/proofs/koch-curve-dimension.md` | verified |
+| Sierpinski triangle dimension | $D = \log 3/\log 2 \approx 1.585$ | `okf/proofs/sierpinski-dimension.md` | verified |
+| Sierpinski carpet dimension | $D = \log 8/\log 3 \approx 1.893$ | `okf/proofs/sierpinski-dimension.md` | verified |
+| Menger sponge dimension | $D = \log 20/\log 3 \approx 2.727$ | `okf/proofs/menger-sponge-dimension.md` | verified |
+| Barnsley fern dimension | $D_{\text{box}} \approx 1.83$ (no closed form) | `okf/proofs/barnsley-fern-dimension.md` | partially-verified |
+| Mandelbrot escape criterion | $\lvert z\rvert > 2 \Rightarrow$ escape | `okf/proofs/mandelbrot-escape.md` | verified |
+| Mandelbrot boundary dimension | $\dim_H \partial\mathcal{M} = 2$ | `okf/proofs/mandelbrot-boundary-dimension.md` | unverified |
+| Julia connectedness dichotomy | $J_c$ connected $\iff c \in \mathcal{M}$ | `okf/proofs/julia-connectedness.md` | partially-verified |
+| Weierstrass nowhere-differentiable | $ab > 1 + \tfrac{3\pi}{2}$ | `okf/proofs/weierstrass-nondifferentiability.md` | partially-verified |
+| Self-affine spectral relation | $\beta = 2H + 1$ | `okf/proofs/self-affine-spectral.md` | verified |
+| WBE quarter-power law | $B \propto M^{3/4}$ | `okf/proofs/wbe-quarter-power.md` | partially-verified |
+| Cantor complex dimensions | $\omega_k = \tfrac{\log 2}{\log 3} + i\tfrac{2\pi k}{\log 3}$ | `okf/proofs/complex-dimensions-cantor.md` | verified |
+
+A `partially-verified` status means the central computation was machine-checked
+but a substantive structural claim is asserted from a named theorem: the
+Fatou–Julia dichotomy is a topological result no finite computation can settle;
+Weierstrass nowhere-differentiability rests on Hardy (1916); the WBE
+derivation's space-filling and area-preserving premises are biological modeling
+assumptions, with only the algebra that follows from them verified; and the
+Barnsley fern has no closed-form dimension to check its numerical estimate
+against.
+
+An `unverified` status is reserved for results that are important enough to cite
+but that no available tool can machine-check—here, Shishikura's theorem that the
+Mandelbrot boundary has Hausdorff dimension $2$. Recording it explicitly, rather
+than omitting it or overstating its status, is itself the point: the proof
+bundle distinguishes what a machine confirmed from what rests on the published
+literature.
 
 ---
 
@@ -455,3 +576,18 @@ For readers wishing to explore these topics in greater depth:
 - Mandelbrot, B. B. *Gaussian Self-Affinity and Fractals*. Springer, 2002.
 - West, G. B., J. H. Brown, and B. J. Enquist. "A General Model for the Origin of Allometric Scaling Laws in Biology." *Science*, vol. 276, 1997, pp. 122-126.
 - Lapidus, M. L. and M. van Frankenhuijsen. *Fractal Geometry, Complex Dimensions and Zeta Functions*. 2nd ed., Springer, 2012.
+- Barnsley, M. F. *Fractals Everywhere*. Academic Press, 1988.
+- Falconer, K. *Fractal Geometry: Mathematical Foundations and Applications*. 3rd ed., Wiley, 2014.
+- Hardy, G. H. "Weierstrass's Non-Differentiable Function." *Transactions of the American Mathematical Society*, vol. 17, 1916, pp. 301-325.
+- Shishikura, M. "The Hausdorff Dimension of the Boundary of the Mandelbrot Set and Julia Sets." *Annals of Mathematics*, vol. 147, 1998, pp. 225-267.
+- Witten, T. A. and L. M. Sander. "Diffusion-Limited Aggregation, a Kinetic Critical Phenomenon." *Physical Review Letters*, vol. 47, 1981, pp. 1400-1403.
+
+## Beyond this chapter
+
+This history traces one path through fractal geometry; the project's concept
+ontology is broader. For canonical definitions, dimension ranges, and
+cross-links covering topics this chapter treats only in passing—percolation and
+self-organized criticality, multifractal spectra, lacunarity, differential
+box-counting, and more—see the [concept knowledge bundle](../../okf/concepts/)
+(`okf/concepts/`). Machine-checked derivations of the quantitative results are
+in the [proof bundle](../../okf/proofs/) (`okf/proofs/`).
