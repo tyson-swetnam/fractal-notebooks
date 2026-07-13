@@ -47,6 +47,18 @@
     epsilon and measuring how the count N(epsilon) scales as epsilon -> 0.
   domain: [dimension-theory, methods]
 
+- name: Open Set Condition
+  aliases: [osc, moran condition, moran open set condition]
+  definition: >-
+    Separation hypothesis on an iterated function system: there exists a
+    nonempty bounded open set U with the union of the maps' images of U
+    contained in U and those images pairwise disjoint. When it holds for
+    similarities, the similarity dimension log N / log(1/r) equals the Hausdorff
+    dimension (Moran 1946; Hutchinson 1981). It is the precise condition that
+    licenses the closed-form dimension formulas for the classical self-similar
+    fractals.
+  domain: [dimension-theory, measure-theory]
+
 - name: Differential Box-Counting
   aliases: [dbc, differential box counting]
   definition: >-
