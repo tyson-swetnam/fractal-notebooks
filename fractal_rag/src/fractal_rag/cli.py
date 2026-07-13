@@ -8,10 +8,13 @@ from pathlib import Path
 
 import click
 
-from .client import client_session
 from .concepts.loader import load_seed
 from .config import get_settings
-from .schema import bootstrap
+
+# NOTE: `.client` / `.schema` import weaviate, which is only needed for the
+# Weaviate-backed commands. Import them lazily inside those commands so that
+# `fractal-rag okf export`, `concepts list/validate`, and `--help` work without
+# a weaviate install.
 
 
 @click.group()
@@ -29,6 +32,9 @@ def schema() -> None:
 @click.option("--drop", is_flag=True, help="Delete existing collections first (destructive).")
 def schema_bootstrap(drop: bool) -> None:
     """Create FractalArtifact and Concept collections if missing."""
+    from .client import client_session
+    from .schema import bootstrap
+
     with client_session() as client:
         result = bootstrap(client, drop_existing=drop)
     click.echo(json.dumps({
@@ -58,6 +64,33 @@ def concepts_validate() -> None:
     click.echo(f"OK: {len(records)} concepts validated")
 
 
+@main.group()
+def okf() -> None:
+    """Open Knowledge Format (OKF v0.1) bundle commands."""
+
+
+@okf.command("export")
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=Path("okf/concepts"),
+    help="Output directory for the generated bundle.",
+)
+@click.option("--date", default=None, help="ISO date to stamp (default: today).")
+def okf_export(out: Path, date: str | None) -> None:
+    """Generate an OKF v0.1 concept bundle from concepts/seed.yaml.
+
+    The seed YAML is the authoring source of truth; the bundle is a generated
+    artifact. Re-run after editing the seed to keep them in sync.
+    """
+    from .okf_export import DEFAULT_SEED, export
+
+    stats = export(DEFAULT_SEED, out, date)
+    click.echo(
+        f"Wrote {stats['concepts']} concepts across {stats['groups']} groups to {out}"
+    )
+
+
 @main.command()
 @click.option(
     "--source",
@@ -68,6 +101,7 @@ def concepts_validate() -> None:
 @click.option("--dry-run", is_flag=True, help="Don't touch Weaviate; print would-be totals.")
 def ingest(source: str, limit: int | None, dry_run: bool) -> None:
     """Parse, chunk, enrich, and batch-import the corpus."""
+    from .client import client_session
     from .ingest import DryRunWriter, WeaviateWriter, run_ingest
 
     sources = ["json", "notebooks", "docs", "pdfs"] if source == "all" else [source]
@@ -117,6 +151,8 @@ def pull_cmd(force: bool, dry_run: bool) -> None:
 @main.command()
 def status() -> None:
     """Show collection object counts."""
+    from .client import client_session
+
     settings = get_settings()
     with client_session(settings) as client:
         counts = {}
@@ -142,6 +178,8 @@ def serve() -> None:
 @click.option("--limit", default=5)
 def query(query: str, limit: int) -> None:
     """Quick CLI for a hybrid search against content_vec."""
+    from .client import client_session
+
     settings = get_settings()
     with client_session(settings) as client:
         coll = client.collections.get(settings.artifact_collection)
