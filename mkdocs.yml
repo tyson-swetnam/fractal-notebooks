@@ -39,6 +39,15 @@ nav:
     - Discussion: metabolic-scaling/discussion.md
     - Conclusion: metabolic-scaling/conclusion.md
     - References: metabolic-scaling/references.md
+    - Methods Notebooks:
+      - MST & Allometric Relationships: notebooks/metabolic-scaling/methods/1_mst_allometry.ipynb
+      - Branching Ratios: notebooks/metabolic-scaling/methods/2_branching_ratios.ipynb
+      - Volume & Mass Dimension: notebooks/metabolic-scaling/methods/3_volume_mass_dimension.ipynb
+      - DBC & FracLac: notebooks/metabolic-scaling/methods/4_dbc_fraclac.ipynb
+    - Results Notebooks:
+      - Synthetic Dimensions (Table 1): notebooks/metabolic-scaling/results/1_synthetic_dimensions.ipynb
+      - Observed Leaf, Branch & Root (Tables 2-3): notebooks/metabolic-scaling/results/2_observed_leaf_branch_root.ipynb
+      - Canopy & Statistical Validation (Table 4): notebooks/metabolic-scaling/results/3_canopy_statistical_validation.ipynb
 
   - Part III - Spectral Geometry:
     - Abstract: spectral-geometry/abstract.md

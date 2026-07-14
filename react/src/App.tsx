@@ -19,6 +19,8 @@ import { FernPage } from './pages/branching-architectures/FernPage';
 import { TreePage } from './pages/branching-architectures/TreePage';
 import { PythagorasTreePage } from './pages/branching-architectures/PythagorasTreePage';
 import { TreeRoots3DPage } from './pages/branching-architectures/TreeRoots3DPage';
+import { PlantArchitectureLabPage } from './pages/branching-architectures/PlantArchitectureLabPage';
+import { FernFrond3DPage } from './pages/branching-architectures/FernFrond3DPage';
 // Riemann Zeta Functions
 import { ZetaSpaceTilingPage } from './pages/riemann-zeta-functions/ZetaSpaceTilingPage';
 import { Zeta3DVisualizationPage } from './pages/riemann-zeta-functions/Zeta3DVisualizationPage';
@@ -50,6 +52,8 @@ const AppContent: React.FC = () => {
               <Route path="/noise" element={<NoisePage />} />
               <Route path="/waves" element={<WavesPage />} />
               {/* Branching Architectures */}
+              <Route path="/plant-lab" element={<PlantArchitectureLabPage />} />
+              <Route path="/fern-frond-3d" element={<FernFrond3DPage />} />
               <Route path="/dla" element={<DLAPage />} />
               <Route path="/ferns" element={<FernPage />} />
               <Route path="/trees" element={<TreePage />} />

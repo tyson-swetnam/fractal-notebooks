@@ -540,7 +540,7 @@ export const TreeRoots3DPage: React.FC = () => {
                 onClick={regenerateTree}
                 startIcon={<PlayArrow />}
                 fullWidth
-                sx={{ backgroundColor: '#228B22' }}
+                sx={{ backgroundColor: '#2e7d32' }}
               >
                 Regenerate Tree
               </Button>
