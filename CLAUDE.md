@@ -1,27 +1,24 @@
 # CLAUDE.md
 
-Guidance for AI coding/analysis agents working in this repository. It is read by
-**Claude Code** (`claude.ai/code`), **Claude Science**, and any agent that honors the
-`CLAUDE.md` / `AGENTS.md` convention. Keep it tool-agnostic where possible and mark
-tool-specific behavior explicitly.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> `AGENTS.md` is a symlink to this file so non-Claude agents pick up the same guidance.
+It is also read by **Claude Science** and any agent that honors the `CLAUDE.md` /
+`AGENTS.md` convention (`AGENTS.md` is a symlink to this file). Keep it tool-agnostic
+where possible and mark tool-specific behavior explicitly.
 
 ## Project Overview
 
 Fractal Notebooks is a research + teaching platform on self-affine fractals and
-metabolic scaling theory. Five components:
+metabolic scaling theory. Six components:
 
 - **MkDocs documentation** (`docs/`) — the "Self-Affinity in Nature" site, published to GitHub Pages.
 - **React web applications** (`react/`) — TypeScript/React fractal visualizers deployed to `/react`.
 - **Streamlit Python apps** (`apps/`) — 21 interactive fractal generators on the scientific-Python stack.
 - **Fractal RAG stack** (`fractal_rag/`) — Weaviate-backed retrieval + MCP server. Design spec: `docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md`.
-- **Deployment** (`k3s-deployment/`, `docker/`) — K3s manifests (Weaviate 1.35 + GPU embedding sidecar, JupyterLab) and a Streamlit Docker image.
+- **OKF knowledge bundles** (`okf/`) — the concept ontology and appendix proofs as Open Knowledge Format v0.1 Markdown.
+- **Deployment** (`k3s-deployment/`, `docker/`) — K3s manifests (Weaviate 1.35 + GPU embedding sidecar, JupyterLab), a Streamlit Docker image, and a local Docker Compose RAG stack.
 
-**Direction of travel** (see *Roadmap* below): wrap the knowledge in this repo as an
-**Open Knowledge Format (OKF)** bundle and publish the docs via **Zensical** (the
-Material-for-MkDocs successor), with Claude Science **Specialists** as the primary
-agent-facing consumers.
+Design specs and plans live in `docs/superpowers/specs/`; the docs book structure is in `PLAN.md`.
 
 ## Environments
 
@@ -42,25 +39,38 @@ default env. Prepare files in `python`, then reach the MCP server from the `repl
 ```bash
 pip install -r requirements.txt
 python -m mkdocs serve          # http://localhost:8000
-mkdocs build --site-dir site    # production build
+mkdocs build --site-dir site    # production build (what CI runs)
 ```
 
 ### React Application (Vite)
 ```bash
 cd react
 npm ci
-npm start                       # http://localhost:33000
-npm run build
+npm start                       # http://localhost:33000/fractal-notebooks/react/
+npm run build                   # tsc -b && vite build → react/build/
 npm run type-check              # run before committing
 npm run lint
 ```
+There is no React test runner; CI gates on `build`, `type-check`, and `lint`.
 
 ### Streamlit Applications
 ```bash
-streamlit run apps/mandelbrot.py
-streamlit run apps/branching_tree.py
-streamlit run apps/julia.py
+streamlit run apps/mandelbrot.py   # any apps/*.py runs standalone
 ```
+
+### Fractal RAG package
+```bash
+cd fractal_rag
+pytest                                          # unit tests (tests/unit)
+pytest tests/unit/test_chunk.py -k <name>       # single test
+ruff check src tests && mypy src
+fractal-rag concepts validate                   # check seed.yaml
+fractal-rag okf export --out ../okf/concepts    # regenerate the OKF concept bundle
+fractal-rag status                              # collection counts
+fractal-rag query "<text>"                      # ad-hoc hybrid search
+```
+The `integration` pytest marker (testcontainers Weaviate) is declared in `pyproject.toml`,
+but no `tests/integration/` directory exists yet.
 
 ### Docker
 ```bash
@@ -70,29 +80,38 @@ cd docker && docker build -t fractal-app . && docker run -p 8501:8501 fractal-ap
 ## The Fractal RAG knowledge stack
 
 `fractal_rag/` builds a Weaviate index over four content types — Constellate
-scholarly-article exports (`json_corpus`), Jupyter notebooks (`notebook`), MkDocs
-markdown (`markdown`), and reference PDFs (`pdf`) — plus a hand-curated `Concept`
-side-collection (31 seeded canonical concepts in
-`fractal_rag/src/fractal_rag/concepts/seed.yaml`). It exposes eight retrieval tools
-over an MCP server. The stack is **read-only by design** — it retrieves and
-synthesizes, it does not mutate the corpus.
+scholarly-article exports (`json`), Jupyter notebooks (`notebooks`), MkDocs
+markdown (`docs`), and reference PDFs (`pdfs`) — these are the `--source` values
+for `fractal-rag ingest`. It also keeps a hand-curated `Concept` side-collection
+(31 seeded canonical concepts in `fractal_rag/src/fractal_rag/concepts/seed.yaml`)
+and exposes eight retrieval tools over an MCP server. The stack is **read-only by
+design** — it retrieves and synthesizes, it does not mutate the corpus.
 
-Bring it up:
+Configuration is via `FRACTAL_RAG_*` env vars (`fractal_rag/src/fractal_rag/config.py`).
+Defaults point Weaviate at the K3s NodePorts (`localhost:30080` HTTP / `30051` gRPC).
+
+Bring it up — either on K3s:
 ```bash
-# 1. K3s manifests define Weaviate 1.35 + a text2vec-transformers
-#    (Arctic-embed-l-v2.0) GPU sidecar.
-kubectl apply -f k3s-deployment/
-
-# 2. Install + bootstrap the RAG package
+kubectl apply -f k3s-deployment/   # Weaviate 1.35 + Arctic-embed-l-v2.0 GPU sidecar
+```
+or locally without a GPU (CPU `bge-small` embedder; override the port):
+```bash
+docker compose -f docker/fractal-rag/docker-compose.yaml up -d
+export FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080 FRACTAL_RAG_WEAVIATE_GRPC_PORT=50051
+```
+then:
+```bash
 cd fractal_rag && pip install -e ".[dev,parsers]"
 fractal-rag schema bootstrap
 fractal-rag pull                # gocmd-backed iRODS sync (one-time, ~30 GB)
-fractal-rag ingest --source all
+fractal-rag ingest --source all # or json | notebooks | docs | pdfs; --limit N for smoke tests
 ```
 
 **Reaching the MCP server depends on the tool:**
 
-- **Claude Code** picks up `.mcp.json` automatically (`fractal-rag serve` over stdio); the
+- **Claude Code** picks up `.mcp.json`, which runs the bare `fractal-rag serve` over stdio.
+  The `fractal-rag` executable must be on `PATH` (activate the env where the package is
+  installed before launching Claude Code), otherwise the server fails with `ENOENT`. The
   `fractal-explorer` subagent (`.claude/agents/fractal-explorer.md`) is scoped to the eight
   retrieval tools.
 - **Claude Science** reaches a connected MCP server via `host.mcp("fractal-rag", "<tool>", ...)`
@@ -105,6 +124,20 @@ The eight tools: `search_artifacts`, `get_artifact`, `near_artifact`,
 `artifacts_by_concept`, `list_concepts`, `get_concept`, `search_concepts`,
 `corpus_stats`. See `fractal_rag/README.md` and the design spec for signatures and the
 tool-selection rubric.
+
+## OKF bundles (`okf/`)
+
+- **`okf/concepts/`** is **generated** from `concepts/seed.yaml` by `fractal-rag okf export`
+  (`fractal_rag/src/fractal_rag/okf_export.py`). Never hand-edit it: edit the seed and
+  re-export. Concepts are grouped into folders by their first domain tag; each level has
+  `index.md` (progressive disclosure) and `log.md` (change history); the root `index.md`
+  declares `okf_version: "0.1"`.
+- **`okf/proofs/`** is **hand-authored**: `type: Fractal Proof` documents backing the
+  quantitative claims in `docs/foundations/history.md`. Every proof step is tagged
+  `[verified]` (checked with SymPy/NumPy, reproducibly) or `[asserted]` (rests on a cited
+  named theorem), and the frontmatter `verification_status` is
+  `verified` | `partially-verified` | `unverified`. Add a `log.md` entry and an `index.md`
+  line when adding a proof.
 
 ## Agents & Specialists
 
@@ -127,16 +160,22 @@ cleanly), then mirror it as a Specialist profile.
 ## Architecture
 
 ### React (`react/src/`)
-- HashRouter for GitHub Pages compatibility.
-- Pages by category: `pages/fractals-1d-2d-3d/`, `pages/branching-architectures/`, `pages/riemann-zeta-functions/`.
-- `components/{controls,layout,math}/`; `utils/` holds WebGL Mandelbrot/Julia, noise generators, theming.
+- HashRouter for GitHub Pages; Vite `base` is `/fractal-notebooks/react/`.
+- Adding a page takes two edits: import + `<Route>` in `App.tsx`, and an entry in the
+  nav config in `components/layout/Navigation.tsx`. Pages live under
+  `pages/{fractals-1d-2d-3d,branching-architectures,riemann-zeta-functions}/`.
+- `components/controls/` is the shared UI kit (`AppScaffold`, `ControlSection`,
+  `ParameterSlider`, `ParameterSelect`, `ActionBar`, `CollapsiblePanel`); build new
+  pages on it rather than ad-hoc MUI layouts.
+- `utils/` holds the compute engines: WebGL Mandelbrot/Julia, noise generators,
+  L-system / plant engine + presets, and MUI themes.
 - ThemeContext (light/dark/system, persisted to localStorage, MUI-integrated). Viz: D3, Plotly, KaTeX.
 
 ### Streamlit (`apps/`)
 - Each `.py` is self-contained and independently runnable. NumPy, Matplotlib, Plotly, SciPy, Numba. Runtime GIFs/images stay local.
 
 ### Documentation (`docs/`)
-- MkDocs Material, custom `fractals` palette, `mkdocs-jupyter` embeds, MathJax.
+- MkDocs Material, custom `fractals` palette, `mkdocs-jupyter` embeds (notebooks in `docs/notebooks/`), MathJax.
 - Structured per `PLAN.md`: Part I Foundations (tutorial), then research chapters (biological-geometry, metabolic-scaling, spectral-geometry, hypotheses).
 
 ### Kubernetes (`k3s-deployment/`)
@@ -144,13 +183,11 @@ cleanly), then mirror it as a Specialist profile.
 
 ## CI/CD
 
-GitHub Actions deploys MkDocs (root) and React/Vite (`/react`) to GitHub Pages on push
-to `main`. PR checks run React type-check + lint and an MkDocs build test.
-
-> **Housekeeping:** `.github/workflows/` currently has one active deploy workflow
-> (`deploy-all.yaml`) plus three `.disabled` files (`deploy.yml`, `mkdocs.yaml`,
-> `react-deploy.yaml`) and `test-build.yaml`. Delete the superseded `.disabled`
-> workflows or document why they are retained — see `SPECIALIST_READINESS.md`.
+`.github/workflows/deploy-all.yaml` (push to `main`) builds MkDocs into `site/` and
+React into `react/build/`, merges them (React under `/react`, with `index.html` copied
+to `404.html`, and a `/react-apps` → `/react` redirect), and deploys to GitHub Pages.
+`test-build.yaml` (PRs) runs the MkDocs build and React build + type-check + lint.
+The RAG package has no CI yet.
 
 ## Change & Commit Policy
 
@@ -172,23 +209,13 @@ to `main`. PR checks run React type-check + lint and an MkDocs build test.
 - **React:** React 18, Vite 7, MUI 5, D3 7, Plotly, react-router-dom 6, TypeScript 5, KaTeX, ESLint 9.
 - **Python (docs):** mkdocs-material, mkdocs-jupyter, mkdocstrings, pymdown-extensions.
 - **Python (apps):** streamlit, numpy, matplotlib, plotly, scipy, numba, pillow, imageio.
-- **Python (RAG):** weaviate-client, MCP SDK, corpus/notebook/markdown/pdf parsers (`.[parsers]`).
+- **Python (RAG):** weaviate-client v4, MCP SDK, click, pydantic-settings, nbformat, mistune, pdfminer.six (`.[parsers]`).
 
-## Roadmap — OKF + Zensical
+## Roadmap — Zensical + OKF publishing
 
-The project's stated goal is to publish this work as agent-consumable knowledge.
-
-1. **OKF bundle.** Represent the concept ontology (and, over time, datasets/notebooks)
-   as an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog)
-   bundle — a directory of Markdown files, one concept per file, each with YAML
-   frontmatter (`type` is the only required field; `title`/`description`/`tags`/`timestamp`
-   are optional). The 31 entries in `concepts/seed.yaml` (name, aliases, definition,
-   domain) already map onto OKF concepts; cross-link them with normal Markdown links and
-   add `index.md` (progressive disclosure) + `log.md` (change history) per level. OKF
-   *complements* the MCP server — the server can expose the bundle as a knowledge source.
-2. **Zensical migration.** Material for MkDocs is in maintenance mode; Zensical is its
-   successor and reads the existing `mkdocs.yml` natively. Plan a migration
-   (`zensical serve` / `zensical build`) once feature parity covers the plugins this site
-   uses (`mkdocs-jupyter`, MathJax, PDF export). Track the parity gap before switching CI.
-
-See `SPECIALIST_READINESS.md` for the concrete tightening checklist.
+Material for MkDocs is in maintenance mode; Zensical is its successor and reads the
+existing `mkdocs.yml` natively. The plan (spec: `docs/superpowers/specs/2026-07-13-zensical-migration.md`,
+status Draft) is a non-blocking parallel `zensical build` job in CI until parity covers
+the plugins this site uses (`mkdocs-jupyter`, MathJax, PDF export, git-revision-date),
+then switch, and publish the `okf/` bundles through the site. Remaining hygiene items are
+tracked in `SPECIALIST_READINESS.md`.
