@@ -2,7 +2,7 @@
 
 Why ``gocmd`` rather than the iRODS MCP server: the MCP server is restricted
 to ``/iplant/home/shared/*`` paths, but the corpus lives under the user's
-home (``/iplant/home/tswetnam/fractal-notebooks/``). ``gocmd`` reuses the
+home (``/iplant/home/tswetnam/projects/fractal-notebooks/``). ``gocmd`` reuses the
 existing ``~/.irods/`` auth.
 """
 

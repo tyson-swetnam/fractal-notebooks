@@ -1,0 +1,12 @@
+# NVIDIA DGX Spark (arm64, GB10, CUDA 13). The published transformers-inference images ship a
+# CPU-only PyTorch on arm64, so the sidecar is built locally with
+# docker/t2v-transformers-cuda-arm64/build.sh and imported into K3s's containerd
+# (docker save <image> | sudo k3s ctr images import -); imagePullPolicy stays IfNotPresent.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: docker.io/semitechnologies/transformers-inference
+    newName: fractal-rag/t2v-transformers
+    newTag: arctic-embed-l-v2.0-cu130-arm64

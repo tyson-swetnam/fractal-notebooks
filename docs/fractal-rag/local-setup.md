@@ -64,23 +64,32 @@ fractal-rag --version              # fractal-rag, version 0.1.0
 fractal-rag concepts validate      # OK: 32 concepts validated
 ```
 
-## 3. Point the CLI at the local Weaviate
+## 3. Point the CLI at the local Weaviate and at your checkout
 
-The defaults in `fractal_rag/src/fractal_rag/config.py` target the K3s NodePort
-(`30080`). For the docker-compose stack you want the standard `8080`. Export
-the override once per shell:
+The defaults in `fractal_rag/src/fractal_rag/config.py` target the K3s NodePorts
+(`30080`/`30051`) and a checkout at `/opt/tswetnam/github/fractal-notebooks`
+(`repo_root`). For the docker-compose stack you want the standard `8080`/`50051`,
+and on any other machine `FRACTAL_RAG_REPO_ROOT` must point at your clone: the
+`docs` and `notebooks` sources walk `<repo_root>/docs/`, and a missing path is not
+an error, they silently index nothing. Go back to the repo root and export the
+overrides once per shell:
 
 ```bash
+cd ..                                   # back to the repo root after step 2
 export FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080
 export FRACTAL_RAG_WEAVIATE_GRPC_PORT=50051
+export FRACTAL_RAG_REPO_ROOT=$PWD
 ```
 
-Or persist them in a `.env` file at the repo root:
+Or persist them in a `.env` file at the repo root. The file is gitignored, and
+`Settings` reads it from the directory you run `fractal-rag` in, so run the CLI
+from the repo root:
 
 ```bash
-cat > .env <<'EOF'
+cat > .env <<EOF
 FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080
 FRACTAL_RAG_WEAVIATE_GRPC_PORT=50051
+FRACTAL_RAG_REPO_ROOT=$PWD
 EOF
 ```
 
@@ -97,20 +106,24 @@ fractal-rag schema bootstrap          # second run is idempotent
 ## 5. Ingest a slice
 
 For local iteration, **skip the 30 GB iRODS pull** and ingest just the repo's
-own markdown + notebooks (a few hundred chunks), plus an optional small
-JSONL sample:
+own markdown + notebooks (about 3,800 chunks from 112 pages and bundle files
+plus 55 notebooks, roughly 15 minutes on the CPU embedder), plus an optional
+small JSONL sample:
 
 ```bash
 # Repo docs and notebooks — fast, no external corpus needed.
-export FRACTAL_RAG_REPO_ROOT=$PWD      # run from the repo root
+export FRACTAL_RAG_REPO_ROOT=$PWD      # from the repo root, unless step 3's .env set it
 fractal-rag ingest --source docs
 fractal-rag ingest --source notebooks
 ```
 
-`--source docs` walks `<repo_root>/docs/**/*.md`. The default `repo_root` is
-the K3s host path `/opt/tswetnam/github/fractal-notebooks`; on any other
-machine point `FRACTAL_RAG_REPO_ROOT` at your checkout first, because a
-missing path is not an error — `rglob` on it silently yields `parsed_docs: 0`.
+`--source docs` walks `<repo_root>/docs/**/*.md` plus the `okf/concepts` and
+`okf/proofs` bundles, and `--source notebooks` walks `<repo_root>/docs/**/*.ipynb`
+(the generated per-site 3DEP notebooks are skipped). Both depend on
+`FRACTAL_RAG_REPO_ROOT` from step 3: the default `repo_root` is the K3s host path
+`/opt/tswetnam/github/fractal-notebooks`, and when that path does not exist the
+run reports `parsed_docs: 0` without an error, because `rglob` on a missing
+directory simply yields nothing.
 
 If you do have the JSONL on disk and want a representative subset:
 
@@ -123,7 +136,7 @@ Confirm:
 
 ```bash
 fractal-rag status
-# { "FractalArtifact": 837, "Concept": 31 }
+# { "FractalArtifact": 3759, "Concept": 32 }   # docs + notebooks only, 2026-10-25
 ```
 
 You can sanity-check retrieval from the CLI without booting Claude Code:

@@ -1,411 +1,117 @@
-# K3s Kubernetes Deployment
+# K3s deployment
 
-This folder contains Kubernetes manifests for deploying the fractal-notebooks repository as a remote, scalable service on a K3s cluster. The deployment creates a GPU-accelerated environment suitable for running Jupyter notebooks, Streamlit applications, and vector database operations on a virtual machine.
+Kubernetes manifests for the Fractal RAG stack on a single-node [K3s](https://k3s.io) server with
+one NVIDIA GPU: Weaviate 1.35 (NodePorts 30080 HTTP / 30051 gRPC), the `text2vec-transformers`
+embedding sidecar on the GPU, and the NVIDIA device plugin. The `fractal-rag` CLI and MCP server
+(`fractal_rag/`) target these NodePorts by default; the operator walkthrough is
+[docs/fractal-rag/hosted-vm.md](../docs/fractal-rag/hosted-vm.md).
 
-## Deployment Architecture
+## Layout
 
-### Core Components
-- **JupyterLab**: GPU-accelerated notebook environment for fractal computation
-- **Weaviate**: Vector database for AI/ML workloads and data storage
-- **Persistent Storage**: Local storage provisioning for data persistence
-- **GPU Support**: NVIDIA device plugin integration for CUDA acceleration
+| Path | What it is |
+|---|---|
+| `base/` | kustomize base: `namespace.yaml` (`ai-workloads`), `nvidia-device-plugin-config.yaml` (time-slicing ConfigMap, 2 slices), `nvidia-device-plugin-daemonset.yaml` (plugin v0.20.1), `weaviate-pvc.yaml` (50 Gi, K3s `local-path` class), `weaviate-deployment.yaml`, `weaviate-service.yaml`, `t2v-transformers-deployment.yaml` (published `snowflake-snowflake-arctic-embed-l-latest` image, `ENABLE_CUDA=1`, `runtimeClassName: nvidia`, 1 GPU), `t2v-transformers-service.yaml` |
+| `overlays/dgx-spark/` | arm64 NVIDIA DGX Spark (GB10): swaps the sidecar image for the locally built CUDA 13 build (see below) |
+| `jupyterlab-*.yaml` | optional, legacy: a GPU JupyterLab written for the former x86 CyVerse node (hard-coded node name, `hostPath` library mounts). Adapt before applying; not part of the kustomize base |
 
-### Kubernetes Resources
-- **Deployments**: Application pod management and scaling
-- **Services**: Internal networking and service discovery
-- **PersistentVolumeClaims**: Data storage with node affinity
-- **ConfigMaps**: Environment configuration management
+K3s provides two things the manifests rely on: the `nvidia` RuntimeClass (created automatically
+when `nvidia-container-runtime` is on K3s's PATH) and the default `local-path` StorageClass
+(volumes under `/var/lib/rancher/k3s/storage`).
 
-## Manifest Files
+## Prerequisites (host)
 
-### JupyterLab Deployment
-- **`jupyterlab-deployment.yaml`** - Main JupyterLab container with PyTorch and CUDA support
-- **`jupyterlab-service.yaml`** - ClusterIP service for internal access
-- **`jupyterlab-pvc.yaml`** - Persistent storage for notebooks and data
-- **`jupyterlab-to-weaviate.yaml`** - Service configuration for database connectivity
+1. NVIDIA driver and the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/):
+   `nvidia-smi` works and `/usr/bin/nvidia-container-runtime` exists. No toolkit or containerd
+   configuration is needed: K3s detects the runtime at start-up.
+2. K3s server configuration, written before the install so it survives upgrades:
 
-### Weaviate Vector Database  
-- **`weaviate-deployment.yaml`** - Vector database for AI workloads
-- **`weaviate-service.yaml`** - Database service endpoints
-- **`weaviate-pvc.yaml`** - Persistent storage for vector data
+   ```yaml
+   # /etc/rancher/k3s/config.yaml
+   disable:
+     - traefik                      # no ingress needed; keeps host ports 80/443 free
+   write-kubeconfig-mode: "0640"    # root-owned kubeconfig, readable by one group
+   write-kubeconfig-group: "docker" # or a dedicated k3s-admins group
+   ```
 
-### Infrastructure Support
-- **`storageclass.yaml`** - Local storage class configuration
-- **`nvidia-device-plugin-daemonset.yaml`** - GPU device plugin for CUDA access
-- **`nvdp.yaml`** - NVIDIA device plugin configuration
+3. If `ufw` is enforcing, allow the cluster CIDRs. Check with `sudo ufw status`: only `Status: active`
+   counts (an active `ufw.service` with `ENABLED=no` in `/etc/ufw/ufw.conf` enforces nothing, and
+   `ufw status` then lists no rules). Nothing else needs opening: `kubectl` talks to
+   `127.0.0.1:6443` and the RAG client to `localhost`; Weaviate runs with anonymous access, so do
+   not expose 30080/30051 to the network):
 
-## Step-by-Step Deployment Guide
+   ```bash
+   sudo ufw allow from 10.42.0.0/16 to any comment 'k3s pod CIDR'
+   sudo ufw allow from 10.43.0.0/16 to any comment 'k3s service CIDR'
+   ```
 
-### Prerequisites
+4. Install K3s with its embedded containerd (do not use `--docker`: the bundled cri-dockerd rejects
+   `runtimeClassName`, and switching Docker's default runtime restarts every Docker workload):
 
-1. **Install K3s with Docker Runtime**
+   ```bash
+   curl -sfL https://get.k3s.io | sudo env INSTALL_K3S_VERSION="v1.36.5+k3s1" sh -s - server
+   export KUBECONFIG=/etc/rancher/k3s/k3s.yaml          # kubectl is symlinked into /usr/local/bin
+   kubectl get nodes -o wide && kubectl get runtimeclass nvidia && kubectl get storageclass
+   sudo grep -A3 "runtimes.'nvidia'" /var/lib/rancher/k3s/agent/etc/containerd/config.toml   # BinaryName = nvidia-container-runtime
+   ```
+
+## Deploy
+
 ```bash
-# Install K3s with Docker support and disable Traefik
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" sh -s - --docker
-
-# Set up kubeconfig for current user
-sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-
-# Verify installation
-kubectl get nodes
+kubectl label node "$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')" nvidia.com/gpu.present=true
+kubectl apply -k k3s-deployment/base                 # or: kubectl apply -k k3s-deployment/overlays/dgx-spark
+kubectl -n kube-system rollout status daemonset/nvidia-device-plugin-daemonset
+kubectl get node -o jsonpath='{.items[0].status.allocatable.nvidia\.com/gpu}{"\n"}'   # 2 (time-sliced)
+kubectl -n ai-workloads rollout status deployment/t2v-transformers --timeout=20m          # image pull + model load
+kubectl -n ai-workloads rollout status deployment/weaviate --timeout=10m
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:30080/v1/.well-known/ready        # 200
+kubectl -n ai-workloads logs deploy/t2v-transformers | grep -i -E 'cuda|sentence transformer'  # model on cuda:0
 ```
 
-2. **Set up GPU Support (if using GPU nodes)**
+The label satisfies the device plugin's `nodeSelector` (there is no GPU feature discovery here).
+A plugin older than v0.17.4 crashes on unified-memory GPUs such as the GB10 ("error getting device
+memory: Not Supported"); v0.20.1 logs that condition and carries on. Time-slicing advertises
+`nvidia.com/gpu: 2` so the sidecar and one more pod (a notebook, a second sidecar replica) can share
+the GPU; there is no memory or fault isolation between slices, and MIG and MPS are unavailable on GB10.
+
+Then, from the repository root with the `fractal_rag` package installed:
+
 ```bash
-# Create directories for GPU feature discovery
-sudo mkdir -p /etc/kubernetes/node-feature-discovery/source.d/
-sudo mkdir -p /etc/kubernetes/node-feature-discovery/features.d/
-
-# Install NVIDIA device plugin using Helm
-helm repo add nvdp https://nvidia.github.io/k8s-device-plugin
-helm repo update
-helm upgrade --install --set gfd.enabled=true nvidia-device-plugin nvdp/nvidia-device-plugin \
-  --version 0.14.0 --namespace nvidia-device-plugin --create-namespace \
-  --set-file config.map.config=./nvdp.yaml
-
-# Label GPU nodes (replace with your actual node name)
-kubectl label nodes <your-gpu-node-name> nvidia.com/gpu.present=true
+fractal-rag schema bootstrap
+fractal-rag pull                     # iRODS mirror (FRACTAL_RAG_IRODS_ROOT / FRACTAL_RAG_CORPUS_ROOT)
+fractal-rag ingest --source all
+fractal-rag status
 ```
 
-3. **Update Node Annotations**
-Edit the PVC files to match your actual node name:
+## NVIDIA DGX Spark (arm64, GB10)
+
+The images Weaviate publishes for `transformers-inference` are multi-arch, but their arm64 variant
+installs the PyPI PyTorch wheel, which has no CUDA support on aarch64: with `ENABLE_CUDA=1` the pod
+dies with `AssertionError: Torch not compiled with CUDA enabled`. Build the same upstream app on a
+CUDA 13 base with the `cu130` PyTorch wheel and the arctic-embed-l-v2.0 model instead, import it
+into K3s's containerd (K3s does not read the Docker image store), and apply the overlay:
+
 ```bash
-# Update both PVC files with your node name
-sed -i 's/gpu06.cyverse.org/<your-actual-node-name>/g' jupyterlab-pvc.yaml
-sed -i 's/gpu06.cyverse.org/<your-actual-node-name>/g' weaviate-pvc.yaml
+bash docker/t2v-transformers-cuda-arm64/build.sh                 # -> fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 (~8 GB)
+docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr -n k8s.io images import -
+kubectl apply -k k3s-deployment/overlays/dgx-spark
 ```
 
-### Deployment Steps
+Measured on a GB10: the model takes about 2.3 GB of GPU memory and embeds roughly 16 long
+(350-word) or 50 short texts per second. Platform notes: `nvidia-smi` reports memory as `N/A`
+(unified memory, expected); a container's `resources.limits.memory` also caps its GPU allocations,
+so raise the sidecar's 24 Gi limit before adding replicas; PyTorch 2.9 warns that compute
+capability 12.1 is newer than its tested range and runs through PTX, which works.
 
-#### Step 1: Create Namespace and Storage
+## Operations
+
 ```bash
-# Create the namespace
-kubectl apply -f namespace.yaml
-
-# Create the storage class
-kubectl apply -f storageclass.yaml
-
-# Verify namespace creation
-kubectl get namespaces | grep ai-workloads
+kubectl -n ai-workloads get pods -o wide
+kubectl -n ai-workloads logs -f deploy/weaviate
+kubectl -n ai-workloads rollout restart deploy/t2v-transformers
+sudo ls /var/lib/rancher/k3s/storage/                    # Weaviate data (PVC)
+sudo /usr/local/bin/k3s-uninstall.sh                     # remove K3s (data under /var/lib/rancher is deleted too)
 ```
 
-#### Step 2: Deploy GPU Support (Optional)
-```bash
-# Deploy NVIDIA device plugin DaemonSet
-kubectl apply -f nvidia-device-plugin-daemonset.yaml
-
-# Verify GPU plugin is running
-kubectl get pods -n kube-system | grep nvidia
-```
-
-#### Step 3: Deploy Weaviate Vector Database
-```bash
-# Create Weaviate persistent volume claim
-kubectl apply -f weaviate-pvc.yaml
-
-# Deploy Weaviate
-kubectl apply -f weaviate-deployment.yaml
-
-# Create Weaviate service
-kubectl apply -f weaviate-service.yaml
-
-# Verify Weaviate deployment
-kubectl get pods -n ai-workloads -l app=weaviate
-kubectl logs -f deployment/weaviate -n ai-workloads
-```
-
-#### Step 4: Deploy JupyterLab
-```bash
-# Create JupyterLab persistent volume claim
-kubectl apply -f jupyterlab-pvc.yaml
-
-# Deploy JupyterLab
-kubectl apply -f jupyterlab-deployment.yaml
-
-# Create JupyterLab service
-kubectl apply -f jupyterlab-service.yaml
-
-# Apply network policy for Jupyter-Weaviate communication
-kubectl apply -f jupyterlab-to-weaviate.yaml
-
-# Verify JupyterLab deployment
-kubectl get pods -n ai-workloads -l app=jupyterlab
-kubectl logs -f deployment/jupyterlab -n ai-workloads
-```
-
-#### Step 5: Verify Complete Deployment
-```bash
-# Check all resources
-kubectl get all -n ai-workloads
-
-# Check persistent volumes
-kubectl get pv,pvc -n ai-workloads
-
-# Check GPU allocation (if using GPU)
-kubectl describe nodes | grep -A 5 "Allocated resources"
-```
-
-### Access Applications
-
-#### Method 1: NodePort Services (Recommended for VM deployment)
-```bash
-# Get node IP
-NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
-if [ -z "$NODE_IP" ]; then
-  NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
-fi
-
-# Access JupyterLab (NodePort 30088)
-echo "JupyterLab URL: http://$NODE_IP:30088"
-
-# Access Weaviate (NodePort 30080)
-echo "Weaviate URL: http://$NODE_IP:30080/v1"
-
-# Access Weaviate gRPC (NodePort 30051)
-echo "Weaviate gRPC: $NODE_IP:30051"
-```
-
-#### Method 2: Port Forwarding (for local testing)
-```bash
-# Port forward JupyterLab (runs in foreground)
-kubectl port-forward service/jupyterlab 8888:8888 -n ai-workloads &
-
-# Port forward Weaviate HTTP
-kubectl port-forward service/weaviate 8080:8080 -n ai-workloads &
-
-# Port forward Weaviate gRPC
-kubectl port-forward service/weaviate 50051:50051 -n ai-workloads &
-
-# Access locally
-echo "JupyterLab: http://localhost:8888 (no password required)"
-echo "Weaviate: http://localhost:8080/v1"
-```
-
-### One-Command Deployment
-
-For experienced users, deploy everything at once:
-```bash
-# Deploy in correct order
-kubectl apply -f namespace.yaml && \
-kubectl apply -f storageclass.yaml && \
-kubectl apply -f nvidia-device-plugin-daemonset.yaml && \
-sleep 10 && \
-kubectl apply -f weaviate-pvc.yaml && \
-kubectl apply -f weaviate-deployment.yaml && \
-kubectl apply -f weaviate-service.yaml && \
-kubectl apply -f jupyterlab-pvc.yaml && \
-kubectl apply -f jupyterlab-deployment.yaml && \
-kubectl apply -f jupyterlab-service.yaml && \
-kubectl apply -f jupyterlab-to-weaviate.yaml
-
-# Wait for deployment and show status
-echo "Waiting for deployments to be ready..."
-kubectl wait --for=condition=available --timeout=300s deployment/weaviate -n ai-workloads
-kubectl wait --for=condition=available --timeout=300s deployment/jupyterlab -n ai-workloads
-kubectl get all -n ai-workloads
-```
-
-## Resource Allocation
-
-### JupyterLab Resources
-- **GPU**: 1 NVIDIA GPU (configurable)
-- **CPU**: 2-16 cores with burstable limits  
-- **Memory**: 4-64GB RAM allocation
-- **Storage**: 5GB persistent volume
-
-### Weaviate Resources  
-- **CPU**: 1-4 cores (no GPU required)
-- **Memory**: 2-8GB RAM allocation
-- **Storage**: 10GB persistent volume
-
-### Storage Configuration
-- **Storage Class**: `local-storage` using rancher.io/local-path provisioner
-- **Volume Binding**: `WaitForFirstConsumer` for optimal node placement
-- **Reclaim Policy**: `Delete` (data will be lost when PVC is deleted)
-- **Node Affinity**: Volumes bound to specific nodes via annotations
-
-## Integration with Other Folders
-
-### Relationship to `apps/`
-- JupyterLab environment can run Streamlit applications from the `apps/` folder
-- GPU acceleration enables real-time fractal rendering for complex applications
-- Remote deployment allows multiple users to access applications simultaneously
-- Container environment includes all dependencies from `apps/` requirements
-
-### Relationship to `docs/`
-- JupyterLab provides an environment for editing and running documentation notebooks
-- The documentation site (Zensical) can be served from within the cluster for documentation hosting
-- Documentation build process can be automated within the Kubernetes environment
-- Remote access enables collaborative documentation development
-
-### Relationship to `docker/`
-- Kubernetes deployments use containerized versions of applications
-- JupyterLab container includes the same Python environment as Docker builds
-- Container registry integration allows automated deployment of updated applications
-- Scaling benefits from containerization strategies developed in `docker/` folder
-
-### Relationship to Repository Root
-- Persistent volumes mount the entire repository for development access
-- Git integration within JupyterLab allows version control of notebooks and code
-- Environment replication ensures consistent behavior between local and remote execution
-- Backup and restore capabilities for research data and computational results
-
-## Configuration Details
-
-### Node Affinity and Tolerations
-```yaml
-nodeSelector:
-  nvidia.com/gpu.present: "true"
-tolerations:
-  - key: "nvidia.com/gpu"
-    operator: "Exists"
-    effect: "NoSchedule"
-```
-
-### Persistent Storage Configuration
-- **Storage Class**: `local-storage` for high-performance local disk access
-- **Node Binding**: Specific node assignment for data locality
-- **Access Mode**: `ReadWriteOnce` for single-node attachment
-- **Reclaim Policy**: Data persistence across pod restarts
-
-### Security Considerations
-- **Password Authentication**: JupyterLab secured with SHA1 password hash
-- **Network Policies**: ClusterIP services for internal-only access
-- **Resource Limits**: Prevents resource exhaustion and ensures fair sharing
-- **RBAC**: Kubernetes role-based access control for cluster security
-
-## Monitoring and Management
-
-### Health Checks
-```bash
-# Check pod status
-kubectl get pods -n ai-workloads
-
-# View logs
-kubectl logs -f deployment/jupyterlab -n ai-workloads
-kubectl logs -f deployment/weaviate -n ai-workloads
-
-# Describe resources for troubleshooting
-kubectl describe pod <pod-name> -n ai-workloads
-```
-
-### Scaling Operations
-```bash
-# Scale JupyterLab instances
-kubectl scale deployment jupyterlab --replicas=2 -n ai-workloads
-
-# Update deployment with new configuration
-kubectl apply -f jupyterlab-deployment.yaml -n ai-workloads
-```
-
-### Cleanup
-```bash
-# Remove all resources
-kubectl delete namespace ai-workloads
-
-# Individual resource cleanup
-kubectl delete -f k3s-deployment/ -n ai-workloads
-```
-
-## Troubleshooting
-
-### Common Issues
-
-#### Pods Stuck in Pending State
-```bash
-# Check pod events for scheduling issues
-kubectl describe pod <pod-name> -n ai-workloads
-
-# Common causes:
-# - Insufficient resources (CPU/Memory/GPU)
-# - Node affinity constraints  
-# - Missing storage class or PVC binding issues
-# - GPU node labels missing
-```
-
-#### GPU Not Available
-```bash
-# Verify NVIDIA device plugin is running
-kubectl get pods -n nvidia-device-plugin
-
-# Check GPU node labels
-kubectl get nodes --show-labels | grep gpu
-
-# Label GPU nodes if missing
-kubectl label nodes <node-name> nvidia.com/gpu.present=true
-
-# Check GPU resources on nodes
-kubectl describe nodes | grep -A 10 "Allocated resources"
-```
-
-#### Persistent Volume Issues
-```bash
-# Check PVC status
-kubectl get pvc -n ai-workloads
-
-# Check storage class
-kubectl get storageclass
-
-# Check if local-path provisioner is running
-kubectl get pods -n kube-system | grep local-path
-
-# Check node annotations match actual node names
-kubectl get nodes
-```
-
-#### Service Connectivity Problems
-```bash
-# Check service endpoints
-kubectl get endpoints -n ai-workloads
-
-# Test internal connectivity
-kubectl run test-pod --image=curlimages/curl -i --tty --rm -- sh
-# Inside pod: curl http://weaviate.ai-workloads.svc.cluster.local:8080/v1
-
-# Check network policies
-kubectl get networkpolicies -n ai-workloads
-```
-
-#### Application Logs and Debugging
-```bash
-# Check JupyterLab logs
-kubectl logs deployment/jupyterlab -n ai-workloads
-
-# Check Weaviate logs  
-kubectl logs deployment/weaviate -n ai-workloads
-
-# Get shell access to troubleshoot
-kubectl exec -it deployment/jupyterlab -n ai-workloads -- /bin/bash
-
-# Check GPU access from within container
-kubectl exec -it deployment/jupyterlab -n ai-workloads -- nvidia-smi
-```
-
-### Resource Monitoring
-```bash
-# Check overall resource usage
-kubectl top pods -n ai-workloads
-kubectl top nodes
-
-# Check detailed node resources
-kubectl describe nodes
-
-# Monitor GPU utilization  
-kubectl exec -it deployment/jupyterlab -n ai-workloads -- nvidia-smi
-
-# Watch pod status in real-time
-kubectl get pods -n ai-workloads -w
-```
-
-### Performance Optimization
-```bash
-# Check if pods are CPU/Memory throttled
-kubectl describe pod <pod-name> -n ai-workloads | grep -A 5 "Limits\|Requests"
-
-# Monitor resource usage over time
-kubectl top pods -n ai-workloads --containers
-
-# Check storage performance
-kubectl exec -it deployment/jupyterlab -n ai-workloads -- df -h
-```
+Swapping the embedding model: change the image (base manifest or an overlay `images:` entry), roll
+the deployment, then `fractal-rag schema bootstrap --drop` and re-ingest, because vectors are
+model-specific.

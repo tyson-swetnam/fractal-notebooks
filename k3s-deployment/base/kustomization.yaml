@@ -1,0 +1,18 @@
+# Base: the Fractal RAG stack on K3s (namespace, NVIDIA device plugin + its time-slicing config,
+# Weaviate, GPU embedding sidecar). K3s itself provides the "nvidia" RuntimeClass (auto-detected
+# nvidia-container-runtime) and the "local-path" StorageClass the PVC requests. JupyterLab
+# (../jupyterlab-*.yaml) is optional and applied separately.
+#   kubectl label node <node> nvidia.com/gpu.present=true
+#   kubectl apply -k k3s-deployment/base                 # x86 GPU node, published sidecar image
+#   kubectl apply -k k3s-deployment/overlays/dgx-spark   # arm64 DGX Spark, locally built sidecar
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - nvidia-device-plugin-config.yaml
+  - nvidia-device-plugin-daemonset.yaml
+  - weaviate-pvc.yaml
+  - weaviate-deployment.yaml
+  - weaviate-service.yaml
+  - t2v-transformers-deployment.yaml
+  - t2v-transformers-service.yaml

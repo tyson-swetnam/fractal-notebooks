@@ -20,6 +20,11 @@ Newest first. Bullets are tagged **Creation**, **Update** or **Deprecation**, fo
 reserved-file convention. The two knowledge bundles keep their own logs:
 [concepts](okf/concepts/log.md) and [proofs](okf/proofs/log.md).
 
+## 2026-10-25
+
+- **Update**: Fractal RAG guides: `FRACTAL_RAG_REPO_ROOT` is documented in [Local Setup](fractal-rag/local-setup.md), [Hosted VM](fractal-rag/hosted-vm.md) and [Troubleshooting](fractal-rag/troubleshooting.md). The `docs` and `notebooks` sources index `<repo_root>/docs/` and silently index nothing when the default checkout path does not exist; the `.env` recipe gained the variable and the gRPC port, and the Local Setup counts reflect the 2026-10-25 rebuild.
+- **Update**: [Hosted VM (K3s)](fractal-rag/hosted-vm.md) rewritten for the current deployment: the manifests are a kustomize base (`kubectl apply -k k3s-deployment/base`) with a DGX Spark (arm64) overlay, the embedding sidecar runs from a CUDA 13 arm64 image built by `docker/t2v-transformers-cuda-arm64/build.sh`, the NVIDIA device plugin moved to v0.20.1 with GPU time slicing, and a new "DGX Spark (arm64) notes" section records the platform findings. The iRODS corpus path is now `/iplant/home/tswetnam/projects/fractal-notebooks/` in the [overview](fractal-rag/index.md), [Troubleshooting](fractal-rag/troubleshooting.md) and the CLI default.
+
 ## 2026-10-24
 
 - **Creation**: [For AI Agents](agents.md) — guide to the machine-readable endpoints (llms.txt, Markdown twins, OKF bundle roots) and to reading the frontmatter trust signals.

@@ -1,0 +1,19 @@
+# Device plugin configuration (replaces the Helm-only nvdp.yaml values). Time-slicing lets two
+# pods share the single GPU (e.g. the embedding sidecar and a notebook); there is no memory or
+# fault isolation between the slices.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nvidia-device-plugin-config
+  namespace: kube-system
+data:
+  config.yaml: |
+    version: v1
+    flags:
+      migStrategy: none
+    sharing:
+      timeSlicing:
+        failRequestsGreaterThanOne: true
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 2
