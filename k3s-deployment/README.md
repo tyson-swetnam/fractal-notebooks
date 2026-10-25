@@ -108,6 +108,7 @@ capability 12.1 is newer than its tested range and runs through PTX, which works
 kubectl -n ai-workloads get pods -o wide
 kubectl -n ai-workloads logs -f deploy/weaviate
 kubectl -n ai-workloads rollout restart deploy/t2v-transformers
+kubectl -n ai-workloads scale deploy/t2v-transformers --replicas=2   # one pod per GPU time slice; ~14 vs ~8 chunks/s on a GB10
 sudo ls /var/lib/rancher/k3s/storage/                    # Weaviate data (PVC)
 sudo /usr/local/bin/k3s-uninstall.sh                     # remove K3s (data under /var/lib/rancher is deleted too)
 ```

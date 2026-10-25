@@ -166,8 +166,10 @@ tail -f ~/.cache/fractal-rag/failed_objects.jsonl
 
 Common causes:
 
-- **Embedding sidecar saturated:** GPU OOM or 429 backoff. Reduce
-  concurrency by lowering `FRACTAL_RAG_BATCH_CONCURRENCY` (default 4).
+- **Embedding sidecar saturated:** GPU OOM or 429 backoff in the sidecar log.
+  The ingest sends one chunk at a time, so this points at an undersized pod
+  memory limit rather than at load (`FRACTAL_RAG_BATCH_CONCURRENCY` is read
+  but not used by the current loop).
 - **Property too large:** a single chunk above ~64 KiB will fail with a
   Weaviate validation error. Reduce `chunk_max_tokens` or fix the upstream
   parser that's emitting a giant blob.
@@ -176,13 +178,27 @@ Common causes:
   `uuid5(...)` scheme; if it does, rerun pass 1 (`fractal-rag schema
   bootstrap` + reseed).
 
+### `status` shows fewer objects than `inserted_chunks`
+
+The json parser names each record `doi:<doi>` (falling back to the Constellate
+id only when the DOI is empty) and object UUIDs derive from that name plus the
+chunk index, so records that share a DOI overwrite each other and the loop still
+counts them as inserted. In the 2026-10-25 export 1,125 of the 50,000 records
+repeat an earlier DOI (48,875 distinct), which is why the run reported 100,012
+inserted chunks and `status` shows 97,762 json objects. Nothing is lost from the
+other sources; if every record must survive, key the parser on the Constellate
+id (unique across the export) and re-ingest the json source.
+
 ### Ingest takes forever on the JSONL corpus
 
 The 50K-article JSONL is ~17 GB and dominates wall clock. Options:
 
 - Ingest a slice first: `fractal-rag ingest --source json --limit 5000`.
-- Bump `FRACTAL_RAG_BATCH_SIZE` from 100 → 256 (Weaviate handles it; the
-  bottleneck is the GPU embed call).
+- Run two sidecar replicas: `kubectl -n ai-workloads scale deploy/t2v-transformers
+  --replicas=2` took a DGX Spark from 8 to 14 chunks per second (the full
+  corpus then takes about two hours). `FRACTAL_RAG_BATCH_SIZE` is not
+  consulted by the current one-chunk-at-a-time loop, so raising it changes
+  nothing.
 - Run the ingest in `screen`/`tmux`; it's resumable because the deterministic
   UUID scheme upserts rather than appends.
 
