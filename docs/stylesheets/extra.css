@@ -1,5 +1,26 @@
+/* Fractal Self-Affinity in Nature — site styles (Zensical, Material classic variant). */
+
+/* Light palette: zensical.toml [[project.theme.palette]] scheme = "fractals". */
 [data-md-color-scheme="fractals"] {
     --md-primary-fg-color:        #023047;
     --md-primary-fg-color--light: #219EBC;
     --md-primary-fg-color--dark:  #333333;
+}
+
+/* OKF frontmatter `status:` renders an .md-status span after the nav entry
+   ([project.extra.status]). "stable" is the normal state and would otherwise show
+   an empty badge on almost every page; keep only the draft marker visible. */
+.md-status--stable {
+    display: none;
+}
+
+/* Rendered notebook pages (scripts/render_notebooks.py): figures extracted into
+   <stem>_files/ and fenced output blocks. Keep figures centred and never wider
+   than the column; the "Jupyter notebook" banner is a stock admonition. */
+.md-typeset .nb-figure,
+.md-typeset img[src*="_files/"] {
+    display: block;
+    margin: 0.75em auto;
+    max-width: 100%;
+    height: auto;
 }
