@@ -15,7 +15,7 @@ site_name = "Fractal Self-Affinity in Nature"
 site_url = "https://tyson-swetnam.github.io/fractal-notebooks"
 site_description = "Self-affine fractals, metabolic scaling theory and the geometry of biological systems: tutorial chapters on fractal foundations, four research manuscripts, pre-rendered Jupyter notebooks, interactive apps, and OKF knowledge bundles of fractal concepts and proofs."
 site_author = "Tyson L. Swetnam"
-copyright = "Copyright &copy; 2025 The University of Arizona &mdash; content licensed <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
+copyright = "Copyright &copy; 2026 The University of New Mexico &mdash; content licensed <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
 repo_url = "https://github.com/tyson-swetnam/fractal-notebooks"
 repo_name = "tyson-swetnam/fractal-notebooks"
 # Trailing slash: overrides/main.html derives each page's Markdown twin from

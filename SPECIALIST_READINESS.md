@@ -47,9 +47,12 @@ committed independently.
       `mkdocs.yaml`, `react-deploy.yaml`) were deleted in 3080fb1 (2026-07-13). `.github/workflows/`
       now holds `deploy-all.yaml` (Zensical + React deploy, live smoke test) and `test-build.yaml`
       (PR checks: docs pipeline, `fractal_rag` lint + tests, React, MkDocs rollback canary).
+- [x] **Reconcile the copyright.** `zensical.toml` (and the frozen `mkdocs.yml`) now say
+      "Copyright © 2026 The University of New Mexico"; the JSON-LD publisher in
+      `overrides/main.html` matches. Author affiliations in the Part II pages are left as the
+      historical University of Arizona departments.
 - [ ] **Reconcile the site name across files.** `README.md` title is "Fractal Notebooks";
-      `zensical.toml` `site_name` is "Fractal Self-Affinity in Nature"; the copyright says
-      "The University of Arizona" (2025) while the citation says 2026. Pick canonical values
+      `zensical.toml` `site_name` is "Fractal Self-Affinity in Nature". Pick canonical values
       and make README, `zensical.toml`, and the BibTeX entry agree.
 - [x] **Verify `requirements.txt` reflects the live plugin set.** Done: the docs build uses the
       pinned `requirements-docs.txt` (Zensical, nbconvert, nbformat, PyYAML, pathspec);
