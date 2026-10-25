@@ -235,7 +235,7 @@ kubectl get all -n ai-workloads
 
 ### Relationship to `docs/`
 - JupyterLab provides an environment for editing and running documentation notebooks
-- MkDocs site can be served from within the cluster for documentation hosting
+- The documentation site (Zensical) can be served from within the cluster for documentation hosting
 - Documentation build process can be automated within the Kubernetes environment
 - Remote access enables collaborative documentation development
 

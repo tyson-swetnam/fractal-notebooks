@@ -7,12 +7,12 @@ committed independently.
 
 ## 1. Make agent guidance portable and single-sourced
 
-- [ ] **Adopt the updated `CLAUDE.md`** (tool-agnostic, with Claude Code vs Claude Science
+- [x] **Adopt the updated `CLAUDE.md`** (tool-agnostic, with Claude Code vs Claude Science
       behavior split explicitly, and an Agents/Specialists section).
-- [ ] **Add `AGENTS.md` as a symlink to `CLAUDE.md`** so non-Claude agents that honor the
+- [x] **Add `AGENTS.md` as a symlink to `CLAUDE.md`** so non-Claude agents that honor the
       `AGENTS.md` convention get the same guidance from one source:
       `ln -s CLAUDE.md AGENTS.md`.
-- [ ] **Remove the "commit after every prompt" blanket rule** for Claude Science. Auto-commit
+- [x] **Remove the "commit after every prompt" blanket rule** for Claude Science. Auto-commit
       is a Claude Code behavior; Claude Science should produce artifacts and commit only on
       explicit instruction. (Done in the updated `CLAUDE.md`.)
 
@@ -33,53 +33,60 @@ committed independently.
 - [ ] **Document each of the 8 tools with input/output JSON schemas** in
       `fractal_rag/README.md` (name, params, defaults, return shape, error codes). Agents
       bind more reliably against explicit schemas than prose.
-- [ ] **Confirm `.mcp.json` is portable.** It invokes the bare command `fractal-rag serve`,
-      which assumes the package is installed and on `PATH`. Note that dependency in
-      `CLAUDE.md`/README, or pin an absolute/venv path, so a fresh clone does not fail
-      silently.
+- [x] **Confirm `.mcp.json` is portable.** It invokes the bare command `fractal-rag serve`,
+      which assumes the package is installed and on `PATH`. Done: `CLAUDE.md` ("Reaching the
+      MCP server") documents that the env with the package must be activated before launching
+      Claude Code, otherwise the server fails with `ENOENT`.
 - [ ] **Surface stable error codes** (`not_found`, `invalid_argument`, `weaviate_error`,
       `unsupported`, `internal_error`) in the tool docs — the subagent already relies on them
       for retry logic.
 
 ## 4. Repository hygiene
 
-- [ ] **Resolve the disabled workflows.** `.github/workflows/` has `deploy-all.yaml` +
-      `test-build.yaml` active and three `.disabled` files (`deploy.yml`, `mkdocs.yaml`,
-      `react-deploy.yaml`). Delete the superseded ones or add a one-line comment in each
-      explaining why it is retained.
+- [x] **Resolve the disabled workflows.** Done: the three `.disabled` files (`deploy.yml`,
+      `mkdocs.yaml`, `react-deploy.yaml`) were deleted in 3080fb1 (2026-07-13). `.github/workflows/`
+      now holds `deploy-all.yaml` (Zensical + React deploy, live smoke test) and `test-build.yaml`
+      (PR checks: docs pipeline, `fractal_rag` lint + tests, React, MkDocs rollback canary).
 - [ ] **Reconcile the site name across files.** `README.md` title is "Fractal Notebooks";
-      `mkdocs.yml` `site_name` is "Fractal Self-Affinity in Nature"; the copyright says
+      `zensical.toml` `site_name` is "Fractal Self-Affinity in Nature"; the copyright says
       "The University of Arizona" (2025) while the citation says 2026. Pick canonical values
-      and make README, `mkdocs.yml`, and the BibTeX entry agree.
-- [ ] **Verify `requirements.txt` reflects the live plugin set.** It carries commented-out
-      pins and legacy tooling (`sphinx`, `tox`, `twine`, `bump2version`) that the docs build
-      may not need. Split into `requirements-docs.txt` (build) vs dev extras, or prune.
+      and make README, `zensical.toml`, and the BibTeX entry agree.
+- [x] **Verify `requirements.txt` reflects the live plugin set.** Done: the docs build uses the
+      pinned `requirements-docs.txt` (Zensical, nbconvert, nbformat, PyYAML, pathspec);
+      `requirements.txt` is kept only as the MkDocs rollback path until the cleanup phase.
 - [ ] **Add a top-level `CONTRIBUTING.md`** (or expand README's contributing section) that
       states the env-per-component convention and the "run type-check + lint before commit"
       rule for React.
 
 ## 5. Prepare the OKF knowledge bundle
 
-- [ ] **Generate an OKF bundle from `concepts/seed.yaml`.** Each of the 31 concepts becomes a
-      Markdown file with YAML frontmatter (`type: concept` is the only required field;
-      `title`, `description`, `tags`/domain, `timestamp` optional) and body = definition +
-      aliases. Cross-link related concepts with Markdown links.
-- [ ] **Add `index.md` (entry point / progressive disclosure) and `log.md` (change history)**
+- [x] **Generate an OKF bundle from `concepts/seed.yaml`.** Done (`fractal-rag okf export`,
+      OKF v0.2): each of the 32 concepts is a Markdown file with YAML frontmatter
+      (`type: Fractal Concept`, `title`, `description`, `resource`, `tags`, `sources`,
+      `generated`, `status`) and body = definition + aliases, cross-linked with relative
+      Markdown links. Published at `/okf/concepts/` together with the hand-authored
+      `okf/proofs/` bundle.
+- [x] **Add `index.md` (entry point / progressive disclosure) and `log.md` (change history)**
       at each bundle level, per the OKF spec.
 - [ ] **Wire the bundle into the RAG stack** as an additional knowledge source so the MCP
       server and the OKF bundle stay consistent (single ontology, two surfaces).
-- [ ] **Keep `seed.yaml` as the authoring source**; treat the OKF Markdown as a generated
-      artifact so there is one place to edit a concept.
+- [x] **Keep `seed.yaml` as the authoring source**; treat the OKF Markdown as a generated
+      artifact so there is one place to edit a concept (CI runs `okf export --check`).
 
-## 6. Plan the Zensical migration
+## 6. Zensical migration (done 2026-10-24)
 
-- [ ] **Inventory MkDocs plugin usage** the site depends on: `mkdocs-jupyter`, MathJax,
-      `mkdocs-pdf-export-plugin`, `mkdocs-git-revision-date-plugin`, mkdocstrings.
-- [ ] **Check each against Zensical's compatibility matrix** before switching — Zensical reads
-      `mkdocs.yml` natively but does not yet cover the entire Material/MkDocs plugin surface.
-- [ ] **Add a parallel `zensical build` job** (non-blocking) in CI to track parity without
-      breaking the live MkDocs deploy; promote to the primary builder only once notebooks,
-      math, and PDF export render correctly.
+- [x] **Inventory MkDocs plugin usage.** Done: the site depended on `mkdocs-jupyter` (notebooks,
+      now pre-rendered by `scripts/render_notebooks.py`) and MathJax; `mkdocs-git-revision-date-plugin`
+      and mkdocstrings were configured but unused. ~~`mkdocs-pdf-export-plugin`~~ was never
+      configured in `mkdocs.yml` (it was only listed in `requirements.txt`), so there was no PDF
+      export to preserve.
+- [x] **Check each against Zensical's compatibility matrix.** Done: Zensical has no
+      `mkdocs-jupyter` support (notebook pages are rendered to Markdown at commit time), ships
+      native search and redirects, and renders math through `pymdownx.arithmatex` +
+      `docs/javascripts/mathjax.js`.
+- [x] **Switch the primary builder to Zensical.** Done: `zensical.toml` + `scripts/build_site.sh`
+      build the site in CI (`deploy-all.yaml`); the MkDocs job in `test-build.yaml` remains only
+      as a non-blocking rollback canary until the cleanup phase removes `mkdocs.yml`.
 
 ## 7. Reproducibility for agents
 
@@ -96,4 +103,4 @@ committed independently.
 **Quick wins first:** items 1 (`AGENTS.md` symlink + commit-policy split), 4 (workflows +
 name reconciliation), and 3 (`.mcp.json` PATH note) are low-effort and unblock reliable
 agent onboarding. The OKF bundle (5) and Zensical migration (6) are larger tracks worth
-their own specs under `docs/superpowers/specs/`.
+their own specs under `specs/`.

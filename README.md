@@ -15,14 +15,14 @@ A comprehensive collection of Python applications and Jupyter notebooks for simu
 - **Interactive Streamlit Applications** - Real-time fractal visualization with parameter controls
 - **Jupyter Notebooks** - Educational content with mathematical theory and implementations
 - **Research-Grade Tools** - Scientific Python stack for fractal analysis and dimension calculation
-- **Comprehensive Documentation** - MkDocs site with LaTeX equations and theory
+- **Comprehensive Documentation** - Zensical site with LaTeX equations, pre-rendered notebooks, and OKF knowledge bundles (plus `llms.txt` and raw Markdown twins for AI agents)
 - **Cloud Deployment** - K3s Kubernetes with GPU support for scalable computation
 - **Containerization** - Docker deployment for consistent environments
 
 ## 📁 Repository Structure
 
 - **`apps/`** - Streamlit applications for interactive fractal visualization
-- **`docs/`** - MkDocs documentation with mathematical content and theory
+- **`docs/`** - Zensical documentation (an OKF v0.2 bundle) with mathematical content and theory
 - **`docs/notebooks/`** - Jupyter notebooks with fractal algorithms and examples
 - **`k3s-deployment/`** - Kubernetes configurations for JupyterLab and Weaviate
 - **`docker/`** - Docker containerization for Streamlit applications
@@ -34,23 +34,24 @@ A comprehensive collection of Python applications and Jupyter notebooks for simu
 ```bash
 git clone https://github.com/tyson-swetnam/fractal-notebooks.git
 cd fractal-notebooks
-pip install -r requirements.txt
-python -m mkdocs serve
+uv venv --python 3.11 .venv && uv pip install --python .venv/bin/python -r requirements-docs.txt
+bash scripts/build_site.sh --serve   # full pipeline (OKF staging, notebook pages, strict build), then live reload
 ```
 Access at http://localhost:8000
 
 ### Run Streamlit Applications
 ```bash
-# Run specific applications
-streamlit run apps/mandelbrot.py
-streamlit run apps/branching_tree.py
-streamlit run apps/julia.py
+# Streamlit apps: the 12 apps/*.py files that import streamlit (see apps/README.md)
+streamlit run apps/tree_roots_3d.py
+# The other scripts (mandelbrot.py, julia.py, branching_tree.py, ...) are plain
+# matplotlib/PIL programs that write an image or GIF next to the script
+python apps/mandelbrot.py
 ```
 
 ### Docker Deployment
 ```bash
-cd docker/
-docker build -t fractal-app .
+# from the repository root (the Dockerfile copies apps/)
+docker build -f docker/Dockerfile -t fractal-app .
 docker run -p 8501:8501 fractal-app
 ```
 
@@ -62,7 +63,7 @@ kubectl apply -f k3s-deployment/ -n ai-workloads
 
 ## 🔬 Core Technologies
 
-- **Documentation**: MkDocs with Material theme, MathJax for equations
+- **Documentation**: Zensical (Material theme, classic variant) with MathJax for equations; OKF v0.2 frontmatter, `llms.txt` and Markdown twins for AI agents
 - **Interactive Apps**: Streamlit for web-based fractal visualizations
 - **Notebooks**: Jupyter with NumPy, Matplotlib, SciPy scientific stack
 - **Deployment**: K3s Kubernetes with GPU support for AI workloads
@@ -85,7 +86,7 @@ kubectl apply -f k3s-deployment/ -n ai-workloads
 
 Contributions are welcome! Please see individual folder README files for specific development guidelines:
 - `apps/README.md` - Streamlit application development
-- `docs/README.md` - Documentation structure and MkDocs configuration
+- `CLAUDE.md` - Documentation architecture, OKF frontmatter convention, and the Zensical build pipeline (`zensical.toml`, `scripts/`)
 - `k3s-deployment/README.md` - Kubernetes deployment guide
 
 ## 📄 Citation
