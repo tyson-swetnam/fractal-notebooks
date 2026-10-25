@@ -116,3 +116,10 @@ sudo /usr/local/bin/k3s-uninstall.sh                     # remove K3s (data unde
 Swapping the embedding model: change the image (base manifest or an overlay `images:` entry), roll
 the deployment, then `fractal-rag schema bootstrap --drop` and re-ingest, because vectors are
 model-specific.
+
+Upgrading Weaviate: change the tag in `base/weaviate-deployment.yaml` (1.35.3 or newer; 1.35.0
+zeroes every BM25 score after a bulk delete, weaviate/weaviate#10102) and `kubectl apply -f` that
+file. The deployment's `Recreate` strategy stops the old pod before the new one mounts the volume,
+and the pinned `CLUSTER_HOSTNAME=node1` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created
+pod rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
+after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`.

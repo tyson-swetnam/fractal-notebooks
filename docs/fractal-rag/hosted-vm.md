@@ -152,6 +152,9 @@ second replica, which uses the second GPU time slice, is the only cheap lever:
 kubectl -n ai-workloads scale deploy/t2v-transformers --replicas=2
 ```
 
+The manifests declare one replica, so any later `kubectl apply -k` scales the
+sidecar back to one; repeat the command before the next long ingest.
+
 Watch progress with:
 
 ```bash
@@ -244,6 +247,29 @@ sudo systemctl restart k3s                # if K3s wasn't enabled-on-boot
 kubectl -n ai-workloads rollout restart deploy/weaviate
 kubectl -n ai-workloads rollout restart deploy/t2v-transformers
 ```
+
+The manifest pins Weaviate's Raft node name (`CLUSTER_HOSTNAME=node1`), so a
+re-created pod rejoins its own single-node cluster; a pod created before that
+setting existed recovers through `RAFT_ENABLE_ONE_NODE_RECOVERY` (see
+[Troubleshooting](troubleshooting.md#weaviate-pod-stays-01-running-and-exits-every-ten-minutes)).
+
+### Upgrade Weaviate
+
+Change the image tag in `k3s-deployment/base/weaviate-deployment.yaml` and apply
+that file alone: the deployment uses the `Recreate` strategy, so the old pod
+releases the volume before the new one mounts it, and a full `kubectl apply -k`
+would also reset the sidecar to one replica.
+
+```bash
+kubectl apply -f k3s-deployment/base/weaviate-deployment.yaml
+kubectl -n ai-workloads rollout status deploy/weaviate
+curl -s localhost:30080/v1/meta | python -c "import json, sys; print(json.load(sys.stdin)['version'])"
+```
+
+Stay at 1.35.3 or newer: 1.35.0 zeroes every keyword score after a bulk delete
+(see [Troubleshooting](troubleshooting.md#keyword-bm25-scores-are-0-and-hybrid-ranking-looks-arbitrary)).
+The 2026-10-25 move from 1.35.0 to 1.35.23 kept the 104,061 objects and repaired
+the scores on restart.
 
 ### Re-ingest after a schema change
 

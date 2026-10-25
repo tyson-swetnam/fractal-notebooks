@@ -7,6 +7,10 @@ metadata:
     app: weaviate
 spec:
   replicas: 1
+  # One pod on a ReadWriteOnce local-path volume: stop the old pod before starting the new one,
+  # otherwise a rolling update mounts the data directory twice on the same node.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: weaviate
@@ -17,12 +21,24 @@ spec:
     spec:
       containers:
         - name: weaviate
-          image: semitechnologies/weaviate:1.35.0
+          # 1.35.3+ is required: 1.35.0 writes a NaN average property length for a segment
+          # flush that only holds deletions (weaviate/weaviate#10102), which zeroes every BM25
+          # score on the affected properties after a bulk delete.
+          image: semitechnologies/weaviate:1.35.23
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
             - containerPort: 50051
           env:
+            # Pin the Raft node name. Without it Weaviate names the node after the pod, and a
+            # re-created pod (new name) can never rejoin its own single-node cluster: it retries
+            # for RAFT_BOOTSTRAP_TIMEOUT seconds and exits. The recovery flag lets a node whose
+            # name changed (a pod created before this setting existed) rewrite the stored
+            # single-voter configuration to itself.
+            - name: CLUSTER_HOSTNAME
+              value: node1
+            - name: RAFT_ENABLE_ONE_NODE_RECOVERY
+              value: "true"
             - name: QUERY_DEFAULTS_LIMIT
               value: "100"
             - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
