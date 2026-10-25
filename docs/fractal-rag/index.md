@@ -63,7 +63,7 @@ flowchart LR
 | `docker/fractal-rag/docker-compose.yaml` | this repo | Single-node local stack (CPU-only) |
 | `.claude/agents/fractal-explorer.md` | this repo | Custom retrieval subagent definition |
 | `.mcp.json` | this repo | Repo-local MCP server wiring |
-| Constellate JSONL corpus | iRODS `/iplant/home/tswetnam/fractal-notebooks/` | 50K scholarly articles |
+| Constellate JSONL corpus | iRODS `/iplant/home/tswetnam/projects/fractal-notebooks/` | 50K scholarly articles |
 
 ## Worked examples
 

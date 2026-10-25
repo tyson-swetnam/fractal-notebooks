@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
     # Filesystem paths
     corpus_root: Path = Path("/opt/tswetnam/fractal-notebooks")
-    irods_root: str = "/iplant/home/tswetnam/fractal-notebooks/"
+    irods_root: str = "/iplant/home/tswetnam/projects/fractal-notebooks/"
     repo_root: Path = Field(
         default=Path("/opt/tswetnam/github/fractal-notebooks"),
         description=(

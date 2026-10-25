@@ -57,8 +57,8 @@ docker run -p 8501:8501 fractal-app
 
 ### Kubernetes Deployment
 ```bash
-kubectl create namespace ai-workloads
-kubectl apply -f k3s-deployment/ -n ai-workloads
+kubectl apply -k k3s-deployment/base                 # Weaviate + GPU embedding sidecar (creates the namespace)
+kubectl apply -k k3s-deployment/overlays/dgx-spark   # arm64 DGX Spark: locally built CUDA sidecar
 ```
 
 ## 🔬 Core Technologies

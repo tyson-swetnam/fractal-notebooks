@@ -42,9 +42,9 @@ You can run on far less. Minimum: 1 modern NVIDIA GPU with ≥16 GB VRAM,
 
 | Need | Notes |
 |---|---|
-| K3s | `curl -sfL https://get.k3s.io \| sh -` |
-| NVIDIA driver + container runtime | `nvidia-smi` must work on the host; K3s picks up the NVIDIA runtime via the `nvdp.yaml` manifest in this repo |
-| `kubectl` | `sudo ln -s /usr/local/bin/k3s /usr/local/bin/kubectl` (or use `k3s kubectl ...`) |
+| K3s | `curl -sfL https://get.k3s.io \| sudo env INSTALL_K3S_VERSION=v1.36.5+k3s1 sh -s - server`, with `/etc/rancher/k3s/config.yaml` written first (no Traefik, kubeconfig mode and group) and the two `ufw` cluster-CIDR rules; embedded containerd, not `--docker`. Details in `k3s-deployment/README.md` |
+| NVIDIA driver + container toolkit | `nvidia-smi` must work and the NVIDIA Container Toolkit must be installed; K3s detects `nvidia-container-runtime` at start-up and creates the `nvidia` RuntimeClass the GPU pods request |
+| `kubectl` | installed by K3s into `/usr/local/bin`; `export KUBECONFIG=/etc/rancher/k3s/k3s.yaml` |
 | `gocmd` v0.11.5+ | for the iRODS pull; `~/.irods/` must already be authenticated |
 | `helm` (optional) | not required by these manifests |
 
@@ -56,13 +56,18 @@ sudo systemctl status k3s                  # active (running)
 kubectl get nodes -o wide                  # node Ready, GPU label present
 ```
 
-## 1. Create the namespace + storage class + GPU plugin
+## 1. Apply the stack
+
+The manifests are a kustomize base, `k3s-deployment/base/` (namespace, NVIDIA
+device plugin with its time-slicing config, Weaviate, the embedding sidecar), plus
+host overlays under `k3s-deployment/overlays/`. On an x86 GPU node the base is all
+you need; K3s itself provides the `nvidia` RuntimeClass and the `local-path`
+StorageClass the PVC requests.
 
 ```bash
-kubectl apply -f k3s-deployment/namespace.yaml
-kubectl apply -f k3s-deployment/storageclass.yaml
-kubectl apply -f k3s-deployment/nvidia-device-plugin-daemonset.yaml
-kubectl -n kube-system get pods | grep nvidia-device-plugin   # Running
+kubectl label node <node> nvidia.com/gpu.present=true   # the device plugin's nodeSelector
+kubectl apply -k k3s-deployment/base
+kubectl -n kube-system rollout status daemonset/nvidia-device-plugin-daemonset
 ```
 
 Verify GPUs are now schedulable:
@@ -73,18 +78,14 @@ kubectl describe node | grep -A2 "nvidia.com/gpu"
 #   nvidia.com/gpu:  3
 ```
 
-## 2. Deploy Weaviate + the embedding sidecar
+## 2. Wait for Weaviate + the embedding sidecar
 
 ```bash
-kubectl apply -f k3s-deployment/weaviate-pvc.yaml
-kubectl apply -f k3s-deployment/weaviate-deployment.yaml
-kubectl apply -f k3s-deployment/weaviate-service.yaml
-kubectl apply -f k3s-deployment/t2v-transformers-deployment.yaml
-kubectl apply -f k3s-deployment/t2v-transformers-service.yaml
-
-# Wait for both pods to go Ready (first start pulls ~6 GB of images +
-# downloads the embedding model; budget 5-10 minutes).
-kubectl -n ai-workloads get pods -w
+# First start pulls ~6 GB of images and the sidecar loads the model before it
+# reports Ready; budget 5-10 minutes.
+kubectl -n ai-workloads rollout status deployment/t2v-transformers --timeout=15m
+kubectl -n ai-workloads rollout status deployment/weaviate --timeout=15m
+kubectl -n ai-workloads get pods -o wide
 ```
 
 Smoke-test from the host:
@@ -130,7 +131,8 @@ fractal-rag schema bootstrap
 
 ```bash
 fractal-rag pull
-# Mirrors /iplant/home/tswetnam/fractal-notebooks/ -> /opt/tswetnam/fractal-notebooks/
+# Mirrors /iplant/home/tswetnam/projects/fractal-notebooks/ -> /opt/tswetnam/fractal-notebooks/
+# (override with FRACTAL_RAG_IRODS_ROOT / FRACTAL_RAG_CORPUS_ROOT, e.g. when /opt is not writable)
 # ~30 GB. Resumable; gocmd skips files whose checksums already match.
 ```
 
@@ -242,16 +244,34 @@ fractal-rag ingest --source all
 
 ### Swap the embedding model
 
-Edit `k3s-deployment/t2v-transformers-deployment.yaml` to change the image
+Edit `k3s-deployment/base/t2v-transformers-deployment.yaml` to change the image
 tag (e.g. to `transformers-inference:sentence-transformers-all-mpnet-base-v2`
-or `nomic-embed-text-v2-moe`), then:
+or `nomic-embed-text-v2-moe`), or the `images:` entry of your overlay, then:
 
 ```bash
-kubectl apply -f k3s-deployment/t2v-transformers-deployment.yaml
+kubectl apply -k k3s-deployment/base          # or your overlay
 kubectl -n ai-workloads rollout status deploy/t2v-transformers
 fractal-rag schema bootstrap --drop      # vectors are model-specific
 fractal-rag ingest --source all
 ```
+
+## DGX Spark (arm64) notes
+
+The published `transformers-inference` images are multi-arch, but on arm64 they
+ship a CPU-only PyTorch, so the sidecar must be built locally on a CUDA 13 base
+(`docker/t2v-transformers-cuda-arm64/build.sh`, arctic-embed-l-v2.0 baked in),
+imported into K3s's containerd and selected through the `dgx-spark` overlay:
+
+```bash
+bash docker/t2v-transformers-cuda-arm64/build.sh
+docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr images import -
+kubectl apply -k k3s-deployment/overlays/dgx-spark
+```
+
+The device plugin must be v0.17.4 or newer on the GB10 (the base ships v0.20.1),
+`nvidia-smi` reports memory as `N/A` on this unified-memory platform, and a pod's
+memory limit also caps its GPU allocations. On a GB10 the sidecar embeds about 16
+long or 50 short texts per second. See `k3s-deployment/README.md` for the full recipe.
 
 ## Where to go next
 

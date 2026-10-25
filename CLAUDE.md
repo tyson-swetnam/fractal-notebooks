@@ -24,8 +24,10 @@ metabolic scaling theory. Six components:
 - **OKF knowledge bundles** (`okf/`) — `okf/concepts/` (generated from the concept seed) and
   `okf/proofs/` (hand-authored proofs), both Open Knowledge Format v0.2, published through the
   site under `/okf/`.
-- **Deployment** (`k3s-deployment/`, `docker/`) — K3s manifests (Weaviate 1.35 + GPU embedding
-  sidecar, JupyterLab), a Streamlit Docker image, and a local Docker Compose RAG stack.
+- **Deployment** (`k3s-deployment/`, `docker/`) — K3s manifests as a kustomize base (Weaviate 1.35 +
+  GPU embedding sidecar + device plugin) with an arm64 DGX Spark overlay, optional JupyterLab, a
+  Streamlit Docker image, a local Docker Compose RAG stack, and a CUDA 13 arm64 build of the
+  embedding sidecar (`docker/t2v-transformers-cuda-arm64/`).
 
 Design specs live in `specs/` (moved out of `docs/`, redacted); the notebooks' historical
 planning notes live in `notes/notebooks/`; `PLAN.md` is the completed restructuring plan.
@@ -300,7 +302,8 @@ otherwise `ingest --source docs` silently indexes nothing.
 
 Bring it up — either on K3s:
 ```bash
-kubectl apply -f k3s-deployment/   # Weaviate 1.35 + Arctic-embed-l-v2.0 GPU sidecar
+kubectl apply -k k3s-deployment/base                 # Weaviate 1.35 + arctic-embed GPU sidecar (x86 node)
+kubectl apply -k k3s-deployment/overlays/dgx-spark   # arm64 DGX Spark: sidecar built by docker/t2v-transformers-cuda-arm64/build.sh
 ```
 or locally without a GPU (CPU `bge-small` embedder; override the port):
 ```bash
@@ -393,7 +396,9 @@ cleanly), then mirror it as a Specialist profile.
   Runtime GIFs/images stay local.
 
 ### Kubernetes (`k3s-deployment/`)
-- JupyterLab + Weaviate with persistent storage, NVIDIA device plugin, local-path storage class.
+- `base/` is a kustomize base (namespace, `nvidia` RuntimeClass, device plugin, Weaviate, sidecar);
+  `overlays/dgx-spark/` swaps in the locally built CUDA arm64 sidecar image. JupyterLab manifests
+  stay at the top level and are optional. Persistent storage uses K3s's `local-path` class.
 
 ## CI/CD
 

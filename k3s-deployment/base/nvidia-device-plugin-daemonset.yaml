@@ -1,3 +1,7 @@
+# NVIDIA device plugin. v0.17.4 or newer is required on unified-memory GPUs such as the DGX Spark
+# GB10, where NVML reports "Not Supported" for device memory and older plugins exit on it.
+# Label the node first (no GPU feature discovery here):
+#   kubectl label node <node> nvidia.com/gpu.present=true
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -16,28 +20,28 @@ spec:
       labels:
         app: nvidia-device-plugin
     spec:
-      runtimeClassName: nvidia
+      runtimeClassName: nvidia   # created by K3s when nvidia-container-runtime is on its PATH
       priorityClassName: system-node-critical
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
       containers:
         - name: nvidia-device-plugin-ctr
-          image: nvcr.io/nvidia/k8s-device-plugin:v0.14.5
+          image: nvcr.io/nvidia/k8s-device-plugin:v0.20.1
           env:
-            - name: FAIL_ON_INIT_ERROR
-              value: "false"
-            - name: PASS_DEVICE_SPECS
-              value: "true"
+            - name: CONFIG_FILE
+              value: /config/config.yaml
             - name: DEVICE_LIST_STRATEGY
-              value: "envvar"
+              value: envvar
             - name: DEVICE_ID_STRATEGY
-              value: "uuid"
+              value: uuid
             - name: NVIDIA_VISIBLE_DEVICES
-              value: "all"
+              value: all
             - name: NVIDIA_DRIVER_CAPABILITIES
-              value: "compute,utility"
+              value: compute,utility
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -45,10 +49,14 @@ spec:
           volumeMounts:
             - name: device-plugin
               mountPath: /var/lib/kubelet/device-plugins
+            - name: config
+              mountPath: /config
+              readOnly: true
       volumes:
         - name: device-plugin
           hostPath:
             path: /var/lib/kubelet/device-plugins
             type: Directory
-      nodeSelector:
-        nvidia.com/gpu.present: "true"
+        - name: config
+          configMap:
+            name: nvidia-device-plugin-config

@@ -35,7 +35,7 @@ Look for:
 
     ```bash
     kubectl -n ai-workloads delete pvc weaviate-pvc
-    kubectl apply -f k3s-deployment/weaviate-pvc.yaml
+    kubectl apply -f k3s-deployment/base/weaviate-pvc.yaml
     kubectl -n ai-workloads rollout restart deploy/weaviate
     ```
 
