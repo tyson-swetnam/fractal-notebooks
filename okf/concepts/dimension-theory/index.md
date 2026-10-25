@@ -1,7 +1,7 @@
 # Dimension Theory
 
-* [Box-Counting Dimension](box-counting-dimension.md) - Estimated fractal dimension obtained by covering a set with boxes of edge epsilon and measuring how the count N(epsilon) scales as epsilon -> 0.
-* [Complex Dimensions](complex-dimensions.md) - Generalization of the real Hausdorff/box-counting dimension to complex values, used by Lapidus et al.
+* [Box-Counting Dimension](box-counting-dimension.md) - Estimated fractal dimension obtained by covering a set with boxes of edge epsilon and measuring how the count N(epsilon) scales as epsilon → 0.
+* [Complex Dimensions](complex-dimensions.md) - Generalization of the real Hausdorff/box-counting dimension to complex values, used by Lapidus et al. to describe oscillatory geometric and spectral asymptotics of fractal sets.
 * [Differential Box-Counting](differential-box-counting.md) - Extension of box-counting for grayscale images that partitions the intensity axis to estimate the fractal dimension of textured surfaces.
 * [Fractal Dimension](fractal-dimension.md) - A real-valued (often non-integer) measure of how the detail of a pattern changes with the scale at which it is measured.
 * [Hausdorff Dimension](hausdorff-dimension.md) - Rigorous notion of dimension defined as the infimum of d such that the d-dimensional Hausdorff measure of the set is zero.

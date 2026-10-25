@@ -1,0 +1,256 @@
+# Manifest of the Jupyter notebooks published as pre-rendered pages.
+#
+# scripts/render_notebooks.py turns every [[notebook]] below into
+# docs/<dir>/<stem>.md + docs/<dir>/<stem>_files/ (both committed; CI drift-checks
+# them with --check). Publishing a notebook = add an entry here + a nav entry in
+# zensical.toml, run `python scripts/render_notebooks.py`, commit the output.
+#
+# Per-entry keys
+#   src             notebook path relative to the repo root (must be under docs/)
+#   title           frontmatter title (disambiguated; the body H1 is left as-is)
+#   description     50-300 chars of plain text, no " < > — becomes the meta
+#                   description and the llms.txt entry
+#   tags            2-6 tags from the vocabulary in scripts/validate_okf.py
+#   companion_page  site-relative URL path of the chapter/section the notebook
+#                   supports (optional)
+#   environment     how to run it (free text, shown in the banner)
+#   as_of           date of the notebook's last commit (YYYY-MM-DD); it becomes
+#                   generated.at and the "as of" date in the banner. The renderer
+#                   never calls git, so update this by hand when re-committing a
+#                   re-executed notebook: git log -1 --format=%cs -- <src>
+#   status          stable | draft (default: [defaults].status)
+#   code_only       true -> drop every output (pages for notebooks that need a
+#                   live service, e.g. the Fractal RAG examples)
+#   heading         H1 text to inject when the notebook has no usable H1
+#   h1_policy       keep (default: first H1 kept, extra H1s demoted) |
+#                   replace (first H1 replaced by `heading`/title) |
+#                   demote (all H1s demoted, `heading`/title injected on top)
+#   verified_at     YYYY-MM-DD of a human review -> emits verified[{by: author}];
+#                   leave unset until a person has re-read the rendered page
+
+[defaults]
+author = "human:tswetnam"
+status = "stable"
+max_stream_lines = 120
+# Used only when zensical.toml is absent (or --config is not given); the site
+# configuration wins when present.
+site_url = "https://tyson-swetnam.github.io/fractal-notebooks"
+repo_url = "https://github.com/tyson-swetnam/fractal-notebooks"
+branch = "main"
+
+# ---------------------------------------------------------------- Part I chapters
+
+[[notebook]]
+src = "docs/notebooks/foundations/1_history.ipynb"
+title = "Chapter 1: History of Fractal Mathematics (notebook)"
+description = """Companion notebook to Chapter 1: constructs the Cantor set, Koch snowflake, \
+Sierpinski triangle and carpet, Weierstrass function, Julia and Mandelbrot sets with NumPy and \
+Matplotlib, and tabulates the similarity dimensions of the classical fractals."""
+tags = ["notebook", "part-i", "classics", "geometry", "dimension-theory", "jupyter"]
+companion_page = "foundations/history/"
+environment = "environments/fractal-foundations-gpu.yml (runs on CPU: numpy, matplotlib, numba)"
+as_of = "2025-12-23"
+
+[[notebook]]
+src = "docs/notebooks/foundations/2_mathematics.ipynb"
+title = "Chapter 2: Mathematical Foundations of Fractals (notebook)"
+description = """Companion notebook to Chapter 2: implements box-counting and differential \
+box-counting, power-law fitting with confidence intervals, fractional Brownian motion with \
+Hurst estimation by rescaled range, and gliding-box lacunarity on synthetic fractals."""
+tags = ["notebook", "part-i", "dimension-theory", "methods", "hurst", "jupyter"]
+companion_page = "foundations/mathematics/"
+environment = "environments/fractal-foundations-gpu.yml (runs on CPU: numpy, scipy, matplotlib, Pillow)"
+as_of = "2025-12-23"
+
+[[notebook]]
+src = "docs/notebooks/foundations/3_dimensionality.ipynb"
+title = "Chapter 3: Fractal Dimensionality (1D through 4D) (notebook)"
+description = """Companion notebook to Chapter 3: generates fractals in 1D (coloured noise, fBm, \
+Cantor set), 2D (fBm surfaces, Mandelbrot and Julia sets, Koch and Sierpinski), 3D (Menger sponge, \
+DLA) and as time-evolving DLA growth, reporting the measured dimension of each."""
+tags = ["notebook", "part-i", "dimension-theory", "stochastic", "3d-fractals", "jupyter"]
+companion_page = "foundations/dimensionality/"
+environment = "environments/fractal-foundations-gpu.yml (runs on CPU: numpy, scipy, matplotlib, numba)"
+as_of = "2025-12-23"
+
+[[notebook]]
+src = "docs/notebooks/foundations/4_zeta_space.ipynb"
+title = "Chapter 4: Zeta Space Tilings (notebook)"
+description = """Companion to Chapter 1 section 1.6 (complex dimensions); its own title numbers it \
+Chapter 4. Tiles a plane with circles, squares, triangles and polygons whose areas follow \
+A_i = A_0 / i^p, plots the Riemann zeta function, compares exponents p, and relates the packings to \
+Apollonian gaskets."""
+tags = ["notebook", "part-i", "number-theory", "riemann-zeta", "geometry", "jupyter"]
+companion_page = "foundations/history/#16-modern-developments-complex-dimensions-and-spectral-geometry"
+environment = "environments/fractal-foundations-gpu.yml (runs on CPU: numpy, scipy, matplotlib)"
+# Re-executed on 2026-10-24 (5 figures); the working-tree copy is committed with this change.
+as_of = "2026-10-24"
+
+# ---------------------------------------------------------------- Fractal demonstrations
+
+[[notebook]]
+src = "docs/notebooks/foundations/dla.ipynb"
+title = "Diffusion Limited Aggregation (DLA)"
+description = """Diffusion-limited aggregation with Numba: bacterial colonies, tidal-flat \
+stromatolites, upward-biased bryophytes, five lichen growth forms, L-system fruticose lichens with \
+Murray-law tapering, 3D DLA, and open DLA with environmental constraints, each with figures."""
+tags = ["notebook", "foundations", "dla", "stochastic", "branching", "biological"]
+environment = "environments/fractal-foundations-gpu.yml (numba, matplotlib, ipywidgets, plotly)"
+as_of = "2026-10-24"
+
+[[notebook]]
+src = "docs/notebooks/foundations/fractals.ipynb"
+title = "Foundations of Fractal Geometry (notebook)"
+description = """Overview notebook for the Foundations chapters with minimal examples of the Cantor \
+set, Sierpinski triangle, Menger sponge and fractional Brownian motion, a self-similar dimension \
+reference table, and pointers to the detailed chapter notebooks."""
+tags = ["notebook", "part-i", "foundations", "self-similarity", "geometry", "jupyter"]
+companion_page = "foundations/"
+environment = "environments/fractal-foundations-gpu.yml (runs on CPU: numpy, matplotlib)"
+# Outputs restored and re-executed on 2026-10-24 (4 figures); committed with this change.
+as_of = "2026-10-24"
+
+[[notebook]]
+src = "docs/notebooks/foundations/fractal_generators.ipynb"
+title = "Self-Affine Fractal Generators"
+heading = "Self-Affine Fractal Generators"
+h1_policy = "demote"
+description = """Interactive ipywidgets generators for self-affine fractals: recursive branching \
+trees drawn in 2D with Matplotlib under sliders for depth, angle, length and width ratios, then 3D \
+trees built from tapered-cylinder meshes in Plotly. Stored PNG fallbacks are shown; the sliders \
+need a live kernel."""
+tags = ["notebook", "foundations", "generative", "branching", "self-affinity", "jupyter"]
+environment = "docs/notebooks/streamlit-plotly.yaml or environments/fractal-foundations-gpu.yml (ipywidgets, plotly, numba)"
+as_of = "2026-10-24"
+
+[[notebook]]
+src = "docs/notebooks/foundations/zeta_space.ipynb"
+title = "Riemann Zeta Space Tiling (interactive)"
+heading = "Riemann Zeta Space Tiling (interactive)"
+description = """Interactive ipywidgets version of the Riemann zeta space tiling: fills a plane with \
+circles, squares and triangles whose areas decay as A_0 / i^p. The stored outputs are widget views \
+only, so this page shows the code together with the usage notes."""
+tags = ["notebook", "number-theory", "riemann-zeta", "geometry", "jupyter"]
+companion_page = "notebooks/foundations/4_zeta_space/"
+environment = "any Python 3 kernel with numpy, matplotlib and ipywidgets"
+as_of = "2026-01-31"
+status = "draft"
+
+# ---------------------------------------------------------------- Part II methods
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/methods/1_mst_allometry.ipynb"
+title = "Metabolic Scaling Theory and Allometric Relationships"
+description = """Supports the Part II Methods sections on MST and allometry: fits a log-log \
+regression to metabolic rate versus body mass across 18 orders of magnitude, recovering the \
+Kleiber 3/4 exponent over the Rubner 2/3 surface rule, and states the self-affine framing."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "allometry", "scaling", "jupyter"]
+companion_page = "metabolic-scaling/methods/"
+environment = "Python 3 with numpy, scipy and matplotlib"
+as_of = "2026-07-13"
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/methods/2_branching_ratios.ipynb"
+title = "Branching Ratios and the Space-Filling Dimension"
+description = """Supports the Part II Methods section on branching ratios: tabulates the WBE radius \
+and length ratios for n = 2, 3, 4, verifies the space-filling Hausdorff dimension D = 3, derives \
+the metabolic exponent 3/4 two ways, and draws a WBE bifurcating tree as an L-system."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "branching", "dimension-theory", "jupyter"]
+companion_page = "metabolic-scaling/methods/"
+environment = "Python 3 with numpy and matplotlib"
+as_of = "2026-07-13"
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/methods/3_volume_mass_dimension.ipynb"
+title = "Volume and Mass-Dimension Predictions"
+description = """Supports the Part II Methods sections on volume and mass-dimension predictions: \
+SymPy walks Eqs. 11 to 18, reproduces the projected branch-volume mass dimension d = 3/2, and \
+reconciles the D = 3, d = 3/2 and 4/3 values that appear across the theory."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "dimension-theory", "self-affinity", "jupyter"]
+companion_page = "metabolic-scaling/methods/"
+environment = "Python 3 with sympy; imports docs/notebooks/metabolic-scaling/review/fractal_review_utils.py"
+as_of = "2026-10-24"
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/methods/4_dbc_fraclac.ipynb"
+title = "Differential Box-Counting and the FracLac Protocol"
+description = """Supports the Part II Methods sections on differential box-counting and FracLac: \
+implements Sarkar-Chaudhuri DBC from scratch, validates it on fractional Brownian surfaces of known \
+dimension 3 - H, and reproduces the FracLac box-size ladder with its 0.1 growth factor."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "image-analysis", "methods", "hurst"]
+companion_page = "metabolic-scaling/methods/"
+environment = "Python 3 with numpy and matplotlib; imports docs/notebooks/metabolic-scaling/review/fractal_review_utils.py"
+as_of = "2026-10-24"
+
+# ---------------------------------------------------------------- Part II results
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/results/1_synthetic_dimensions.ipynb"
+title = "Synthetic Fractal Dimensions"
+description = """Supports Results Table 1: transcribes the published synthetic fractal dimensions, \
+regenerates the H-fractal, Pythagoras tree and Barnsley fern, and recomputes box-counting and \
+differential box-counting mass dimensions plus lacunarity for comparison with the paper."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "image-analysis", "ifs", "statistics"]
+companion_page = "metabolic-scaling/results/"
+environment = "Python 3 with numpy, scipy, pandas, matplotlib and Pillow"
+as_of = "2026-07-13"
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/results/2_observed_leaf_branch_root.ipynb"
+title = "Observed Leaf and Branch / Root Mass Dimensions"
+description = """Supports Results Tables 2 and 3: transcribes the published leaf and branch/root \
+mass dimensions, recomputes the group means and standard deviations, and validates the box-counting \
+estimator on synthetic fBm contour and venation proxies near d = 3/2."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "allometry", "image-analysis", "statistics"]
+companion_page = "metabolic-scaling/results/"
+environment = "Python 3 with numpy, scipy, pandas and matplotlib"
+as_of = "2026-07-13"
+
+[[notebook]]
+src = "docs/notebooks/metabolic-scaling/results/3_canopy_statistical_validation.ipynb"
+title = "Forest Canopy Dimensions and Statistical Validation"
+description = """Supports Results Table 4 and the Statistical Validation section: transcribes the \
+six canopy height model dimensions, pools the leaf, branch/root and canopy groups, and runs \
+one-sample t-tests and TOST equivalence tests against the d = 3/2 prediction."""
+tags = ["notebook", "part-ii", "metabolic-scaling", "canopy-height-model", "lidar", "statistics"]
+companion_page = "metabolic-scaling/results/"
+environment = "Python 3 with numpy, scipy, pandas and matplotlib"
+as_of = "2026-07-13"
+
+# ---------------------------------------------------------------- Fractal RAG (code-only)
+
+[[notebook]]
+src = "docs/fractal-rag/notebooks/01_quickstart.ipynb"
+title = "01 — Quickstart: Connect & First Query"
+description = """Code-only walkthrough that connects to the Fractal RAG Weaviate instance with the \
+CLI settings, checks the artifact and concept collections, runs a first hybrid search and fetches \
+one full artifact by UUID. Needs a running stack, so no outputs are stored."""
+tags = ["notebook", "rag", "weaviate", "knowledge", "jupyter"]
+companion_page = "fractal-rag/"
+environment = "fractal_rag package (pip install -e fractal_rag) with a running Weaviate instance"
+as_of = "2026-05-24"
+code_only = true
+
+[[notebook]]
+src = "docs/fractal-rag/notebooks/02_hybrid_search.ipynb"
+title = "02 — Hybrid Search Patterns"
+description = """Code-only tour of the retrieval knobs in the Fractal RAG stack: the target_vector \
+choice (content, title or summary), the alpha keyword-vector balance, source_type and year filters, \
+and near_object expansion from an anchor hit."""
+tags = ["notebook", "rag", "weaviate", "knowledge", "jupyter"]
+companion_page = "fractal-rag/"
+environment = "fractal_rag package (pip install -e fractal_rag) with a running Weaviate instance"
+as_of = "2026-05-24"
+code_only = true
+
+[[notebook]]
+src = "docs/fractal-rag/notebooks/03_concept_ontology.ipynb"
+title = "03 — Concept Ontology"
+description = """Code-only walkthrough of the Concept side-collection: lists concepts by domain, \
+searches definitions semantically, follows artifact-to-concept cross-references, and checks \
+tagging quality against the seed.yaml ontology."""
+tags = ["notebook", "rag", "weaviate", "knowledge", "okf"]
+companion_page = "fractal-rag/"
+environment = "fractal_rag package (pip install -e fractal_rag) with a running Weaviate instance"
+as_of = "2026-05-24"
+code_only = true

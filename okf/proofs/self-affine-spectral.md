@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: Spectral Exponent of Self-Affine Gaussian Processes
-description: For fractional Brownian motion the power spectrum obeys $\beta = 2H+1$; the trace has local (graph) dimension $2-H$ crossing over to global dimension 1.
-tags: [stochastic, self-affinity, spectral-density, hurst, fbm]
-timestamp: '2026-07-13T00:00:00Z'
+description: For fractional Brownian motion the power spectrum obeys beta = 2H + 1; the trace has local (graph) dimension 2 - H crossing over to global dimension 1.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/self-affine-spectral/
+tags: [stochastic, self-affinity, hurst, signal-processing, scaling]
 result: "beta = 2H + 1 (white beta=0/1, pink beta=1, brown beta=2); local dim 2-H"
 concept: ../concepts/stochastic/hurst-exponent.md
 historical_source: B. B. Mandelbrot and J. W. Van Ness, "Fractional Brownian motions, fractional noises and applications" (1968).
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

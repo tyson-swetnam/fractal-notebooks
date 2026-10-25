@@ -1,12 +1,61 @@
+---
+type: Paper Section
+title: Metabolic Scaling — Results
+description: >-
+  Results for Part II: FracLac box-counting and differential box-counting mass
+  dimensions for synthetic L-system trees (Table 1), x-ray leaves (Table 2), branches
+  and roots (Table 3) and LiDAR forest canopy height models (Table 4), all close to
+  the MST prediction d = 3/2.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/results/
+tags: [paper, part-ii, metabolic-scaling, image-analysis, canopy-height-model, statistics]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: fraclac
+    resource: https://imagej.net/ij/plugins/fraclac/FLHelp/Introduction.htm
+    title: "FracLac for ImageJ: box-counting, differential box-counting and lacunarity (Karperien, user guide)"
+  - id: west1999science
+    resource: https://doi.org/10.1126/science.284.5420.1677
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, Science)"
+  - id: west1999nature
+    resource: https://doi.org/10.1038/23251
+    title: A general model for the structure and allometry of plant vascular systems (West, Brown and Enquist 1999, Nature)
+  - id: mandelbrot1982
+    resource: https://search.worldcat.org/isbn/0716711869
+    title: The Fractal Geometry of Nature (Mandelbrot 1982, W. H. Freeman)
+generated:
+  by: human:tswetnam
+  at: "2024-09-22T00:00:00Z"
+status: draft
+---
+
 # Results
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 
 !!! note "Supporting notebooks"
     The tables and statistics in this section are reproduced in executable Jupyter notebooks:
-    [Synthetic Dimensions (Table 1)](../notebooks/metabolic-scaling/results/1_synthetic_dimensions.ipynb),
-    [Observed Leaf, Branch & Root (Tables 2–3)](../notebooks/metabolic-scaling/results/2_observed_leaf_branch_root.ipynb), and
-    [Canopy & Statistical Validation (Table 4)](../notebooks/metabolic-scaling/results/3_canopy_statistical_validation.ipynb).
+    [Synthetic Dimensions (Table 1)](../notebooks/metabolic-scaling/results/1_synthetic_dimensions.md),
+    [Observed Leaf, Branch & Root (Tables 2–3)](../notebooks/metabolic-scaling/results/2_observed_leaf_branch_root.md), and
+    [Canopy & Statistical Validation (Table 4)](../notebooks/metabolic-scaling/results/3_canopy_statistical_validation.md).
 
 Images of different computer-generated Lindenmayer systems (i.e., fractal trees) were analyzed using the open-source image analysis software **FracLac**. First, the fractal dimension was calculated using regular box-counting, and then with the differential box-count technique. The box-count analysis estimated the objects to have fractal dimensions between \( 1.81 \pm 0.056 < D_B < 1.90 \pm 0.66 \); however, the differential box-count mass dimension was found to be lower on average, with \( D_M = 1.60 \pm 0.10 \) (Table 1).
 

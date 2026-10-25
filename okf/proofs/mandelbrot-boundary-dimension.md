@@ -2,12 +2,20 @@
 type: Fractal Proof
 title: Mandelbrot Boundary — Hausdorff Dimension 2 (Shishikura)
 description: The boundary of the Mandelbrot set has Hausdorff dimension 2 (Shishikura 1991/1998); this is asserted from the theorem and is not machine-verifiable.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/mandelbrot-boundary-dimension/
 tags: [complex-dynamics, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "dim_H(∂M) = 2 (asserted, Shishikura)"
 concept: ../concepts/complex-dynamics/mandelbrot-set.md
 historical_source: Mitsuhiro Shishikura, "The Hausdorff dimension of the boundary of the Mandelbrot set and Julia sets" (announced 1991; Ann. of Math. 1998)
 verification_status: unverified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

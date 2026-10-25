@@ -1,0 +1,32 @@
+# robots.txt — Fractal Notebooks, a GitHub Pages PROJECT site.
+# Crawlers read only the host-root file, https://tyson-swetnam.github.io/robots.txt, which governs this
+# origin and is fully permissive. This copy restates the policy and lists the agent entry points.
+#   Outline (llms.txt):        https://tyson-swetnam.github.io/fractal-notebooks/llms.txt
+#   Full corpus (one file):    https://tyson-swetnam.github.io/fractal-notebooks/llms-full.txt
+#   Agent guide:               https://tyson-swetnam.github.io/fractal-notebooks/agents/
+#   Markdown twin of any page: replace the trailing "/" with ".md"; directory pages (home, section
+#                              landings, OKF groups) append "index.md" — or read <link rel="alternate">
+#   OKF bundles (v0.2):        https://tyson-swetnam.github.io/fractal-notebooks/okf/concepts/index.md
+#                              https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/index.md
+#   React apps are JavaScript-only (HashRouter): read /applications/react-apps.md, not /react/
+
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: CCBot
+User-agent: Meta-ExternalAgent
+User-agent: MistralAI-User
+Allow: /
+
+Sitemap: https://tyson-swetnam.github.io/fractal-notebooks/sitemap.xml

@@ -1,0 +1,452 @@
+# Zensical configuration for "Fractal Self-Affinity in Nature"
+# https://tyson-swetnam.github.io/fractal-notebooks  (replaces mkdocs.yml)
+#
+# TOML gotcha: bare keys attach to the most recent [table] header, so every
+# [project] key (nav, extra_css, exclude_docs, ...) must appear BEFORE the first
+# [project.*] / [[project.*]] header.
+#
+# Build: bash scripts/build_site.sh  (stage okf/ -> render notebooks -> validate
+# OKF -> zensical build --strict -> publish raw .md twins -> llms.txt -> checks).
+# scripts/okf_common.py reads site_url, nav, exclude_docs and not_in_nav from
+# this file, so keep them here rather than in script defaults. See CLAUDE.md.
+
+[project]
+site_name = "Fractal Self-Affinity in Nature"
+site_url = "https://tyson-swetnam.github.io/fractal-notebooks"
+site_description = "Self-affine fractals, metabolic scaling theory and the geometry of biological systems: tutorial chapters on fractal foundations, four research manuscripts, pre-rendered Jupyter notebooks, interactive apps, and OKF knowledge bundles of fractal concepts and proofs."
+site_author = "Tyson L. Swetnam"
+copyright = "Copyright &copy; 2025 The University of Arizona &mdash; content licensed <a href=\"https://creativecommons.org/licenses/by/4.0/\">CC BY 4.0</a>"
+repo_url = "https://github.com/tyson-swetnam/fractal-notebooks"
+repo_name = "tyson-swetnam/fractal-notebooks"
+# Trailing slash: overrides/main.html derives each page's Markdown twin from
+# page.edit_url by stripping "<repo_url>/edit/main/docs/".
+edit_uri = "edit/main/docs/"
+docs_dir = "docs"
+site_dir = "site"
+use_directory_urls = true
+strict = true
+
+extra_css = ["stylesheets/extra.css"]
+extra_javascript = [
+  "javascripts/mathjax.js",
+  "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
+]
+
+# gitignore syntax, one pattern per line. Notebook sources (.ipynb), helper
+# scripts, data files, READMEs and internal planning notes stay in the repo but
+# are never built; the research notebook directories are listed with GitHub and
+# nbviewer links on notebooks/research.md instead. Every URL that disappears
+# here has a redirect in [project.plugins.redirects.redirect_maps] below.
+exclude_docs = """
+*.ipynb
+*.py
+*.yaml
+*.yml
+*.geojson
+*.json
+*.npz
+*.csv
+.DS_Store
+/notebooks/3dep/
+/notebooks/sierra-nevada/
+/notebooks/smithsonian/
+/notebooks/metabolic-scaling/review/
+/notebooks/foundations/blender/
+README.md
+PLAN*.md
+*_claude.md
+*_plan.md
+ANALYSIS_AND_FIXES.md
+PROPOSED_FIX.md
+"""
+# Pages that are built and published but hidden from the sidebar until they are
+# ready (none at the moment; same gitignore syntax as exclude_docs).
+draft_docs = ""
+# Built and published, but not listed in the navigation: the change log and the
+# OKF concept pages + group indexes, which are browsed through okf/concepts/index.md
+# (progressive disclosure; the nav does not drift when the seed grows).
+not_in_nav = """
+/log.md
+/okf/concepts/*/
+/okf/*/log.md
+"""
+
+# Navigation: audience tabs. A bare "<dir>/index.md" as the first entry of a
+# section is that section's landing page (navigation.indexes). Part and chapter
+# numbers stay in labels; no directory was renamed, so every pre-2026-10 nav URL
+# survives. Labels stay short; the frontmatter `title` disambiguates pages that
+# share an H1 (four "Methods", four "References", ...).
+nav = [
+  { "Home" = "index.md" },
+  { "Foundations" = [
+      "foundations/index.md",
+      { "Chapter 1: History of Fractals" = "foundations/history.md" },
+      { "Chapter 2: Mathematical Foundations" = "foundations/mathematics.md" },
+      { "Chapter 3: Fractal Dimensionality" = "foundations/dimensionality.md" },
+      { "Chapter 4: Glossary & Equations" = "foundations/glossary.md" },
+  ] },
+  { "Research" = [
+      { "Part II: Metabolic Scaling" = [
+          "metabolic-scaling/index.md",
+          { "Abstract" = "metabolic-scaling/abstract.md" },
+          { "Introduction" = "metabolic-scaling/introduction.md" },
+          { "Methods" = "metabolic-scaling/methods.md" },
+          { "Results" = "metabolic-scaling/results.md" },
+          { "Discussion" = "metabolic-scaling/discussion.md" },
+          { "Conclusion" = "metabolic-scaling/conclusion.md" },
+          { "References" = "metabolic-scaling/references.md" },
+      ] },
+      { "Part III: Spectral Geometry" = [
+          "spectral-geometry/index.md",
+          { "Abstract" = "spectral-geometry/abstract.md" },
+          { "Introduction" = "spectral-geometry/introduction.md" },
+          { "Methods" = "spectral-geometry/methods.md" },
+          { "Results" = "spectral-geometry/results.md" },
+          { "Discussion" = "spectral-geometry/discussion.md" },
+          { "Conclusion" = "spectral-geometry/conclusion.md" },
+          { "References" = "spectral-geometry/references.md" },
+      ] },
+      { "Part IV: Biological Geometry" = [
+          "biological-geometry/index.md",
+          { "Abstract" = "biological-geometry/abstract.md" },
+          { "Introduction" = "biological-geometry/introduction.md" },
+          { "Methods" = "biological-geometry/methods.md" },
+          { "Results" = "biological-geometry/results.md" },
+          { "Discussion" = "biological-geometry/discussion.md" },
+          { "Conclusion" = "biological-geometry/conclusion.md" },
+          { "References" = "biological-geometry/references.md" },
+      ] },
+      { "Part V: Research Hypotheses" = [
+          "hypotheses/index.md",
+          { "Abstract" = "hypotheses/abstract.md" },
+          { "Introduction" = "hypotheses/introduction.md" },
+          { "Methods" = "hypotheses/methods.md" },
+          { "Expected Results" = "hypotheses/results.md" },
+          { "Discussion" = "hypotheses/discussion.md" },
+          { "Conclusion" = "hypotheses/conclusion.md" },
+          { "References" = "hypotheses/references.md" },
+      ] },
+  ] },
+  { "Notebooks" = [
+      "notebooks/index.md",
+      { "Part I chapter notebooks" = [
+          { "Chapter 1: History" = "notebooks/foundations/1_history.md" },
+          { "Chapter 2: Mathematics" = "notebooks/foundations/2_mathematics.md" },
+          { "Chapter 3: Dimensionality" = "notebooks/foundations/3_dimensionality.md" },
+          { "Chapter 4: Zeta Space" = "notebooks/foundations/4_zeta_space.md" },
+      ] },
+      { "Part II methods notebooks" = [
+          { "MST & Allometric Relationships" = "notebooks/metabolic-scaling/methods/1_mst_allometry.md" },
+          { "Branching Ratios" = "notebooks/metabolic-scaling/methods/2_branching_ratios.md" },
+          { "Volume & Mass Dimension" = "notebooks/metabolic-scaling/methods/3_volume_mass_dimension.md" },
+          { "DBC & FracLac" = "notebooks/metabolic-scaling/methods/4_dbc_fraclac.md" },
+      ] },
+      { "Part II results notebooks" = [
+          { "Synthetic Dimensions (Table 1)" = "notebooks/metabolic-scaling/results/1_synthetic_dimensions.md" },
+          { "Observed Leaf, Branch & Root (Tables 2-3)" = "notebooks/metabolic-scaling/results/2_observed_leaf_branch_root.md" },
+          { "Canopy & Statistical Validation (Table 4)" = "notebooks/metabolic-scaling/results/3_canopy_statistical_validation.md" },
+      ] },
+      { "Fractal demonstrations" = [
+          { "Diffusion-Limited Aggregation" = "notebooks/foundations/dla.md" },
+          { "Self-Similar Fractals" = "notebooks/foundations/fractals.md" },
+          { "Self-Affine Generators" = "notebooks/foundations/fractal_generators.md" },
+          { "Riemann Zeta Space" = "notebooks/foundations/zeta_space.md" },
+      ] },
+      { "Research notebooks" = "notebooks/research.md" },
+  ] },
+  { "Apps" = [
+      "applications/index.md",
+      { "Installation" = "applications/installation.md" },
+      { "React Apps" = "applications/react-apps.md" },
+      { "Streamlit Apps" = "applications/streamlit-apps.md" },
+      { "Box-Counting Tool" = "applications/dbc.md" },
+      { "3D Visualization" = "applications/tree-roots-3d.md" },
+      { "Blender DLA" = "applications/blender-dla.md" },
+      { "Launch the React apps ↗" = "https://tyson-swetnam.github.io/fractal-notebooks/react/" },
+  ] },
+  { "Knowledge" = [
+      "okf/index.md",
+      { "OKF Concepts" = "okf/concepts/index.md" },
+      { "OKF Proofs" = [
+          "okf/proofs/index.md",
+          { "Cantor Set Dimension" = "okf/proofs/cantor-set-dimension.md" },
+          { "Koch Curve Dimension" = "okf/proofs/koch-curve-dimension.md" },
+          { "Sierpinski Dimensions" = "okf/proofs/sierpinski-dimension.md" },
+          { "Menger Sponge Dimension" = "okf/proofs/menger-sponge-dimension.md" },
+          { "Barnsley Fern Dimension" = "okf/proofs/barnsley-fern-dimension.md" },
+          { "Weierstrass Nondifferentiability" = "okf/proofs/weierstrass-nondifferentiability.md" },
+          { "Mandelbrot Escape Radius" = "okf/proofs/mandelbrot-escape.md" },
+          { "Mandelbrot Boundary Dimension" = "okf/proofs/mandelbrot-boundary-dimension.md" },
+          { "Fatou-Julia Connectedness" = "okf/proofs/julia-connectedness.md" },
+          { "Complex Dimensions of the Cantor String" = "okf/proofs/complex-dimensions-cantor.md" },
+          { "Self-Affine Spectral Exponent" = "okf/proofs/self-affine-spectral.md" },
+          { "WBE 3/4-Power Law" = "okf/proofs/wbe-quarter-power.md" },
+      ] },
+      { "Fractal RAG" = [
+          "fractal-rag/index.md",
+          { "Local Setup" = "fractal-rag/local-setup.md" },
+          { "Hosted VM (K3s)" = "fractal-rag/hosted-vm.md" },
+          { "Using the Agent" = "fractal-rag/using-the-agent.md" },
+          { "Troubleshooting" = "fractal-rag/troubleshooting.md" },
+          { "Notebooks" = [
+              { "Quickstart" = "fractal-rag/notebooks/01_quickstart.md" },
+              { "Hybrid Search" = "fractal-rag/notebooks/02_hybrid_search.md" },
+              { "Concept Ontology" = "fractal-rag/notebooks/03_concept_ontology.md" },
+          ] },
+      ] },
+  ] },
+  { "For AI Agents" = "agents.md" },
+]
+
+[project.validation]
+invalid_links = true
+invalid_link_anchors = true
+
+[project.theme]
+name = "material"
+variant = "classic"
+custom_dir = "overrides"
+language = "en"
+favicon = "assets/favicon.png"
+icon = { logo = "material/family-tree", repo = "fontawesome/brands/github" }
+features = [
+  "content.action.edit",
+  "content.action.view",
+  "content.code.copy",
+  "content.tooltips",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "search.suggest",
+  "toc.follow",
+]
+
+[project.theme.font]
+text = "EB Garamond"
+code = "Courier Prime"
+
+# Light: custom "fractals" scheme (colours in docs/stylesheets/extra.css). Dark: slate.
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "fractals"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle = { icon = "material/brightness-4", name = "Switch to light mode" }
+
+[project.extra]
+# Sibling OKF bundles / llms.txt files advertised in site/llms.txt
+# (consumed by scripts/generate_llms_txt.py as "Related OKF bundle:" lines).
+related_llms = [
+  "https://tyson-swetnam.github.io/okf/index.md",
+  "https://tyson-swetnam.github.io/intro-gpt/llms.txt",
+  "https://tyson-swetnam.github.io/energetics-pymol/llms.txt",
+  "https://tyson-swetnam.github.io/cod-kmap/llms.txt",
+]
+
+# Frontmatter `status:` renders an .md-status span next to the nav entry; the
+# "stable" badge is hidden in extra.css so only drafts are marked.
+[project.extra.status]
+stable = "Stable"
+draft = "Draft"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/tyson-swetnam/"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/youtube"
+link = "https://www.youtube.com/@PrometheanGift"
+
+# mkdocs.yml's extension set minus pymdownx.magiclink (misconfigured, unused) and
+# pymdownx.critic (unused), plus pymdownx.emoji so the :material-...: shortcodes
+# on the home page render. Prune further only with compare_builds.py evidence.
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+meta = {}
+toc.permalink = true
+toc.title = "On this page"
+pymdownx.arithmatex.generic = true
+pymdownx.betterem.smart_enable = "all"
+pymdownx.caret = {}
+pymdownx.details = {}
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+pymdownx.highlight = {}
+pymdownx.inlinehilite = {}
+pymdownx.keys = {}
+pymdownx.mark = {}
+pymdownx.smartsymbols = {}
+pymdownx.superfences.custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+pymdownx.tabbed.alternate_style = true
+pymdownx.tasklist.custom_checkbox = true
+pymdownx.tilde = {}
+
+# Redirects (native plugin; search is native and on by default). Keys are
+# docs-relative source paths of the OLD page (they become /old/ stubs with a
+# canonical link + meta refresh + JS that forwards #anchors); values are
+# docs-relative .md paths, optionally with #anchor, or absolute URLs. A key of
+# the form "page.md#old-anchor" on a page that still exists is served
+# client-side through redirect.json. Gate: every URL in
+# scripts/fixtures/live-urls-2026-10-24.txt resolves to a page or a stub
+# (scripts/check_site.py; `--emit-redirects` prints any missing entry).
+[project.plugins.redirects.redirect_maps]
+# A. Legacy single-paper pages at the docs root (deleted in the cutover) -> successors
+"introduction.md" = "metabolic-scaling/introduction.md"
+"methods.md" = "metabolic-scaling/methods.md"
+"results.md" = "metabolic-scaling/results.md"
+"discussion.md" = "metabolic-scaling/discussion.md"
+"conclusion.md" = "metabolic-scaling/conclusion.md"
+"references.md" = "metabolic-scaling/references.md"
+"glossary.md" = "foundations/glossary.md"
+"glossary.md#barnsley-fern" = "foundations/glossary.md#barnsley-fern"
+"glossary.md#differential-box-counting" = "foundations/glossary.md#differential-box-counting"
+"dims.md" = "foundations/dimensionality.md"
+"installation.md" = "applications/installation.md"
+"dbc.md" = "applications/dbc.md"
+"dla.md" = "notebooks/foundations/dla.md"
+"tree_roots.md" = "applications/tree-roots-3d.md"
+"react-apps.md" = "applications/react-apps.md"
+
+# B. gh-pages-era flat notebook URLs (/notebooks/<stem>/)
+"notebooks/old_dla.md" = "notebooks/foundations/dla.md"
+"notebooks/dla.md" = "notebooks/foundations/dla.md"
+"notebooks/fractals.md" = "notebooks/foundations/fractals.md"
+"notebooks/fractal_generators.md" = "notebooks/foundations/fractal_generators.md"
+"notebooks/zeta_space.md" = "notebooks/foundations/zeta_space.md"
+"notebooks/ferns.md" = "notebooks/research.md#work-in-progress"
+"notebooks/dbc.md" = "notebooks/research.md#work-in-progress"
+"notebooks/zeta_3d.md" = "notebooks/research.md#work-in-progress"
+"notebooks/torch_test.md" = "notebooks/research.md#work-in-progress"
+
+# C. Orphan notebook pages (73) -> notebooks/research.md sections; generated from scripts/fixtures/live-urls-2026-10-24.txt
+"notebooks/3dep/modified/1_forest_sites_map.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/2_chm_user_aoi.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/3_chm_fractal_analysis.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/chm_forest_sites.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/boundary_waters/chm_boundary_waters.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/boundary_waters/fractal_boundary_waters.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/coconino_ponderosa/chm_coconino_ponderosa.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/coconino_ponderosa/fractal_coconino_ponderosa.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/conecuh_longleaf/chm_conecuh_longleaf.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/conecuh_longleaf/fractal_conecuh_longleaf.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/gila_mixed_conifer/chm_gila_mixed_conifer.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/gila_mixed_conifer/fractal_gila_mixed_conifer.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/great_smoky_cove/chm_great_smoky_cove.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/great_smoky_cove/fractal_great_smoky_cove.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/harvard_forest/chm_harvard_forest.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/harvard_forest/fractal_harvard_forest.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/mark_twain_ozark/chm_mark_twain_ozark.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/mark_twain_ozark/fractal_mark_twain_ozark.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/niwot_ridge/chm_niwot_ridge.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/niwot_ridge/fractal_niwot_ridge.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/ocala_longleaf/chm_ocala_longleaf.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/ocala_longleaf/fractal_ocala_longleaf.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/olympic_hoh/chm_olympic_hoh.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/olympic_hoh/fractal_olympic_hoh.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/redwood_humboldt/chm_redwood_humboldt.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/redwood_humboldt/fractal_redwood_humboldt.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/rocky_mountain_subalpine/chm_rocky_mountain_subalpine.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/rocky_mountain_subalpine/fractal_rocky_mountain_subalpine.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/sequoia_giant_forest/chm_sequoia_giant_forest.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/sequoia_giant_forest/fractal_sequoia_giant_forest.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/superior_old_growth/chm_superior_old_growth.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/superior_old_growth/fractal_superior_old_growth.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/tongass_mendenhall/chm_tongass_mendenhall.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/tongass_mendenhall/fractal_tongass_mendenhall.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/white_mountain_northern/chm_white_mountain_northern.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/white_mountain_northern/fractal_white_mountain_northern.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/wind_river/chm_wind_river.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/wind_river/fractal_wind_river.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/yellowstone_lodgepole/chm_yellowstone_lodgepole.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/modified/sites/yellowstone_lodgepole/fractal_yellowstone_lodgepole.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/01_3DEP_Generate_DEM_User_AOI.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/02_3DEP_Generate_DEM_USGS_7.5_Quadrangles.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/03_3DEP_Generate_DEM_USGS_HUCs.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/04_3DEP_Generate_DEM_Corridors.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/05_3DEP_Generate_Canopy_Height_Models_User_AOI.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/06_3DEP_Topographic_Differencing.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/3dep/original/07_3DEP_Generate_Colorized_PointClouds.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/foundations/3d_dla.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/blender/dla_visualization.md" = "notebooks/research.md#blender-point-cloud-tools"
+"notebooks/foundations/dbc.md" = "notebooks/research.md#work-in-progress"
+"notebooks/foundations/dla_cuda_offgrid.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/dla_slime_mold.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/dla_slime_mold_cuda.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/ferns.md" = "notebooks/research.md#work-in-progress"
+"notebooks/foundations/yeast_colony_simulation.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/zeta_3d.md" = "notebooks/research.md#work-in-progress"
+"notebooks/metabolic-scaling/1_introduction.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/metabolic-scaling/2_mst_equations.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/metabolic-scaling/3_branching_analysis.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/metabolic-scaling/4_differential_box_counting.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/metabolic-scaling/5_empirical_validation.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/metabolic-scaling/review/abstract_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/conclusion_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/discussion_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/introduction_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/methods_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/references_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/metabolic-scaling/review/results_companion.md" = "notebooks/research.md#reviewer-companions-part-ii"
+"notebooks/sierra-nevada/1_download_data.md" = "notebooks/research.md#sierra-nevada-giant-forest"
+"notebooks/sierra-nevada/2_laz_to_raster.md" = "notebooks/research.md#sierra-nevada-giant-forest"
+"notebooks/smithsonian/1_chm_exploration.md" = "notebooks/research.md#smithsonian-barro-colorado-island"
+"notebooks/smithsonian/2_fractal_analysis.md" = "notebooks/research.md#smithsonian-barro-colorado-island"
+"notebooks/smithsonian/3_fractal_hypotheses.md" = "notebooks/research.md#smithsonian-barro-colorado-island"
+
+# D. Helper .py files that mkdocs-jupyter rendered as pages (12) -> their GitHub sources
+"notebooks/3dep/modified/generate_site_notebooks.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/3dep/modified/generate_site_notebooks.py"
+"notebooks/3dep/modified/utils/__init__.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/3dep/modified/utils/__init__.py"
+"notebooks/3dep/modified/utils/cog_utils.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/3dep/modified/utils/cog_utils.py"
+"notebooks/3dep/modified/utils/update_notebooks_cog.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/3dep/modified/utils/update_notebooks_cog.py"
+"notebooks/3dep/modified/utils/validate_cogs.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/3dep/modified/utils/validate_cogs.py"
+"notebooks/foundations/blender/dla_advanced_features.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_advanced_features.py"
+"notebooks/foundations/blender/dla_batch_render.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_batch_render.py"
+"notebooks/foundations/blender/dla_blender_setup.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_blender_setup.py"
+"notebooks/foundations/blender/dla_example_renders.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_example_renders.py"
+"notebooks/foundations/blender/dla_export.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_export.py"
+"notebooks/foundations/blender/dla_gallery_render.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/foundations/blender/dla_gallery_render.py"
+"notebooks/metabolic-scaling/review/fractal_review_utils.md" = "https://github.com/tyson-swetnam/fractal-notebooks/blob/main/docs/notebooks/metabolic-scaling/review/fractal_review_utils.py"
+
+# E. README directory indexes (4)
+"notebooks/3dep/index.md" = "notebooks/research.md#3dep-canopy-height-models"
+"notebooks/foundations/index.md" = "notebooks/index.md"
+"notebooks/foundations/blender/index.md" = "applications/blender-dla.md"
+"notebooks/metabolic-scaling/review/index.md" = "notebooks/research.md#reviewer-companions-part-ii"
+
+# F. Planning notes moved to notes/ (9) and superpowers specs moved to specs/ (4)
+"notebooks/foundations/ANALYSIS_AND_FIXES.md" = "notebooks/research.md#work-in-progress"
+"notebooks/foundations/PROPOSED_FIX.md" = "notebooks/research.md#work-in-progress"
+"notebooks/foundations/dla_cuda_plan.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/dla_point_cloud_plan.md" = "notebooks/research.md#blender-point-cloud-tools"
+"notebooks/foundations/lichen_dla_claude.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/foundations/PLAN_lichen_growth_updates.md" = "notebooks/research.md#gpu-research-notebooks"
+"notebooks/metabolic-scaling/mst_claude.md" = "notebooks/research.md#metabolic-scaling-tutorials"
+"notebooks/sierra-nevada/PLAN.md" = "notebooks/research.md#sierra-nevada-giant-forest"
+"notebooks/smithsonian/PLAN.md" = "notebooks/research.md#smithsonian-barro-colorado-island"
+"superpowers/specs/2026-05-23-fractal-rag-agent-design.md" = "fractal-rag/index.md"
+"superpowers/specs/2026-05-23-fractal-rag-agent-verification.md" = "fractal-rag/index.md"
+"superpowers/specs/2026-05-26-fractal-rag-agent-verification-results.md" = "fractal-rag/index.md"
+"superpowers/specs/2026-07-13-zensical-migration.md" = "fractal-rag/index.md"
+
+# G. Moved anchors on pages that still exist (served client-side via redirect.json)
+"metabolic-scaling/abstract.md#table-of-contents" = "metabolic-scaling/index.md"
+"metabolic-scaling/abstract.md#supporting-notebooks" = "metabolic-scaling/index.md#supporting-notebooks"
+"metabolic-scaling/abstract.md#authors" = "metabolic-scaling/index.md#authors"
+"index.md#part-vii-notebooks" = "notebooks/index.md"

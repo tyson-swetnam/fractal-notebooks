@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Biological Geometry — Conclusion
+description: >-
+  Conclusion of Part IV: a summary table of fractal strategies in biology,
+  self-affinity over self-similarity, log-periodic oscillations as signal rather than
+  noise, organisms as zeta-function machines, and future directions from comparative
+  complex-dimension spectra to synthetic biology.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/conclusion/
+tags: [paper, part-iv, biological, self-affinity, complex-dimensions, statistical-physics]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: lapidus2012lecture
+    resource: https://math.hawaii.edu/numbertheory2012/Lapidus-Lecture.pdf
+    title: "Fractal strings, complex dimensions and the spectral operator: from the Riemann Hypothesis to phase transitions and universality (Lapidus 2012, lecture notes)"
+  - id: de-marchi-cassi1993
+    resource: https://doi.org/10.1142/S0218348X9300037X
+    title: Fractal geometry and ecology of lichens (De Marchi and Cassi 1993, Fractals)
+  - id: wiki-apollonian
+    resource: https://en.wikipedia.org/wiki/Apollonian_gasket
+    title: Apollonian gasket (Wikipedia)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Conclusion: The Thermodynamic Geometry of Life
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

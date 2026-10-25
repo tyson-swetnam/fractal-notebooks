@@ -1,8 +1,24 @@
+---
+type: Index
+title: "Fractal RAG Stack"
+description: >-
+  Overview of the self-hosted retrieval-augmented generation stack: Weaviate
+  1.35 with a text2vec-transformers sidecar indexes 50K Constellate articles
+  plus this site's notebooks and pages, queried through an MCP server by the
+  fractal-explorer subagent.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/fractal-rag/
+tags: [knowledge, rag, weaviate, mcp]
+generated:
+  by: human:tswetnam
+  at: "2026-05-24T00:00:00Z"
+status: stable
+---
+
 # Fractal RAG Stack
 
 A self-hosted retrieval-augmented generation (RAG) stack that turns the
 Fractal Notebooks research corpus — ~50K Constellate scholarly articles plus
-this repository's Jupyter notebooks and MkDocs pages — into a vector index
+this repository's Jupyter notebooks and documentation pages — into a vector index
 you can query from Claude Code via a custom **`fractal-explorer`** subagent.
 
 ```mermaid
@@ -51,16 +67,17 @@ flowchart LR
 
 ## Worked examples
 
-Three Jupyter notebooks under [`notebooks/`](notebooks/01_quickstart.ipynb)
+Three Jupyter notebooks under [`notebooks/`](notebooks/01_quickstart.md), rendered here with their outputs,
 exercise the index directly from Python — useful for prototyping queries
 before you wire them into the subagent rubric:
 
-1. [01 — Quickstart](notebooks/01_quickstart.ipynb) — connect, list concepts, run your first hybrid search.
-2. [02 — Hybrid search patterns](notebooks/02_hybrid_search.ipynb) — `target_vector` tradeoffs, filters, `alpha` tuning.
-3. [03 — Concept ontology](notebooks/03_concept_ontology.ipynb) — walking the `Concept` side-collection and following cross-refs.
+1. [01 — Quickstart](notebooks/01_quickstart.md) — connect, list concepts, run your first hybrid search.
+2. [02 — Hybrid search patterns](notebooks/02_hybrid_search.md) — `target_vector` tradeoffs, filters, `alpha` tuning.
+3. [03 — Concept ontology](notebooks/03_concept_ontology.md) — walking the `Concept` side-collection and following cross-refs.
 
 ## See also
 
-- Design spec — `docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md`
-- Verification checklist — `docs/superpowers/specs/2026-05-23-fractal-rag-agent-verification.md`
+- [Design spec](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-design.md) — architecture, schema and tool-selection rubric (GitHub)
+- [Verification checklist](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-verification.md) — the eight-prompt agent checklist (GitHub)
+- [Knowledge bundles](../okf/index.md) — the OKF concept ontology exported from this stack's `seed.yaml`, and the proof bundle
 - Package source — [`fractal_rag/`](https://github.com/tyson-swetnam/fractal-notebooks/tree/main/fractal_rag)

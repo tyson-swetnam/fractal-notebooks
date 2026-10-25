@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from .chunk import Chunk
 from .concepts.loader import ConceptRecord
 
-
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z(\[\"'$])")
 
 

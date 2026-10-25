@@ -13,7 +13,6 @@ import pytest
 
 from fractal_rag.server.mcp import build_server
 
-
 EXPECTED_TOOLS = {
     "search_artifacts",
     "get_artifact",

@@ -1,5 +1,5 @@
 ---
-okf_version: "0.1"
+okf_version: "0.2"
 ---
 
 # Fractal Notebooks — Proof Knowledge Bundle
@@ -11,7 +11,7 @@ Mathematics](https://tyson-swetnam.github.io/fractal-notebooks/foundations/histo
 record that states the theorem, its assumptions, numbered proof steps, an
 explicit **verification status** distinguishing machine-checked steps from
 steps asserted on the authority of a named theorem, the historical source, and
-a cross-link to the matching concept in [`../concepts/`](../concepts/).
+a cross-link to the matching concept in [`../concepts/`](../concepts/index.md).
 
 ## Verification conventions
 

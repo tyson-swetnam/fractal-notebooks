@@ -2,12 +2,23 @@
 type: Fractal Proof
 title: Menger Sponge — Similarity Dimension
 description: The Menger sponge is self-similar with N=20 sub-cubes at ratio 1/3, giving Hausdorff dimension log 20 / log 3.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/menger-sponge-dimension/
 tags: [classics, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "D = log 20 / log 3 ≈ 2.7268"
 concept: ../concepts/classics/menger-sponge.md
 historical_source: Karl Menger, "Allgemeine Räume und Cartesische Räume" (1926); "Kurventheorie" (1932)
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

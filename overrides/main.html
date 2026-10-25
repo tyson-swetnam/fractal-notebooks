@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{#-
+  Agent-readability head injection for Fractal Notebooks (an OKF v0.2 bundle).
+  Activated by `theme.custom_dir = "overrides"` in zensical.toml.
+
+  Engine: MiniJinja with autoescape OFF and no Python calls. Every attribute
+  interpolation of an author-supplied string goes through `| e`; JSON-LD
+  scalars go through `| tojson` (HTML-safe escaping, so no </script> breakout
+  is possible). Every page.meta.* access is guarded. The two URL attributes
+  (twin href, og:url) are built from config/system values only and are emitted
+  verbatim, because MiniJinja's `e` would entity-escape their slashes.
+
+  Twin rule: scripts/publish_sources.py copies the raw Markdown source of
+  every built page verbatim into site/ at site_url + <source path>:
+    /foundations/history/   <->  /foundations/history.md
+    /metabolic-scaling/     <->  /metabolic-scaling/index.md
+    home                    <->  /index.md
+    /okf/concepts/<g>/<c>/  <->  /okf/concepts/<g>/<c>.md  (pristine okf/ tree)
+  The twin URL is derived from page.edit_url, which Zensical populates with
+  the real source path (repo_url/edit_uri/<src_path>); the canonical-URL
+  branch is a fallback for pages without an edit_url.
+-#}
+
+{% block extrahead %}
+  {%- if page and page.canonical_url %}
+    {%- set site_root = "https://tyson-swetnam.github.io/fractal-notebooks/" %}
+    {%- set edit_prefix = "https://github.com/tyson-swetnam/fractal-notebooks/edit/main/docs/" %}
+
+    {#- Twin (raw Markdown) URL -#}
+    {%- set md_url = none %}
+    {%- if page.edit_url %}
+      {%- set src_path = page.edit_url | replace(edit_prefix, "") %}
+      {%- if src_path != page.edit_url %}
+        {%- set md_url = site_root ~ src_path %}
+      {%- endif %}
+    {%- endif %}
+    {%- if not md_url %}
+      {%- if page.canonical_url == site_root %}
+        {%- set md_url = site_root ~ "index.md" %}
+      {%- else %}
+        {%- set md_url = (page.canonical_url | trim("/")) ~ ".md" %}
+      {%- endif %}
+    {%- endif %}
+
+    {#- Title and OKF type -> schema.org type -#}
+    {%- set head_title = page.title %}
+    {%- if page.meta and page.meta.title %}
+      {%- set head_title = page.meta.title %}
+    {%- endif %}
+    {%- set okf_type = none %}
+    {%- if page.meta and page.meta.type is string %}
+      {%- set okf_type = page.meta.type %}
+    {%- endif %}
+    {%- if okf_type == "Paper Section" %}
+      {%- set ld_type = "ScholarlyArticle" %}
+    {%- elif okf_type in ["Chapter", "Notebook", "Guide"] %}
+      {%- set ld_type = "LearningResource" %}
+    {%- else %}
+      {%- set ld_type = "CreativeWork" %}
+    {%- endif %}
+    <link rel="alternate" type="text/markdown" href="{{ md_url }}" title="Markdown source">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="{{ config.site_name | e }}">
+    <meta property="og:url" content="{{ page.canonical_url }}">
+    <meta property="og:title" content="{{ head_title | e }}">
+    {%- if page.meta and page.meta.description %}
+    <meta property="og:description" content="{{ page.meta.description | e }}">
+    {%- endif %}
+    <meta property="og:image" content="{{ site_root }}assets/mandelbrot_set.png">
+    <meta name="twitter:card" content="summary_large_image">
+    {%- if okf_type %}
+    <meta name="okf:type" content="{{ okf_type | e }}">
+    {%- endif %}
+    {%- if page.meta and page.meta.status is string %}
+    <meta name="okf:status" content="{{ page.meta.status | e }}">
+    {%- endif %}
+    {%- if page.meta and page.meta.generated and page.meta.generated.at is string %}
+    <meta name="okf:generated-at" content="{{ page.meta.generated.at | e }}">
+    {%- endif %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": {{ ld_type | tojson }},
+      "name": {{ head_title | tojson }},
+      {%- if page.meta and page.meta.description %}
+      "description": {{ page.meta.description | tojson }},
+      {%- endif %}
+      {%- if okf_type and ld_type == "LearningResource" %}
+      "learningResourceType": {{ okf_type | tojson }},
+      {%- elif okf_type %}
+      "additionalType": {{ okf_type | tojson }},
+      {%- endif %}
+      {%- if page.meta and page.meta.status is string %}
+      "creativeWorkStatus": {{ page.meta.status | tojson }},
+      {%- endif %}
+      {%- if page.meta and page.meta.tags %}
+      "keywords": {{ page.meta.tags | tojson }},
+      {%- endif %}
+      {%- if ld_type == "ScholarlyArticle" and page.meta.authors %}
+      "author": [
+        {%- for author in page.meta.authors %}
+        {
+          "@type": "Person",
+          "name": {{ author.name | tojson }}
+          {%- if author.orcid is string %},
+          "sameAs": {{ author.orcid | tojson }}
+          {%- endif %}
+          {%- if author.affiliation is string %},
+          "affiliation": { "@type": "Organization", "name": {{ author.affiliation | tojson }} }
+          {%- endif %}
+        }{% if not loop.last %},{% endif %}
+        {%- endfor %}
+      ],
+      {%- endif %}
+      {%- if page.meta and page.meta.generated and page.meta.generated.at is string %}
+      {#- dateModified: the latest verified[].at (ISO-8601 strings sort lexicographically), else generated.at -#}
+      {%- set modified_at = page.meta.generated.at %}
+      {%- if page.meta.verified is sequence and page.meta.verified | length > 0 %}
+        {%- set verified_ats = page.meta.verified | map(attribute="at") | select("string") | sort %}
+        {%- if verified_ats | length > 0 %}
+          {%- set modified_at = verified_ats | last %}
+        {%- endif %}
+      {%- endif %}
+      "datePublished": {{ page.meta.generated.at | tojson }},
+      "dateModified": {{ modified_at | tojson }},
+      {%- endif %}
+      "url": {{ page.canonical_url | tojson }},
+      "encoding": {
+        "@type": "MediaObject",
+        "contentUrl": {{ md_url | tojson }},
+        "encodingFormat": "text/markdown"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "inLanguage": "en",
+      "publisher": {
+        "@type": "Organization",
+        "name": "The University of Arizona",
+        "url": "https://www.arizona.edu/"
+      },
+      "isPartOf": {
+        {%- if ld_type == "ScholarlyArticle" and page.meta.paper and page.meta.paper.title is string %}
+        "@type": "ScholarlyArticle",
+        "name": {{ page.meta.paper.title | tojson }},
+        {%- if page.meta.paper.landing is string %}
+        "url": {{ page.meta.paper.landing | tojson }},
+        {%- endif %}
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": {{ config.site_name | tojson }},
+          "url": {{ site_root | tojson }}
+        }
+        {%- else %}
+        "@type": "WebSite",
+        "name": {{ config.site_name | tojson }},
+        "url": {{ site_root | tojson }}
+        {%- endif %}
+      }
+    }
+    </script>
+  {%- endif %}
+{% endblock %}
+
+{#-
+  Pages rendered from generated or staged sources have no editable file under
+  docs/ on GitHub: Notebook pages are produced by scripts/render_notebooks.py
+  (drift-checked in CI), Fractal Concept / Fractal Proof pages are build-time
+  copies of okf/ (gitignored under docs/okf/). Hide the edit/view buttons
+  (partials/actions.html) for them; every other page renders the stock
+  partials/content.html via super().
+-#}
+{% block content %}
+  {%- if page.meta and page.meta.type is string and page.meta.type in ["Notebook", "Fractal Concept", "Fractal Proof"] %}
+    {#- Mirrors partials/content.html of zensical 0.0.72 minus partials/actions.html -#}
+    {% if "<h1" not in page.content %}
+      <h1>{{ page.title | d(config.site_name, true) }}</h1>
+    {% endif %}
+    {{ page.content }}
+    {% include "partials/tags.html" %}
+    {% include "partials/source-file.html" %}
+    {% include "partials/feedback.html" %}
+    {% include "partials/comments.html" %}
+  {%- else %}
+    {{ super() }}
+  {%- endif %}
+{% endblock %}

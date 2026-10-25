@@ -1,3 +1,39 @@
+---
+type: Chapter
+title: "Chapter 1: History of Fractal Mathematics"
+description: >-
+  Traces fractal geometry from the mathematical monsters of Cantor, Koch,
+  Sierpinski and Julia through Mandelbrot, self-affinity and the Hurst exponent,
+  IFS, L-systems and DLA, metabolic scaling theory, and complex dimensions, with
+  an appendix of machine-checked proofs.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+tags: [foundations, part-i, classics, dimension-theory, self-affinity, complex-dimensions]
+companion_page: https://tyson-swetnam.github.io/fractal-notebooks/notebooks/foundations/1_history/
+sources:
+  - id: mandelbrot1985
+    resource: https://doi.org/10.1088/0031-8949/32/4/001
+    title: "Mandelbrot (1985) Self-affine fractals and fractal dimension, Physica Scripta 32"
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: "West, Brown and Enquist (1997) A general model for the origin of allometric scaling laws in biology, Science 276"
+  - id: hardy-1916
+    resource: https://doi.org/10.1090/S0002-9947-1916-1501044-1
+    title: "Hardy (1916) Weierstrass's non-differentiable function, Transactions of the American Mathematical Society 17"
+  - id: shishikura-1998
+    resource: https://doi.org/10.2307/121009
+    title: "Shishikura (1998) The Hausdorff dimension of the boundary of the Mandelbrot set and Julia sets, Annals of Mathematics 147"
+  - id: witten-sander-1981
+    resource: https://doi.org/10.1103/PhysRevLett.47.1400
+    title: "Witten and Sander (1981) Diffusion-limited aggregation, a kinetic critical phenomenon, Physical Review Letters 47"
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Lapidus and van Frankenhuijsen (2013) Fractal Geometry, Complex Dimensions and Zeta Functions, 2nd ed., Springer"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # Chapter 1: History of Fractal Mathematics
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -514,7 +550,7 @@ The progression from recognizing fractal patterns to understanding their spectra
 ## Appendix: Verified Proofs
 
 Each quantitative result stated in this chapter has a companion proof document in
-the project's OKF proof bundle (`okf/proofs/`). Every document states the theorem,
+the project's [OKF proof bundle](../okf/proofs/index.md) (`okf/proofs/`). Every document states the theorem,
 its assumptions, numbered proof steps, and---critically---an explicit
 **verification status** distinguishing steps checked by symbolic or numerical
 computation (`[verified]`) from steps asserted on the authority of a named,
@@ -532,22 +568,22 @@ re-derived, and are flagged as such.
 
 | Result in this chapter | Value | Proof document | Status |
 |---|---|---|---|
-| Cantor set dimension | $D = \log 2/\log 3 \approx 0.6309$ | `okf/proofs/cantor-set-dimension.md` | verified |
-| Cantor set measure zero | $\lambda(\mathcal{C}) = 0$ | `okf/proofs/cantor-set-dimension.md` | verified |
-| Cantor set uncountable | $\mathfrak{c} = 2^{\aleph_0}$ | `okf/proofs/cantor-set-dimension.md` | verified |
-| Koch curve dimension | $D = \log 4/\log 3 \approx 1.2619$ | `okf/proofs/koch-curve-dimension.md` | verified |
-| Koch perimeter / snowflake area | $\infty$ / $\tfrac{8}{5}A_0$ | `okf/proofs/koch-curve-dimension.md` | verified |
-| Sierpinski triangle dimension | $D = \log 3/\log 2 \approx 1.585$ | `okf/proofs/sierpinski-dimension.md` | verified |
-| Sierpinski carpet dimension | $D = \log 8/\log 3 \approx 1.893$ | `okf/proofs/sierpinski-dimension.md` | verified |
-| Menger sponge dimension | $D = \log 20/\log 3 \approx 2.727$ | `okf/proofs/menger-sponge-dimension.md` | verified |
-| Barnsley fern dimension | $D_{\text{box}} \approx 1.83$ (no closed form) | `okf/proofs/barnsley-fern-dimension.md` | partially-verified |
-| Mandelbrot escape criterion | $\lvert z\rvert > 2 \Rightarrow$ escape | `okf/proofs/mandelbrot-escape.md` | verified |
-| Mandelbrot boundary dimension | $\dim_H \partial\mathcal{M} = 2$ | `okf/proofs/mandelbrot-boundary-dimension.md` | unverified |
-| Julia connectedness dichotomy | $J_c$ connected $\iff c \in \mathcal{M}$ | `okf/proofs/julia-connectedness.md` | partially-verified |
-| Weierstrass nowhere-differentiable | $ab > 1 + \tfrac{3\pi}{2}$ | `okf/proofs/weierstrass-nondifferentiability.md` | partially-verified |
-| Self-affine spectral relation | $\beta = 2H + 1$ | `okf/proofs/self-affine-spectral.md` | verified |
-| WBE quarter-power law | $B \propto M^{3/4}$ | `okf/proofs/wbe-quarter-power.md` | partially-verified |
-| Cantor complex dimensions | $\omega_k = \tfrac{\log 2}{\log 3} + i\tfrac{2\pi k}{\log 3}$ | `okf/proofs/complex-dimensions-cantor.md` | verified |
+| Cantor set dimension | $D = \log 2/\log 3 \approx 0.6309$ | [cantor-set-dimension](../okf/proofs/cantor-set-dimension.md) | verified |
+| Cantor set measure zero | $\lambda(\mathcal{C}) = 0$ | [cantor-set-dimension](../okf/proofs/cantor-set-dimension.md) | verified |
+| Cantor set uncountable | $\mathfrak{c} = 2^{\aleph_0}$ | [cantor-set-dimension](../okf/proofs/cantor-set-dimension.md) | verified |
+| Koch curve dimension | $D = \log 4/\log 3 \approx 1.2619$ | [koch-curve-dimension](../okf/proofs/koch-curve-dimension.md) | verified |
+| Koch perimeter / snowflake area | $\infty$ / $\tfrac{8}{5}A_0$ | [koch-curve-dimension](../okf/proofs/koch-curve-dimension.md) | verified |
+| Sierpinski triangle dimension | $D = \log 3/\log 2 \approx 1.585$ | [sierpinski-dimension](../okf/proofs/sierpinski-dimension.md) | verified |
+| Sierpinski carpet dimension | $D = \log 8/\log 3 \approx 1.893$ | [sierpinski-dimension](../okf/proofs/sierpinski-dimension.md) | verified |
+| Menger sponge dimension | $D = \log 20/\log 3 \approx 2.727$ | [menger-sponge-dimension](../okf/proofs/menger-sponge-dimension.md) | verified |
+| Barnsley fern dimension | $D_{\text{box}} \approx 1.83$ (no closed form) | [barnsley-fern-dimension](../okf/proofs/barnsley-fern-dimension.md) | partially-verified |
+| Mandelbrot escape criterion | $\lvert z\rvert > 2 \Rightarrow$ escape | [mandelbrot-escape](../okf/proofs/mandelbrot-escape.md) | verified |
+| Mandelbrot boundary dimension | $\dim_H \partial\mathcal{M} = 2$ | [mandelbrot-boundary-dimension](../okf/proofs/mandelbrot-boundary-dimension.md) | unverified |
+| Julia connectedness dichotomy | $J_c$ connected $\iff c \in \mathcal{M}$ | [julia-connectedness](../okf/proofs/julia-connectedness.md) | partially-verified |
+| Weierstrass nowhere-differentiable | $ab > 1 + \tfrac{3\pi}{2}$ | [weierstrass-nondifferentiability](../okf/proofs/weierstrass-nondifferentiability.md) | partially-verified |
+| Self-affine spectral relation | $\beta = 2H + 1$ | [self-affine-spectral](../okf/proofs/self-affine-spectral.md) | verified |
+| WBE quarter-power law | $B \propto M^{3/4}$ | [wbe-quarter-power](../okf/proofs/wbe-quarter-power.md) | partially-verified |
+| Cantor complex dimensions | $\omega_k = \tfrac{\log 2}{\log 3} + i\tfrac{2\pi k}{\log 3}$ | [complex-dimensions-cantor](../okf/proofs/complex-dimensions-cantor.md) | verified |
 
 A `partially-verified` status means the central computation was machine-checked
 but a substantive structural claim is asserted from a named theorem: the
@@ -588,6 +624,6 @@ This history traces one path through fractal geometry; the project's concept
 ontology is broader. For canonical definitions, dimension ranges, and
 cross-links covering topics this chapter treats only in passing—percolation and
 self-organized criticality, multifractal spectra, lacunarity, differential
-box-counting, and more—see the [concept knowledge bundle](../../okf/concepts/)
+box-counting, and more—see the [concept knowledge bundle](../okf/concepts/index.md)
 (`okf/concepts/`). Machine-checked derivations of the quantitative results are
-in the [proof bundle](../../okf/proofs/) (`okf/proofs/`).
+in the [proof bundle](../okf/proofs/index.md) (`okf/proofs/`).

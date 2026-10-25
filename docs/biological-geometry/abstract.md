@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Biological Geometry — Abstract
+description: >-
+  Abstract of the Part IV chapter: evolution solves biological space-filling with
+  self-affine fractals, anisotropic WBE branching ratios, iterated function systems,
+  diffusion-limited aggregation and competitive packing, and complex dimensions
+  linking growth oscillations to Riemann zeta zeros.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/abstract/
+tags: [paper, part-iv, biological, self-affinity, metabolic-scaling, complex-dimensions]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: west1999pubmed
+    resource: https://pubmed.ncbi.nlm.nih.gov/10356399/
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, PubMed record)"
+  - id: wiki-barnsley
+    resource: https://en.wikipedia.org/wiki/Barnsley_fern
+    title: Barnsley fern (Wikipedia)
+  - id: lapidus2012lecture
+    resource: https://math.hawaii.edu/numbertheory2012/Lapidus-Lecture.pdf
+    title: "Fractal strings, complex dimensions and the spectral operator: from the Riemann Hypothesis to phase transitions and universality (Lapidus 2012, lecture notes)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Abstract
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

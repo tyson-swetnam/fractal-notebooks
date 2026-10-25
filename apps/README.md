@@ -32,17 +32,17 @@ This folder contains interactive Streamlit applications for real-time fractal vi
 
 ### Local Execution
 ```bash
-# From the repository root
-streamlit run apps/mandelbrot.py
-streamlit run apps/branching_tree.py
-streamlit run apps/julia.py
+# From the repository root. Streamlit apps are the files that import streamlit:
+streamlit run apps/tree_roots_3d.py
+# mandelbrot.py, julia.py, branching_tree.py and the other matplotlib/PIL scripts
+# are run with python and write an image or GIF next to the script:
+python apps/mandelbrot.py
 ```
 
 ### Via Docker
 ```bash
-# Build and run containerized version
-cd docker/
-docker build -t fractal-app .
+# Build and run the containerized version (from the repository root)
+docker build -f docker/Dockerfile -t fractal-app .
 docker run -p 8501:8501 fractal-app
 ```
 
@@ -64,7 +64,6 @@ Applications can be deployed to K3s using the configurations in `k3s-deployment/
 
 ### Performance Optimization
 - NumPy vectorization for efficient computation
-- Numba JIT compilation where applicable
 - Caching for repeated calculations
 
 ## Integration with Other Folders
@@ -93,7 +92,6 @@ Applications require the following Python packages:
 - `plotly` - Interactive 3D visualizations
 - `scipy` - Scientific computing
 - `pandas` - Data manipulation
-- `numba` - JIT compilation
 - `pillow` - Image processing
 - `imageio` - Animation export
 

@@ -1,3 +1,40 @@
+---
+type: Paper Section
+title: Spectral Geometry — Methods
+description: >-
+  Methods for Part III: fractal strings and the Cantor string, geometric zeta
+  functions whose poles are complex dimensions, explicit tube formulas and
+  log-periodic oscillations, fractal sprays, and the Riemann zeta (Zipf) distribution
+  as the probabilistic dual of self-affinity.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/methods/
+tags: [paper, part-iii, spectral-geometry, complex-dimensions, number-theory, methods]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: lapidus2018overview
+    resource: https://arxiv.org/abs/1803.10399
+    title: "An overview of complex fractal dimensions: from fractal strings to fractal drums, and back (Lapidus 2018, arXiv)"
+  - id: lapidus-pomerance1993
+    resource: https://doi.org/10.1112/plms/s3-66.1.41
+    title: The Riemann zeta-function and the one-dimensional Weyl-Berry conjecture for fractal drums (Lapidus and Pomerance 1993, Proceedings of the London Mathematical Society)
+  - id: piantadosi2014
+    resource: https://pmc.ncbi.nlm.nih.gov/articles/PMC4176592/
+    title: "Zipf's word frequency law in natural language: a critical review and future directions (Piantadosi 2014, Psychonomic Bulletin and Review, PMC)"
+  - id: zeta-distribution
+    resource: https://escholarship.org/uc/item/2df682sh
+    title: The Riemann zeta distribution (eScholarship, University of California)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Methods: Fractal Strings, Zeta Functions, and the Riemann Zeta Distribution
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

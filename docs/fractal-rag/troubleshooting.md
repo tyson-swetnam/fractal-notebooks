@@ -1,3 +1,19 @@
+---
+type: Guide
+title: "Fractal RAG: Troubleshooting"
+description: >-
+  Failure modes of the Fractal RAG stack by layer: Weaviate and GPU sidecar
+  pods, schema bootstrap, ingest paths including FRACTAL_RAG_REPO_ROOT and
+  CORPUS_ROOT, MCP wiring in Claude Code, agent quality, and the re-index recipe
+  after a docs reorganisation.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/fractal-rag/troubleshooting/
+tags: [knowledge, rag, weaviate, mcp]
+generated:
+  by: human:tswetnam
+  at: "2026-05-24T00:00:00Z"
+status: stable
+---
+
 # Troubleshooting
 
 Common failure modes and how to root-cause them. Issues are grouped by the
@@ -98,6 +114,42 @@ at the JSONL's parent:
 ```bash
 export FRACTAL_RAG_CORPUS_ROOT=/where/you/actually/put/it
 ```
+
+### `ingest --source docs` (or `notebooks`) reports `parsed_docs: 0`
+
+The markdown source walks `<repo_root>/docs/**/*.md`, and `repo_root`
+defaults to the K3s host path `/opt/tswetnam/github/fractal-notebooks`
+(`config.py`). On a laptop, a CI runner or any other checkout location that
+directory does not exist, and `rglob` on a missing path is **not** an error —
+it silently yields zero documents. Point the setting at your checkout:
+
+```bash
+export FRACTAL_RAG_REPO_ROOT=/path/to/your/fractal-notebooks   # or $PWD from the repo root
+fractal-rag ingest --source docs
+```
+
+The `notebooks` source reads `.ipynb` files under `FRACTAL_RAG_CORPUS_ROOT`
+(the iRODS mirror); if that mirror is absent locally, point `CORPUS_ROOT` at
+the checkout as well.
+
+### Re-index after a reorganisation
+
+Object UUIDs are derived from file paths and `ingest` upserts without ever
+pruning, so moving, renaming or deleting pages (as the docs reorganisation
+into Foundations, Research, Notebooks, Apps and Knowledge tabs did) leaves
+stale objects under the old paths. Rebuild from scratch:
+
+```bash
+export FRACTAL_RAG_REPO_ROOT=$PWD        # the checkout whose docs/ you want indexed
+fractal-rag schema bootstrap --drop      # destructive: drops and recreates both collections
+fractal-rag ingest --source docs
+fractal-rag ingest --source notebooks
+fractal-rag status
+```
+
+Expect the `Concept` count to be unchanged and the `FractalArtifact` count to
+drop to the current page set. Searching for text that only existed on a
+deleted page should then return no hits.
 
 ### Ingest is dropping a lot of objects
 
@@ -213,8 +265,7 @@ fractal-rag ingest --source all
 
 - Check `kubectl -n ai-workloads get events --sort-by=.lastTimestamp | tail`
   for cluster-level signals.
-- Read the design spec
-  (`docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md`) — the
+- Read the [design spec](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-design.md) — the
   "Risks / mitigations" section calls out known weak spots.
 - File an issue with the failing CLI command, the relevant log snippet, and
   the output of `fractal-rag status`.

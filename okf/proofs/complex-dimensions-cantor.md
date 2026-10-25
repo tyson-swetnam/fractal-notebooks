@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: Complex Dimensions of the Cantor String
-description: The geometric zeta function of the Cantor string has poles at $\omega_k = \tfrac{\log 2}{\log 3} + i\tfrac{2\pi k}{\log 3}$; the real part is the Minkowski dimension, the imaginary parts encode log-periodic oscillations.
-tags: [dimension-theory, complex-dimensions, cantor, zeta-function]
-timestamp: '2026-07-13T00:00:00Z'
+description: The geometric zeta function of the Cantor string has poles at omega_k = log 2 / log 3 + i (2 pi k / log 3); the real part is the Minkowski dimension and the imaginary parts encode log-periodic oscillations.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/complex-dimensions-cantor/
+tags: [dimension-theory, complex-dimensions, spectral-geometry, classics, complex-analysis]
 result: "omega_k = log2/log3 + i*2*pi*k/log3 ; oscillation period 2pi/log3"
 concept: ../concepts/dimension-theory/complex-dimensions.md
 historical_source: M. L. Lapidus and M. van Frankenhuijsen, "Fractal Geometry, Complex Dimensions and Zeta Functions" (2006); theory developed 1990s-2000s.
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

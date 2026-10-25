@@ -3,12 +3,18 @@
 Per the design spec §6: polymorphic FractalArtifact for all chunked content +
 a Concept side-collection for ontology entries. Both collections use named
 vectors so titles, summaries, and content can be searched independently.
+
+Re-running the bootstrap against an existing index also appends any property the
+code declares that the live collection lacks (Weaviate allows adding properties,
+never changing them), so a schema addition such as ``resource`` reaches indexes
+created before it existed without ``--drop``.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Iterable
+import logging
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 
 from weaviate.classes.config import (
     Configure,
@@ -21,11 +27,15 @@ from weaviate.client import WeaviateClient
 
 from .config import Settings, get_settings
 
+log = logging.getLogger("fractal_rag.schema")
+
 
 @dataclass
 class BootstrapResult:
     created: list[str]
     already_present: list[str]
+    # collection name -> properties appended to an already-existing collection
+    properties_added: dict[str, list[str]] = field(default_factory=dict)
 
     @property
     def total(self) -> int:
@@ -36,6 +46,8 @@ def _artifact_properties() -> list[Property]:
     return [
         Property(name="source_type", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="source_uri", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
+        # Public page URL (OKF `resource`) for documentation pages; null for other sources.
+        Property(name="resource", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="parent_id", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="chunk_index", data_type=DataType.INT),
         Property(name="title", data_type=DataType.TEXT),
@@ -77,6 +89,26 @@ def _named_vectors(fields: Iterable[str], vectorizer_module: str):
     ]
 
 
+def _add_missing_properties(
+    client: WeaviateClient, name: str, wanted: list[Property]
+) -> list[str]:
+    """Append to collection ``name`` every property in ``wanted`` it lacks; return their names.
+
+    Objects already in the collection carry a null value for a new property until they
+    are re-ingested (``fractal-rag ingest`` upserts by deterministic UUID, so a plain
+    re-run fills it in).
+    """
+    collection = client.collections.get(name)
+    present = {prop.name for prop in collection.config.get().properties}
+    added: list[str] = []
+    for prop in wanted:
+        if prop.name not in present:
+            collection.config.add_property(prop)
+            added.append(prop.name)
+            log.info("schema: added property %r to existing collection %s", prop.name, name)
+    return added
+
+
 def bootstrap(
     client: WeaviateClient,
     settings: Settings | None = None,
@@ -85,11 +117,14 @@ def bootstrap(
 ) -> BootstrapResult:
     """Create the two collections if missing; reuse if present.
 
-    Returns a BootstrapResult describing what changed. Safe to call repeatedly.
+    An existing collection is brought up to date by appending the properties the code
+    declares and it lacks (reported in ``properties_added``). Returns a BootstrapResult
+    describing what changed. Safe to call repeatedly.
     """
     s = settings or get_settings()
     created: list[str] = []
     already: list[str] = []
+    properties_added: dict[str, list[str]] = {}
 
     if drop_existing:
         for name in (s.artifact_collection, s.concept_collection):
@@ -98,6 +133,9 @@ def bootstrap(
 
     if client.collections.exists(s.concept_collection):
         already.append(s.concept_collection)
+        added = _add_missing_properties(client, s.concept_collection, _concept_properties())
+        if added:
+            properties_added[s.concept_collection] = added
     else:
         client.collections.create(
             name=s.concept_collection,
@@ -111,6 +149,9 @@ def bootstrap(
 
     if client.collections.exists(s.artifact_collection):
         already.append(s.artifact_collection)
+        added = _add_missing_properties(client, s.artifact_collection, _artifact_properties())
+        if added:
+            properties_added[s.artifact_collection] = added
     else:
         client.collections.create(
             name=s.artifact_collection,
@@ -131,4 +172,6 @@ def bootstrap(
         )
         created.append(s.artifact_collection)
 
-    return BootstrapResult(created=created, already_present=already)
+    return BootstrapResult(
+        created=created, already_present=already, properties_added=properties_added
+    )

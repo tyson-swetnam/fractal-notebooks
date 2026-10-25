@@ -2,12 +2,23 @@
 type: Fractal Proof
 title: Cantor Set — Dimension, Measure, and Cardinality
 description: The middle-thirds Cantor set has Hausdorff dimension log 2 / log 3, Lebesgue measure zero, and the cardinality of the continuum.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/cantor-set-dimension/
 tags: [classics, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "D = log 2 / log 3 ≈ 0.6309; Lebesgue measure 0; uncountable"
 concept: ../concepts/classics/cantor-set.md
 historical_source: Georg Cantor, "Über unendliche, lineare Punktmannigfaltigkeiten V", Mathematische Annalen 21 (1883)
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

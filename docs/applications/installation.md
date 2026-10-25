@@ -1,3 +1,25 @@
+---
+type: Guide
+title: "Installation Guide"
+description: >-
+  Set up the React apps with Node.js and npm, the Python stack for the Streamlit
+  apps with pip or the streamlit-plotly conda environment, a Jupyter kernel,
+  optional CUDA acceleration and the Docker image, with troubleshooting tips.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/applications/installation/
+tags: [app, react, streamlit, jupyter, cuda]
+sources:
+  - id: miniconda
+    resource: https://docs.conda.io/en/latest/miniconda.html
+    title: "Miniconda installation guide"
+  - id: cuda-toolkit
+    resource: https://developer.nvidia.com/cuda-downloads
+    title: "NVIDIA CUDA Toolkit downloads"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # Installation Guide
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -57,7 +79,6 @@ npm run build
 | `npm run build` | Create production build |
 | `npm run type-check` | Run TypeScript type checking |
 | `npm run lint` | Run ESLint |
-| `npm run test` | Run Jest tests |
 
 ---
 
@@ -66,9 +87,10 @@ npm run build
 ### Option 1: Using pip
 
 ```bash
-cd fractal-notebooks
-pip install -r requirements.txt
+pip install streamlit numpy scipy matplotlib plotly pillow imageio
 ```
+
+The four tree-ring apps (`app.py` to `app4.py`) also need `pandas`, and `app3.py` needs `shapely`. The repository's root `requirements.txt` is the documentation toolchain, not the app stack.
 
 ### Option 2: Using Conda with Mamba
 
@@ -105,7 +127,7 @@ pip install -r requirements.txt
 4. **Activate Environment**
 
     ```bash
-    mamba activate fractal-env
+    mamba activate streamlit-plotly
     ```
 
 ---
@@ -116,17 +138,19 @@ After setting up the Python environment:
 
 ```bash
 cd apps
-streamlit run mandelbrot.py
+streamlit run tree_roots_3d.py
 ```
 
 ### Available Applications
 
 | File | Description |
 |------|-------------|
-| `mandelbrot.py` | Interactive Mandelbrot set explorer |
-| `julia.py` | Julia set visualization |
-| `branching_tree.py` | Self-affine branching tree generator |
-| `pythagoras_tree.py` | Pythagoras tree fractal |
+| `tree_roots_3d.py` | Interactive 3D tree with crown and root systems |
+| `cones.py` | Year-by-year tree growth simulator built from cones |
+| `bacterial_dla_app.py` | Animated bacterial diffusion-limited aggregation |
+| `yeast_d3js.py` | D3.js yeast colony simulation |
+
+The full catalogue of the twelve Streamlit apps, and of the matplotlib/PIL scripts (`mandelbrot.py`, `julia.py`, `branching_tree.py`, `pythagoras_tree.py`) that are run with `python` rather than `streamlit`, is on the [Streamlit Apps](streamlit-apps.md) page.
 
 ---
 
@@ -135,9 +159,9 @@ streamlit run mandelbrot.py
 ### Install Jupyter Kernel
 
 ```bash
-mamba activate fractal-env
+mamba activate streamlit-plotly
 mamba install -c conda-forge jupyterlab ipykernel
-python -m ipykernel install --name fractal-env --display-name "Fractal Env"
+python -m ipykernel install --name streamlit-plotly --display-name "Python (streamlit-plotly)"
 ```
 
 ### Launch JupyterLab
@@ -182,8 +206,8 @@ if torch.cuda.is_available():
 For containerized deployment:
 
 ```bash
-cd docker
-docker build -t fractal-app .
+# from the repository root (the Dockerfile copies apps/)
+docker build -f docker/Dockerfile -t fractal-app .
 docker run -p 8501:8501 fractal-app
 ```
 
@@ -201,7 +225,7 @@ nvm use 18
 
 **Python package conflicts**
 ```bash
-mamba env remove -n fractal-env
+mamba env remove -n streamlit-plotly
 mamba env create -f streamlit-plotly.yaml
 ```
 

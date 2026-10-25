@@ -1,3 +1,57 @@
+---
+type: Paper Section
+title: Metabolic Scaling — References
+description: >-
+  Reference list for the Part II manuscript, grouped by metabolic scaling theory,
+  Mandelbrot's fractal geometry, allometry and historical background, fractal analysis
+  methods, ecological applications, and thermodynamics and entropy.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/references/
+tags: [paper, part-ii, reference, metabolic-scaling]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: banavar1999
+    resource: https://doi.org/10.1038/20144
+    title: Size and form in efficient transportation networks (Banavar, Maritan and Rinaldo 1999, Nature)
+  - id: bentley2013
+    resource: https://doi.org/10.1111/ele.12127
+    title: An empirical assessment of tree branching networks and implications for plant allometric scaling models (Bentley et al. 2013, Ecology Letters)
+  - id: brown2004
+    resource: https://doi.org/10.1890/03-9000
+    title: Toward a metabolic theory of ecology (Brown et al. 2004, Ecology)
+  - id: enquist1998
+    resource: https://doi.org/10.1038/25977
+    title: Allometric scaling of plant energetics and population density (Enquist, Brown and West 1998, Nature)
+  - id: enquist1999
+    resource: https://doi.org/10.1038/44819
+    title: Allometric scaling of production and life-history variation in vascular plants (Enquist et al. 1999, Nature)
+  - id: smith2014
+    resource: https://doi.org/10.1111/nph.12487
+    title: Deviation from symmetrically self-similar branching in trees predicts altered hydraulics, mechanics, light interception and metabolic scaling (Smith et al. 2014, New Phytologist)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # References
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

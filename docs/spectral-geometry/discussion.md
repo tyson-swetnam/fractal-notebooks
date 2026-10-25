@@ -1,3 +1,43 @@
+---
+type: Paper Section
+title: Spectral Geometry — Discussion
+description: >-
+  Discussion for Part III: the Faloutsos-Kamel fractal-dimension cost model for
+  R-trees, a cross-domain table of oscillatory phenomena, lacunarity and the music of
+  the primes, GUE statistics and the Montgomery-Odlyzko law, forest canopies as
+  spectral DNA, and the Fractal Riemann Hypothesis.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/discussion/
+tags: [paper, part-iii, spectral-geometry, riemann-zeta, statistical-physics, forest-ecology]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: faloutsos-kamel1994
+    resource: https://doi.org/10.1145/182591.182593
+    title: "Beyond uniformity and independence: analysis of R-trees using the concept of fractal dimension (Faloutsos and Kamel 1994, PODS)"
+  - id: kamel-faloutsos1994
+    resource: https://www.vldb.org/conf/1994/P500.PDF
+    title: "Hilbert R-tree: an improved R-tree using fractals (Kamel and Faloutsos 1994, VLDB)"
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: odlyzko1987
+    resource: https://doi.org/10.1090/S0025-5718-1987-0866115-0
+    title: On the distribution of spacings between zeros of the zeta function (Odlyzko 1987, Mathematics of Computation)
+  - id: frh-preprint
+    resource: https://doi.org/10.31219/osf.io/p4fg3_v1
+    title: "Fractal Riemann Hypothesis, Part A: the analytic continuation of fractal zeta functions and the universality of the critical line (OSF preprint)"
+  - id: zeta-fractal-arxiv
+    resource: https://arxiv.org/abs/chao-dyn/9406003
+    title: Riemann zeta function is a fractal (arXiv chao-dyn/9406003)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Discussion: R-Trees, Spectral Chirality, and the Fractal Riemann Hypothesis
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

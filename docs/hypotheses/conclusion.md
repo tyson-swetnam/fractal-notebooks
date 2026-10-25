@@ -1,3 +1,40 @@
+---
+type: Paper Section
+title: Research Hypotheses — Conclusion
+description: >-
+  Conclusion of Part V: summary of the five primary and four fractal-string
+  hypotheses, a table mapping ecological concepts to mathematical analogues, an
+  analytical pipeline for LiDAR canopy height models, experimental priorities from
+  chronosequences to cross-biome tests, and framework integration.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/conclusion/
+tags: [paper, part-v, preregistration, forest-ecology, riemann-zeta, lidar]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: odlyzko1987
+    resource: https://doi.org/10.1090/S0025-5718-1987-0866115-0
+    title: On the distribution of spacings between zeros of the zeta function (Odlyzko 1987, Mathematics of Computation)
+  - id: bak1987
+    resource: https://doi.org/10.1103/PhysRevLett.59.381
+    title: "Self-organized criticality: an explanation of 1/f noise (Bak, Tang and Wiesenfeld 1987, Physical Review Letters)"
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: sole-manrubia1995
+    resource: https://doi.org/10.1006/jtbi.1995.0040
+    title: Are rainforests self-organized in a critical state? (Sole and Manrubia 1995, Journal of Theoretical Biology)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Conclusion
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

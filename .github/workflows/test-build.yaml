@@ -7,17 +7,61 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-mkdocs:
+  docs:
+    name: Docs (Zensical pipeline, strict)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Test MkDocs build
-        run: mkdocs build --site-dir test-site
+          cache: 'pip'
+          cache-dependency-path: requirements-docs.txt
+
+      - name: Install the docs toolchain
+        run: pip install -r requirements-docs.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+
+      # Same pipeline as deploy-all.yaml, without the deploy.
+      - name: Build the site
+        run: bash scripts/build_site.sh --with-react --ci
+
+      - name: Run the pipeline unit tests
+        run: python -m pytest scripts/tests -q
+
+      - name: Upload the built site
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
+          retention-days: 7
+
+  fractal-rag:
+    name: fractal_rag (ruff + unit tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: fractal_rag/pyproject.toml
+
+      - name: Install the package with dev and parser extras
+        run: pip install -e "fractal_rag[dev,parsers]"
+
+      - name: Lint
+        run: ruff check fractal_rag/src fractal_rag/tests
+
+      - name: Unit tests
+        run: python -m pytest fractal_rag/tests/unit -q
 
   test-react:
     runs-on: ubuntu-latest
@@ -40,3 +84,19 @@ jobs:
       - name: Test linting
         working-directory: ./react
         run: npm run lint
+
+  # Rollback canary: mkdocs.yml and requirements.txt are kept until the cleanup
+  # phase so `git revert` of the cutover still builds. Non-blocking.
+  test-mkdocs:
+    name: MkDocs build (rollback canary, non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Test MkDocs build
+        run: mkdocs build --site-dir test-site

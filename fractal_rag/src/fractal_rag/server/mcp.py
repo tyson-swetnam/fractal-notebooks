@@ -42,6 +42,7 @@ def _artifact_row(obj: Any) -> dict[str, Any]:
         "summary": props.get("summary"),
         "source_type": props.get("source_type"),
         "source_uri": props.get("source_uri"),
+        "resource": props.get("resource"),
         "parent_id": props.get("parent_id"),
         "chunk_index": props.get("chunk_index"),
         "year": props.get("year"),
@@ -70,8 +71,10 @@ def build_server(settings: Settings | None = None) -> FastMCP:
     mcp = FastMCP(
         name="fractal-rag",
         instructions=(
-            "Read-only retrieval over the Fractal Notebooks corpus "
-            "(Constellate JSONL, Jupyter notebooks, MkDocs markdown). "
+            "Read-only retrieval over the Fractal Notebooks corpus: Constellate JSONL, "
+            "Jupyter notebooks, documentation site pages (Zensical, OKF v0.2 frontmatter) "
+            "and the OKF concept and proof bundles. Cite `resource` (public page URL) "
+            "when a hit carries one, else `source_uri`. "
             "Use search_artifacts for general queries; near_artifact to "
             "expand around a hit; list_concepts and get_concept for the "
             "ontology; artifacts_by_concept to filter by tag; corpus_stats "
@@ -124,7 +127,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                     filters=combined_filter,
                     return_metadata=MetadataQuery(distance=True),
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
 
         return json.dumps([_artifact_row(o) for o in response.objects], indent=2)
@@ -139,7 +142,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
             try:
                 coll = client.collections.get(s.artifact_collection)
                 obj = coll.query.fetch_object_by_id(uuid)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         if obj is None:
             raise ValueError(_err("not_found", f"artifact {uuid} not found"))
@@ -162,7 +165,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                     target_vector="content_vec",
                     return_metadata=MetadataQuery(distance=True),
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         return json.dumps([_artifact_row(o) for o in response.objects], indent=2)
 
@@ -190,7 +193,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                 )
             except ValueError:
                 raise
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
 
         return json.dumps([_artifact_row(o) for o in response.objects], indent=2)
@@ -211,7 +214,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                     filters=filt,
                     limit=_bound_limit(s, limit or s.mcp_max_limit),
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         return json.dumps([_concept_row(o) for o in response.objects], indent=2)
 
@@ -228,7 +231,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                     filters=Filter.by_property("name").equal(name),
                     limit=1,
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         if not hits.objects:
             raise ValueError(_err("not_found", f"concept {name!r} not found"))
@@ -255,7 +258,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                     target_vector=target_vector,
                     return_metadata=MetadataQuery(distance=True),
                 )
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         return json.dumps([_concept_row(o) for o in response.objects], indent=2)
 
@@ -287,7 +290,7 @@ def build_server(settings: Settings | None = None) -> FastMCP:
                         )
                         by_source[st] = agg.total_count
                     out[s.artifact_collection]["by_source_type"] = by_source
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 raise RuntimeError(_err("weaviate_error", str(exc))) from exc
         return json.dumps(out, indent=2)
 

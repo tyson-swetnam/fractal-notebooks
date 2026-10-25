@@ -2,12 +2,23 @@
 type: Fractal Proof
 title: Sierpinski Triangle and Carpet — Dimensions
 description: The Sierpinski triangle has Hausdorff dimension log 3 / log 2 and the Sierpinski carpet log 8 / log 3, both via the open-set condition.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/sierpinski-dimension/
 tags: [classics, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "Triangle D = log 3 / log 2 ≈ 1.5850; Carpet D = log 8 / log 3 ≈ 1.8928"
 concept: ../concepts/classics/sierpinski-triangle.md
 historical_source: Wacław Sierpiński, "Sur une courbe cantorienne qui contient une image biunivoque et continue de toute courbe donnée", C. R. Acad. Sci. Paris 162 (1916); triangle 1915
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

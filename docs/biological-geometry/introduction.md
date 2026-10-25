@@ -1,3 +1,34 @@
+---
+type: Paper Section
+title: Biological Geometry — Introduction
+description: >-
+  Introduction to Part IV: the optimisation problem of capturing diffuse resources at
+  minimal tissue cost, self-affine versus self-similar structures under anisotropic
+  forces, pre-fractals with upper and lower cutoffs and dimension crossover, and the
+  organisation of the chapter.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/introduction/
+tags: [paper, part-iv, biological, self-affinity, self-similarity, scaling]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: west1999pubmed
+    resource: https://pubmed.ncbi.nlm.nih.gov/10356399/
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, PubMed record)"
+  - id: kenkel1996
+    resource: https://home.cc.umanitoba.ca/~kenkel/pubs/1996.pdf
+    title: Fractals in the biological sciences (Kenkel and Walker 1996, PDF)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Introduction: The Geometric Imperative of Biological Existence
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

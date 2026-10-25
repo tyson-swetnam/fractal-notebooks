@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: Fatou-Julia Connectedness Dichotomy
-description: The Julia set $J_c$ of $z^2+c$ is connected iff the critical orbit is bounded ($c\in M$); otherwise it is totally disconnected Cantor dust.
-tags: [complex-dynamics, julia-set, connectedness, fatou-julia]
-timestamp: '2026-07-13T00:00:00Z'
+description: The Julia set J_c of z^2 + c is connected if and only if the critical orbit is bounded (c lies in the Mandelbrot set); otherwise it is totally disconnected Cantor dust.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/julia-connectedness/
+tags: [complex-dynamics, topology, complex-analysis]
 result: "J_c connected iff 0 in K_c iff c in Mandelbrot set; else totally disconnected"
 concept: ../concepts/complex-dynamics/julia-set.md
 historical_source: Pierre Fatou and Gaston Julia, independent memoirs 1917-1919 (Julia, "Memoire sur l'iteration des fonctions rationnelles", 1918).
 verification_status: partially-verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

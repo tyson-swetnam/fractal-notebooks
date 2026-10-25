@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: WBE Derivation of the 3/4-Power Metabolic Scaling Law
-description: Area-preserving branching plus space-filling delivery in a fractal transport network yields Kleiber's law, $B\propto M^{3/4}$.
-tags: [biological, allometry, wbe, metabolic-scaling, power-law]
-timestamp: '2026-07-13T00:00:00Z'
+description: Area-preserving branching plus space-filling delivery in a fractal transport network yields Kleiber's law, in which metabolic rate B scales as body mass M to the 3/4 power.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/wbe-quarter-power/
+tags: [biological, allometry, metabolic-scaling, scaling, branching]
 result: "B proportional to M^(3/4)"
 concept: ../concepts/biological/allometry.md
 historical_source: G. B. West, J. H. Brown, B. J. Enquist, "A general model for the origin of allometric scaling laws in biology" (Science, 1997).
 verification_status: partially-verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

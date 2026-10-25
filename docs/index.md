@@ -1,3 +1,20 @@
+---
+okf_version: "0.2"
+type: Index
+title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+description: >-
+  Home page of Fractal Notebooks: Part I foundations of fractal geometry, Parts
+  II-V research on self-affine scaling in vascular organisms, rendered Jupyter
+  notebooks, React and Streamlit apps, OKF knowledge bundles and a guide for AI
+  agents.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/
+tags: [foundations, research, self-affinity, metabolic-scaling, okf]
+generated:
+  by: human:tswetnam
+  at: "2024-09-22T00:00:00Z"
+status: stable
+---
+
 # Fractal Patterns in Nature: Self-Affinity vs Self-Similarity
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -14,11 +31,11 @@ We link metabolic scaling theory to the structural traits of organisms and propo
 
 ---
 
-## Document Structure
+## Site Structure
 
-This documentation is organized into seven parts:
+The site is organised into seven tabs. The original Part numbers are kept in page titles so that cross-references and citations into the manuscripts stay stable.
 
-### [Part I: Foundations](foundations/history.md)
+### [Foundations (Part I)](foundations/index.md)
 
 Educational chapters providing mathematical and historical background:
 
@@ -27,7 +44,11 @@ Educational chapters providing mathematical and historical background:
 - [**Fractal Dimensionality**](foundations/dimensionality.md) — 1D through 4D fractals with examples
 - [**Glossary & Equations**](foundations/glossary.md) — Quick reference for terms and formulas
 
-### [Part II: Metabolic Scaling Theory](metabolic-scaling/abstract.md)
+### Research (Parts II–V)
+
+Four research manuscripts, each with a landing page and sections from Abstract to References; Part II also has supporting notebooks. They are unpublished drafts.
+
+#### [Part II: Metabolic Scaling Theory](metabolic-scaling/index.md)
 
 The core research paper on self-affinity in vascular organisms:
 
@@ -36,7 +57,7 @@ The core research paper on self-affinity in vascular organisms:
 - Empirical validation using differential box-counting
 - Tables of fractal dimensions for leaves, branches, and forest canopies
 
-### [Part III: Spectral Geometry](spectral-geometry/abstract.md)
+#### [Part III: Spectral Geometry](spectral-geometry/index.md)
 
 Advanced mathematical theory connecting fractals to the Riemann zeta function:
 
@@ -45,7 +66,7 @@ Advanced mathematical theory connecting fractals to the Riemann zeta function:
 - Applications to algorithmic sorting and spatial indexing
 - The "Fractal Riemann Hypothesis"
 
-### [Part IV: Biological Geometry](biological-geometry/abstract.md)
+#### [Part IV: Biological Geometry](biological-geometry/index.md)
 
 Applications of self-affine geometry to biological systems:
 
@@ -54,15 +75,19 @@ Applications of self-affine geometry to biological systems:
 - Crown shyness and Apollonian packing in forest canopies
 - Root foraging and spectral dimensions
 
-### [Part V: Research Hypotheses](hypotheses/abstract.md)
+#### [Part V: Research Hypotheses](hypotheses/index.md)
 
-Proposed experimental research framework:
+Preregistration framework for testing whether old-growth forest canopies, read from LiDAR canopy height models, carry the signatures of self-organised criticality:
 
-- **Hypothesis 1**: DLA geometry in lichens and algae
-- **Hypothesis 2**: Monofractal vs multifractal branching in plants
-- **Hypothesis 3**: Canopy gap dynamics and Zeta distributions
+- **Five primary hypotheses**: Optimal Filling (canopy fractal dimension), Scale Invariance (power-law lacunarity), Zeta Distribution of Gaps (gap sizes with exponent near 2), Universal Repulsion (Wigner-Dyson/GUE spacing of dominant trees) and Biotic Decoupling (weaker coupling to topography)
+- **Four spatial-distribution hypotheses** from Lapidus's fractal strings: transect gap lengths, GUE pair correlation of canopy emergents, log-periodic lacunarity oscillations and "Riemann gas" tree density
+- **Methods and expected results** stated before any data are analysed, with the statistical tests that will decide each hypothesis
 
-### [Part VI: Applications](applications/index.md)
+### [Notebooks](notebooks/index.md)
+
+Jupyter notebooks rendered as pages with their stored outputs: the four Part I chapter notebooks, the Part II methods and results notebooks, and four stand-alone fractal demonstrations — [diffusion-limited aggregation](notebooks/foundations/dla.md), [self-similar fractals](notebooks/foundations/fractals.md), [self-affine generators](notebooks/foundations/fractal_generators.md) and [Riemann zeta space](notebooks/foundations/zeta_space.md). The [notebook index](notebooks/index.md) also lists the research notebooks that are kept on GitHub only.
+
+### [Apps (Part VI)](applications/index.md)
 
 Interactive tools and demonstrations:
 
@@ -70,16 +95,15 @@ Interactive tools and demonstrations:
 - [Streamlit apps](applications/streamlit-apps.md) — Python-based interactive tools
 - [Differential box-counting](applications/dbc.md) — Fractal dimension estimation
 - [3D visualization](applications/tree-roots-3d.md) — Branching network rendering
+- [Blender DLA](applications/blender-dla.md) — 3D point-cloud generator with Geometry Nodes
 
-### [Part VII: Notebooks](notebooks/index.md)
+### [Knowledge](okf/index.md)
 
-Jupyter notebooks for hands-on exploration:
+Machine-readable knowledge bundles in Open Knowledge Format (OKF) v0.2: the concept ontology exported from the Fractal RAG seed, the verified proofs behind Chapter 1, and the [Fractal RAG stack](fractal-rag/index.md) that indexes this corpus for retrieval agents.
 
-- [DLA simulation](notebooks/old_dla.ipynb)
-- [Barnsley ferns](notebooks/ferns.ipynb)
-- [Self-similar fractals](notebooks/fractals.ipynb)
-- [Self-affine generators](notebooks/fractal_generators.ipynb)
-- [Riemann zeta functions](notebooks/zeta_space.ipynb)
+### [For AI Agents](agents.md)
+
+How agents and harnesses should read this site: `llms.txt`, a Markdown twin of every page, the OKF frontmatter on each page, and the MCP retrieval tools.
 
 ---
 
@@ -93,7 +117,7 @@ Jupyter notebooks for hands-on exploration:
 
     Learn the mathematical background of fractal geometry
 
-    [:octicons-arrow-right-24: Get started](foundations/history.md)
+    [:octicons-arrow-right-24: Get started](foundations/index.md)
 
 -   :material-tree:{ .lg .middle } **Metabolic Scaling**
 
@@ -101,7 +125,7 @@ Jupyter notebooks for hands-on exploration:
 
     Explore the fractal geometry of vascular organisms
 
-    [:octicons-arrow-right-24: Read the paper](metabolic-scaling/abstract.md)
+    [:octicons-arrow-right-24: Read the paper](metabolic-scaling/index.md)
 
 -   :material-play-circle:{ .lg .middle } **Interactive Apps**
 
@@ -109,7 +133,7 @@ Jupyter notebooks for hands-on exploration:
 
     Explore fractals with GPU-accelerated visualizations
 
-    [:octicons-arrow-right-24: Launch apps](react/)
+    [:octicons-arrow-right-24: Launch apps](https://tyson-swetnam.github.io/fractal-notebooks/react/)
 
 -   :material-notebook:{ .lg .middle } **Jupyter Notebooks**
 
@@ -118,6 +142,22 @@ Jupyter notebooks for hands-on exploration:
     Run code and visualize fractal algorithms
 
     [:octicons-arrow-right-24: Open notebooks](notebooks/index.md)
+
+-   :material-book-open-variant:{ .lg .middle } **Knowledge**
+
+    ---
+
+    OKF concept ontology, verified proofs and the Fractal RAG stack
+
+    [:octicons-arrow-right-24: Browse the bundles](okf/index.md)
+
+-   :material-robot:{ .lg .middle } **For AI Agents**
+
+    ---
+
+    llms.txt, Markdown twins and the OKF frontmatter convention
+
+    [:octicons-arrow-right-24: Read the agent guide](agents.md)
 
 </div>
 
@@ -166,15 +206,7 @@ Since \( \xi \neq \gamma \), these networks are self-affine.
 
 ## Abstract
 
-Much of the scientific literature describes the fractal-like hierarchical branching networks of vascular organisms as 'self-similar'. Here we examine papers where fractal-like self-similarity is incorrectly described. We also link why the hierarchical branching networks in vascular organisms are 'self-affine' rather than self-similar by linking metabolic scaling theory to these structural traits. Last, we propose a mechanistic theory of fractal dimensions for single cell through multicellular life forms.
-
-Our results demonstrate:
-
-1. **Dimensional analysis** with appropriate self-affine mass dimension shows that many reported fractal dimensions in ecology are either incorrect or inappropriately reported.
-
-2. **A technique for testable predictions**, including a mechanistic explanation for how individual branching networks grow and fill space and how communities of organisms emerge with fractal dimensions based on MST predictions.
-
-These results may help reveal when communities of individuals have maximized their potential to cycle energy through an ecosystem or when they have been disturbed by exogenous forces.
+Much of the scientific literature describes the fractal-like hierarchical branching networks of vascular organisms as self-similar; Part II links metabolic scaling theory to measured structural traits to show that they are self-affine, and that many fractal dimensions reported in ecology are therefore estimated with inappropriate self-similar methods. The full abstract, key findings and manuscript outline are on the [Part II: Metabolic Scaling Theory](metabolic-scaling/index.md) landing page.
 
 ---
 

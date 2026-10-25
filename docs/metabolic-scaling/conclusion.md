@@ -1,3 +1,49 @@
+---
+type: Paper Section
+title: Metabolic Scaling — Conclusion
+description: >-
+  Conclusion of Part II: natural fractals are mostly self-affine, 1/f spectral noise
+  and organismal fractal dimensions follow from anisotropic scaling, entropy
+  maximisation through mass transfer is the proposed mechanism, with implications for
+  ecology and future research directions.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/conclusion/
+tags: [paper, part-ii, metabolic-scaling, self-affinity, scaling]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: west1999science
+    resource: https://doi.org/10.1126/science.284.5420.1677
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, Science)"
+  - id: west1999nature
+    resource: https://doi.org/10.1038/23251
+    title: A general model for the structure and allometry of plant vascular systems (West, Brown and Enquist 1999, Nature)
+  - id: mandelbrot1982
+    resource: https://search.worldcat.org/isbn/0716711869
+    title: The Fractal Geometry of Nature (Mandelbrot 1982, W. H. Freeman)
+generated:
+  by: human:tswetnam
+  at: "2024-09-22T00:00:00Z"
+status: draft
+---
+
 # Conclusion
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

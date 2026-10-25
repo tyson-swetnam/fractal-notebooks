@@ -1,3 +1,29 @@
+---
+type: Guide
+title: "3D Tree and Root Visualization"
+description: >-
+  Interactive 3D model of self-affine branching networks built on the WBE radius
+  and length ratios, with crown, root and crown-shyness parameters, biological
+  dimension tables, Three.js implementation notes, export options and worked
+  parameter examples.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/applications/tree-roots-3d/
+tags: [app, react, branching, metabolic-scaling, allometry]
+sources:
+  - id: west1999nature
+    resource: https://doi.org/10.1038/23251
+    title: "West, Brown and Enquist (1999) A general model for the structure and allometry of plant vascular systems, Nature 400"
+  - id: bentley2013
+    resource: https://doi.org/10.1111/ele.12127
+    title: "Bentley et al. (2013) An empirical assessment of tree branching networks and implications for plant allometric scaling models, Ecology Letters 16"
+  - id: smith2014
+    resource: https://doi.org/10.1111/nph.12487
+    title: "Smith et al. (2014) Deviation from symmetrically self-similar branching in trees predicts altered hydraulics, mechanics, light interception and metabolic scaling, New Phytologist 201"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # 3D Tree and Root Visualization
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

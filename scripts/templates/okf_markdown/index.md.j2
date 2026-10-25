@@ -1,0 +1,71 @@
+{#-
+  OKF notebook page template for scripts/render_notebooks.py (nbconvert 7.x).
+
+  Extends nbconvert's stock markdown template (share/jupyter/nbconvert/templates/
+  markdown/index.md.j2, whose chain is markdown -> base/display_priority.j2 ->
+  base/null.j2). Differences:
+
+  * code inputs always get a language fence (defaults to python when the
+    notebook has no language_info, e.g. never-executed notebooks);
+  * stream and text/plain outputs are emitted as fenced ```text blocks instead
+    of 4-space-indented text, so an output that follows a list-ending markdown
+    cell is not swallowed as list continuation (and never renders as a code
+    block by accident);
+  * errors become a `!!! failure` admonition with the one-line evalue the
+    SitePreprocessor left behind; tracebacks are never emitted;
+  * images carry the alt text the SitePreprocessor stored in output.metadata.alt.
+-#}
+{%- extends 'markdown/index.md.j2' -%}
+
+{% block input %}
+{%- set lang = cell.metadata.get('magics_language') or nb.metadata.get('language_info', {}).get('name') or resources.get('default_language', 'python') %}
+```{{ lang }}
+{{ cell.source }}
+```
+{% endblock input %}
+
+{% block stream %}
+{%- set fence = '````' if '```' in output.text else '```' %}
+{{ fence }}text
+{{ output.text }}
+{{ fence }}
+{% endblock stream %}
+
+{% block error %}
+!!! failure "Cell raised {{ output.ename }}"
+
+    {{ output.evalue }}
+{% endblock error %}
+
+{% block traceback_line %}{% endblock traceback_line %}
+
+{% block data_text scoped %}
+{%- set fence = '````' if '```' in output.data['text/plain'] else '```' %}
+{{ fence }}text
+{{ output.data['text/plain'] }}
+{{ fence }}
+{% endblock data_text %}
+
+{% block data_svg %}
+{%- if "filenames" in output.metadata %}
+![{{ output.metadata.get('alt', 'svg') }}]({{ output.metadata.filenames['image/svg+xml'] | path2url }})
+{%- else %}
+![{{ output.metadata.get('alt', 'svg') }}](data:image/svg;base64,{{ output.data['image/svg+xml'] }})
+{%- endif %}
+{% endblock data_svg %}
+
+{% block data_png %}
+{%- if "filenames" in output.metadata %}
+![{{ output.metadata.get('alt', 'png') }}]({{ output.metadata.filenames['image/png'] | path2url }})
+{%- else %}
+![{{ output.metadata.get('alt', 'png') }}](data:image/png;base64,{{ output.data['image/png'] }})
+{%- endif %}
+{% endblock data_png %}
+
+{% block data_jpg %}
+{%- if "filenames" in output.metadata %}
+![{{ output.metadata.get('alt', 'jpeg') }}]({{ output.metadata.filenames['image/jpeg'] | path2url }})
+{%- else %}
+![{{ output.metadata.get('alt', 'jpeg') }}](data:image/jpeg;base64,{{ output.data['image/jpeg'] }})
+{%- endif %}
+{% endblock data_jpg %}

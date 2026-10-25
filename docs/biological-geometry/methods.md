@@ -1,3 +1,40 @@
+---
+type: Paper Section
+title: Biological Geometry — Methods
+description: >-
+  Methods for Part IV: WBE area-preserving and space-filling branching ratios, the
+  four affine maps of the Barnsley fern as genetic compression, a partition-function
+  formalism for leaf venation, diffusion-limited aggregation in lichens, stromatolites
+  and kelp, and spectral analysis methods.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/methods/
+tags: [paper, part-iv, biological, ifs, dla, metabolic-scaling]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: wiki-barnsley
+    resource: https://en.wikipedia.org/wiki/Barnsley_fern
+    title: Barnsley fern (Wikipedia)
+  - id: de-marchi-cassi1993
+    resource: https://doi.org/10.1142/S0218348X9300037X
+    title: Fractal geometry and ecology of lichens (De Marchi and Cassi 1993, Fractals)
+  - id: stevens2021
+    resource: https://scholarworks.umt.edu/etd/11766/
+    title: Modeling stromatolite formation with diffusion-limited aggregation (Stevens 2021, University of Montana thesis)
+  - id: kelp-map2020
+    resource: https://doi.org/10.3390/rs12040694
+    title: A high-resolution global map of giant kelp (Macrocystis pyrifera) forests and intertidal green algae with Sentinel-2 imagery (Mora-Soto et al. 2020, Remote Sensing)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Methods: Mathematical Frameworks for Biological Fractals
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

@@ -2,12 +2,23 @@
 type: Fractal Proof
 title: Barnsley Fern — Box-Counting Dimension (Numerical)
 description: The Barnsley fern is the attractor of a four-map affine IFS with overlapping, non-similarity maps; its dimension has no closed form and is estimated numerically at D ≈ 1.83.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/barnsley-fern-dimension/
 tags: [ifs, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "box-counting D ≈ 1.83 (numerical; no closed form)"
 concept: ../concepts/ifs/barnsley-fern.md
 historical_source: Michael Barnsley, "Fractals Everywhere" (Academic Press, 1988)
 verification_status: partially-verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

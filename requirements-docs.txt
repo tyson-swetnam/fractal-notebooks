@@ -1,0 +1,8 @@
+# Documentation toolchain only (Python >= 3.11). The RAG package has its own pyproject.toml.
+# Local bootstrap: uv venv --python 3.11 .venv && uv pip install --python .venv/bin/python -r requirements-docs.txt
+zensical==0.0.72          # pinned; bump deliberately (the 0.1.x stable line is announced for 2026-11-05)
+nbconvert>=7.16,<8        # MarkdownExporter + ExtractOutputPreprocessor for scripts/render_notebooks.py (no kernel needed)
+nbformat>=5.10
+pyyaml>=6
+pathspec>=0.12            # gitignore-style matching of exclude_docs in scripts/
+pytest>=8                 # scripts/tests (run in CI next to the build)

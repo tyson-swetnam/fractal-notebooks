@@ -1,5 +1,11 @@
 # PLAN.md - Website Restructuring Plan
 
+> **Status (2026-10-24): completed and superseded.** The restructure below shipped: the site is built by
+> Zensical from `zensical.toml` (navigation, redirects, theme), `docs/` is an OKF v0.2 bundle with
+> frontmatter on every page, and the notebooks are pre-rendered pages. `CLAUDE.md` is the current
+> description of the documentation architecture, conventions and build pipeline; this file is kept as
+> the historical plan (its file names and nav structure are no longer authoritative).
+
 This document outlines a proposed restructuring of the Fractal Notebooks documentation to create a logical progression through fractal mathematics, dimensionality, and their applications to natural phenomena.
 
 ## Current State Analysis

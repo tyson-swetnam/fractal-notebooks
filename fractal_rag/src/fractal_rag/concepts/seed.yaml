@@ -1,5 +1,6 @@
 # Seed concepts for the Concept side-collection.
-# Drawn from docs/glossary.md and docs/foundations/glossary.md.
+# Drawn from docs/foundations/glossary.md (Chapter 4: Glossary & Equations); the legacy
+# docs/glossary.md page is retired and must not be cited.
 # Each entry: name (canonical), aliases (matched case-insensitive, longest first),
 # definition (one-paragraph), domain (tags), hausdorff_dim_range (optional [lo, hi]).
 

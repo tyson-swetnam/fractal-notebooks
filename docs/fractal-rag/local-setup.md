@@ -1,3 +1,19 @@
+---
+type: Guide
+title: "Fractal RAG: Local Setup (Laptop, No GPU)"
+description: >-
+  Run the Fractal RAG stack on one machine without a GPU: Docker Compose
+  Weaviate with a CPU bge-small embedder, install the fractal-rag CLI, bootstrap
+  the schema, ingest the repository docs and notebooks, wire Claude Code, and
+  re-index after a reorganisation.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/fractal-rag/local-setup/
+tags: [knowledge, rag, weaviate, mcp, tutorial]
+generated:
+  by: human:tswetnam
+  at: "2026-05-24T00:00:00Z"
+status: stable
+---
+
 # Local Setup (Laptop, No GPU)
 
 This page walks you through running the entire Fractal RAG stack on a single
@@ -45,7 +61,7 @@ curl -s http://localhost:8080/v1/meta | python -m json.tool | grep -i text2vec
 cd fractal_rag
 pip install -e ".[dev,parsers]"
 fractal-rag --version              # fractal-rag, version 0.1.0
-fractal-rag concepts validate      # OK: 31 concepts validated
+fractal-rag concepts validate      # OK: 32 concepts validated
 ```
 
 ## 3. Point the CLI at the local Weaviate
@@ -86,9 +102,15 @@ JSONL sample:
 
 ```bash
 # Repo docs and notebooks — fast, no external corpus needed.
+export FRACTAL_RAG_REPO_ROOT=$PWD      # run from the repo root
 fractal-rag ingest --source docs
 fractal-rag ingest --source notebooks
 ```
+
+`--source docs` walks `<repo_root>/docs/**/*.md`. The default `repo_root` is
+the K3s host path `/opt/tswetnam/github/fractal-notebooks`; on any other
+machine point `FRACTAL_RAG_REPO_ROOT` at your checkout first, because a
+missing path is not an error — `rglob` on it silently yields `parsed_docs: 0`.
 
 If you do have the JSONL on disk and want a representative subset:
 
@@ -127,10 +149,28 @@ rubric and example transcripts.
 ## 7. Try the worked notebooks
 
 The three notebooks under
-[`docs/fractal-rag/notebooks/`](notebooks/01_quickstart.ipynb) connect
+[`docs/fractal-rag/notebooks/`](notebooks/01_quickstart.md) connect
 directly to the local Weaviate over the same `8080`/`50051` ports and give
 you a Python-level handle on the index — useful when you want to prototype a
 new query pattern before teaching it to the agent.
+
+## Re-index after a reorganisation
+
+Object UUIDs derive from file paths and `ingest` never prunes, so when pages
+or notebooks are moved, renamed or deleted (for example after the docs
+reorganisation that introduced the Foundations, Research and Knowledge tabs)
+the index keeps stale objects under the old paths. Drop and rebuild it:
+
+```bash
+export FRACTAL_RAG_REPO_ROOT=$PWD        # the checkout whose docs/ you want indexed
+fractal-rag schema bootstrap --drop      # destructive: drops and recreates both collections
+fractal-rag ingest --source docs
+fractal-rag ingest --source notebooks
+fractal-rag status
+```
+
+`fractal-rag status` should report the `Concept` count unchanged and a
+`FractalArtifact` count that reflects only the current pages.
 
 ## Teardown
 

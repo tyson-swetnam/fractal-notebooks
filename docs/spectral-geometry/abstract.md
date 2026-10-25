@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Spectral Geometry — Abstract
+description: >-
+  Abstract of the Part III chapter: fractal self-affinity and the Riemann zeta
+  distribution in sorting and 2D packing, complex dimensions of fractal strings,
+  Mellin transform analysis of recurrence wobble, the Apollonian gasket and Zagier's
+  theorem, and a proposed Fractal Riemann Hypothesis.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/abstract/
+tags: [paper, part-iii, spectral-geometry, complex-dimensions, riemann-zeta]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: flajolet1995
+    resource: https://doi.org/10.1016/0304-3975(95)00002-E
+    title: "Mellin transforms and asymptotics: harmonic sums (Flajolet, Gourdon and Dumas 1995, Theoretical Computer Science)"
+  - id: hempstead2015
+    resource: https://scholar.rose-hulman.edu/rhumj/vol16/iss2/13/
+    title: Apollonian circle packings and the Riemann Hypothesis (Hempstead 2015, Rose-Hulman Undergraduate Mathematics Journal)
+  - id: faloutsos-kamel1994
+    resource: https://doi.org/10.1145/182591.182593
+    title: "Beyond uniformity and independence: analysis of R-trees using the concept of fractal dimension (Faloutsos and Kamel 1994, PODS)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Abstract
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

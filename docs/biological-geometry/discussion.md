@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Biological Geometry — Discussion
+description: >-
+  Discussion for Part IV: complex dimensions and log-periodic growth oscillations, the
+  Riemann zeta function and biological rhythms, prime-numbered cicada cycles,
+  phyllotaxis and the golden mean as a spectral optimum, implications for biological
+  scaling theory, and open questions.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/discussion/
+tags: [paper, part-iv, biological, complex-dimensions, riemann-zeta, number-theory]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: johansen-sornette2000
+    resource: https://arxiv.org/abs/cond-mat/0003478
+    title: Critical ruptures (Johansen and Sornette 2000, arXiv)
+  - id: lapidus2012lecture
+    resource: https://math.hawaii.edu/numbertheory2012/Lapidus-Lecture.pdf
+    title: "Fractal strings, complex dimensions and the spectral operator: from the Riemann Hypothesis to phase transitions and universality (Lapidus 2012, lecture notes)"
+  - id: watkins-goldenmean
+    resource: https://empslocal.ex.ac.uk/people/staff/mrwatkin/zeta/goldenmean.htm
+    title: The golden mean in number theory (Watkins, University of Exeter)
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Discussion: The Mathematical Heart of Biological Geometry
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
