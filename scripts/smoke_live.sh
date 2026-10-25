@@ -23,7 +23,10 @@ check() {  # check description condition...
   if "$@"; then echo "ok   $desc"; pass=$((pass+1)); else echo "FAIL $desc"; fail=$((fail+1)); fi
 }
 is200() { [ "$(status "$1")" = "200" ]; }
-body_has() { "${CURL[@]}" "$1" 2>/dev/null | grep -q -- "$2"; }
+body_has() {  # read the whole body first: `grep -q` exiting early makes curl fail with SIGPIPE under pipefail
+  local body; body="$("${CURL[@]}" "$1" 2>/dev/null)" || return 1
+  grep -q -- "$2" <<<"$body"
+}
 body_count_ge() { [ "$("${CURL[@]}" "$1" 2>/dev/null | grep -c -- "$2")" -ge "$3" ]; }
 ctype_is() { case "$(header "$1" content-type)" in *"$2"*) return 0;; *) return 1;; esac; }
 is200_ctype() { is200 "$1" && ctype_is "$1" "$2"; }
@@ -70,7 +73,8 @@ check "page head declares text/markdown alternate" body_has "$BASE/foundations/h
 # React app and a redirect stub
 check "GET /react/ -> 200" is200 "$BASE/react/"
 check "/introduction/ stub -> metabolic-scaling/introduction" body_has "$BASE/introduction/" 'metabolic-scaling/introduction/'
-check "/notebooks/3dep/modified/sites/harvard_forest/chm_harvard_forest/ stub -> research" body_has "$BASE/notebooks/3dep/modified/sites/harvard_forest/chm_harvard_forest/" 'notebooks/research/'
+# Stubs use relative destinations (../../../../../research/#3dep-canopy-height-models)
+check "/notebooks/3dep/modified/sites/harvard_forest/chm_harvard_forest/ stub -> research" body_has "$BASE/notebooks/3dep/modified/sites/harvard_forest/chm_harvard_forest/" 'research/#3dep-canopy-height-models'
 
 echo "smoke_live: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]
