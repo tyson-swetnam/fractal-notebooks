@@ -99,7 +99,7 @@ The agent will typically:
 > [^1]: *Glossary of Self-Affine Fractal Properties* — `markdown`,
 >       `file:///…/docs/glossary.md`, chunk 1
 > [^2]: *Fractal dimensions of the Cantor set* (2014) — `json_corpus`,
->       `doi:10.xxxx/yyy`, chunk -1
+>       `https://doi.org/10.xxxx/yyy`, chunk -1
 
 ### Example 2 — Find a notebook by topic
 

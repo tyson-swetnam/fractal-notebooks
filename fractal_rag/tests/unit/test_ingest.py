@@ -121,11 +121,11 @@ def test_one_bad_document_is_recorded_and_skipped(fixtures: Settings, monkeypatc
     assert stats.failed_docs == 1
     assert stats.inserted_chunks >= 2  # the good document was fully ingested
     assert stats.failed_chunks == 0
-    assert all(uri != "doi:10.0/test.1" for uri, _ in writer.artifacts)
+    assert all(uri != "ark://x/1" for uri, _ in writer.artifacts)
     failures = [json.loads(line) for line in fixtures.failed_objects_path.read_text().splitlines()]
     assert len(failures) == 1
     assert failures[0]["kind"] == "document"
-    assert failures[0]["source_uri"] == "doi:10.0/test.1"
+    assert failures[0]["source_uri"] == "ark://x/1"
     assert "simulated chunker bug" in failures[0]["error"]
 
 

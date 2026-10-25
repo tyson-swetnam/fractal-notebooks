@@ -46,7 +46,8 @@ def _artifact_properties() -> list[Property]:
     return [
         Property(name="source_type", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="source_uri", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
-        # Public page URL (OKF `resource`) for documentation pages; null for other sources.
+        # Public URL: the OKF `resource` of documentation pages and rendered notebooks, the
+        # https://doi.org/ link of Constellate records that have a DOI; null otherwise.
         Property(name="resource", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="parent_id", data_type=DataType.TEXT, tokenization=Tokenization.FIELD),
         Property(name="chunk_index", data_type=DataType.INT),
