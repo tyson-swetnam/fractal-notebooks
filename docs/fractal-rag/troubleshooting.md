@@ -128,9 +128,13 @@ export FRACTAL_RAG_REPO_ROOT=/path/to/your/fractal-notebooks   # or $PWD from th
 fractal-rag ingest --source docs
 ```
 
-The `notebooks` source reads `.ipynb` files under `FRACTAL_RAG_CORPUS_ROOT`
-(the iRODS mirror); if that mirror is absent locally, point `CORPUS_ROOT` at
-the checkout as well.
+The `notebooks` source scans `<repo_root>/docs/**/*.ipynb` as well (skipping the
+generated per-site 3DEP notebooks), so the same `FRACTAL_RAG_REPO_ROOT` covers it;
+`FRACTAL_RAG_CORPUS_ROOT` (the iRODS mirror) only adds the mirrored copies and may
+be absent. Do not point `CORPUS_ROOT` at the checkout: that tree is scanned without
+the site's exclusion rules. To make the setting stick, put it in a gitignored `.env`
+at the repo root together with any port overrides; `Settings` reads `.env` from the
+directory you run `fractal-rag` in, so run the CLI from the repo root.
 
 ### Re-index after a reorganisation
 

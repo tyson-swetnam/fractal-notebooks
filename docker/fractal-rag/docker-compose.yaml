@@ -4,10 +4,12 @@
 #   weaviate           http://localhost:8080  (REST), localhost:50051 (gRPC)
 #   t2v-transformers   internal-only; Weaviate calls it via TRANSFORMERS_INFERENCE_API
 #
-# Quickstart:
+# Quickstart, from the repo root (the three variables can also live in a gitignored
+# .env there; see docs/fractal-rag/local-setup.md):
 #   docker compose -f docker/fractal-rag/docker-compose.yaml up -d
-#   FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080 fractal-rag schema bootstrap
-#   FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080 fractal-rag ingest --source docs
+#   export FRACTAL_RAG_WEAVIATE_HTTP_PORT=8080 FRACTAL_RAG_WEAVIATE_GRPC_PORT=50051 FRACTAL_RAG_REPO_ROOT=$PWD
+#   fractal-rag schema bootstrap
+#   fractal-rag ingest --source docs
 
 version: "3.8"
 

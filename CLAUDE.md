@@ -295,7 +295,8 @@ indexes those, scanning `docs/**/*.ipynb` as well as the iRODS mirror).
 Configuration is via `FRACTAL_RAG_*` env vars (`fractal_rag/src/fractal_rag/config.py`).
 Defaults point Weaviate at the K3s NodePorts (`localhost:30080` HTTP / `30051` gRPC) and
 `repo_root` at `/opt/tswetnam/github/fractal-notebooks`; set `FRACTAL_RAG_REPO_ROOT=$PWD` on any
-other host, otherwise `ingest --source docs` silently indexes nothing.
+other host (or put it in a gitignored `.env` at the repo root, read when the CLI runs from there),
+otherwise `ingest --source docs` silently indexes nothing.
 
 Bring it up — either on K3s:
 ```bash
@@ -438,8 +439,6 @@ cleanly), then mirror it as a Specialist profile.
 - **Cleanup:** remove `mkdocs.yml`, `requirements.txt`, the `test-mkdocs` canary and
   `scripts/compare_builds.py`; drop the TEMPORARY legacy excludes in `zensical.toml`; refresh
   `okf/README.md` (v0.2, both bundles, truthful validation statement).
-- **RAG re-index** with `FRACTAL_RAG_REPO_ROOT` (recipe above); document the variable in
-  `docs/fractal-rag/troubleshooting.md` (next to `CORPUS_ROOT`) and `docs/fractal-rag/local-setup.md`.
 - **User-site PR** to `tyson-swetnam/tyson-swetnam.github.io`: root `robots.txt` sitemap line and an
   "AI agents and harnesses: Fractal Notebooks" block (llms.txt, llms-full.txt, twin rule incl.
   `index.md` for directory pages, OKF bundle roots, agent guide, React is HashRouter/JS-only),

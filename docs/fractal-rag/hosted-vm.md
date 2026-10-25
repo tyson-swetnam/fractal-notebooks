@@ -111,7 +111,13 @@ fractal-rag concepts validate            # OK: 32 concepts validated
 ```
 
 The default `config.py` already targets the NodePort `30080`/`30051` exposed
-by `weaviate-service.yaml`, so no environment overrides are needed.
+by `weaviate-service.yaml`, and `repo_root` defaults to
+`/opt/tswetnam/github/fractal-notebooks`, so a checkout at that path needs no
+environment overrides. If the repository lives anywhere else, set
+`FRACTAL_RAG_REPO_ROOT` before `ingest --source docs` or `--source notebooks`,
+for example in a gitignored `.env` at the repo root, which is read when you run
+`fractal-rag` from there. Those two sources index nothing, without an error,
+when the path does not exist.
 
 ## 4. Bootstrap the schema
 

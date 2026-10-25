@@ -20,6 +20,10 @@ Newest first. Bullets are tagged **Creation**, **Update** or **Deprecation**, fo
 reserved-file convention. The two knowledge bundles keep their own logs:
 [concepts](okf/concepts/log.md) and [proofs](okf/proofs/log.md).
 
+## 2026-10-25
+
+- **Update**: Fractal RAG guides: `FRACTAL_RAG_REPO_ROOT` is documented in [Local Setup](fractal-rag/local-setup.md), [Hosted VM](fractal-rag/hosted-vm.md) and [Troubleshooting](fractal-rag/troubleshooting.md). The `docs` and `notebooks` sources index `<repo_root>/docs/` and silently index nothing when the default checkout path does not exist; the `.env` recipe gained the variable and the gRPC port, and the Local Setup counts reflect the 2026-10-25 rebuild.
+
 ## 2026-10-24
 
 - **Creation**: [For AI Agents](agents.md) — guide to the machine-readable endpoints (llms.txt, Markdown twins, OKF bundle roots) and to reading the frontmatter trust signals.
