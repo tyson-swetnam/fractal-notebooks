@@ -33,7 +33,7 @@ Two collections back every answer:
   page, and Constellate article. Each chunk has three named vectors
   (`content_vec`, `title_vec`, `summary_vec`) plus cross-refs to the
   concepts it mentions.
-- **`Concept`** — the curated ontology (~31 entries: Mandelbrot Set,
+- **`Concept`** — the curated ontology (32 entries: Mandelbrot Set,
   Hausdorff Dimension, Hurst Exponent, DLA, …) with definitions and aliases.
 
 ## Invoking the agent
@@ -87,7 +87,10 @@ for "find me a paper" questions.
 The agent will typically:
 
 1. Call `get_concept("Cantor Set")` → returns `hausdorff_dim_range = [0.6309, 0.6309]` with the definition.
-2. Call `artifacts_by_concept("Cantor Set", limit=5)` → returns notebook + article hits.
+2. Call `artifacts_by_concept("Cantor Set", limit=5)` → returns five artifacts that
+   reference the concept. The listing is unranked and in ingest order, so a small
+   `limit` returns documentation chunks first (five Chapter 3 chunks today); raise
+   `limit` or use `search_artifacts` to reach the notebook and article hits.
 3. Optionally call `get_artifact(uuid)` on the strongest hit to quote a passage.
 4. Synthesize:
 
@@ -96,8 +99,8 @@ The agent will typically:
 > producing $N = 2$ self-similar copies at scale $r = 1/3$, so
 > $D_H = -\log N / \log r = \log 2 / \log 3$. [^1][^2]
 >
-> [^1]: *Glossary of Self-Affine Fractal Properties* — `markdown`,
->       `file:///…/docs/glossary.md`, chunk 1
+> [^1]: *Chapter 4: Glossary and Equations* — `markdown`,
+>       `https://tyson-swetnam.github.io/fractal-notebooks/foundations/glossary/`, chunk 1
 > [^2]: *Fractal dimensions of the Cantor set* (2014) — `json_corpus`,
 >       `https://doi.org/10.xxxx/yyy`, chunk -1
 
@@ -143,7 +146,7 @@ section, or add explicit examples.
   pointers to the actual paper (use the DOI).
 - **Embedding model is English-only.** Non-English passages embed but
   retrieval quality is much weaker.
-- **Concept ontology is hand-curated** (31 entries at v1). If your question
+- **Concept ontology is hand-curated** (32 entries at v1). If your question
   hinges on a concept that isn't in `seed.yaml`, `artifacts_by_concept`
   won't find it; fall back to `search_artifacts`.
 - **PDFs are optional** and currently empty in the default corpus.

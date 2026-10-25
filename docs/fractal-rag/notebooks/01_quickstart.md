@@ -91,7 +91,7 @@ with client_session() as client:
 
 ## Browse the concept ontology
 
-The `Concept` collection holds ~31 hand-curated entries. Listing them is the fastest way to orient yourself.
+The `Concept` collection holds 32 hand-curated entries. Listing them is the fastest way to orient yourself.
 
 
 ```python
