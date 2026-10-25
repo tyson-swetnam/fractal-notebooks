@@ -15,6 +15,7 @@ re-tried without re-parsing the corpus. Resume state lives in
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import uuid
@@ -23,6 +24,13 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
+
+import pathspec
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib  # type: ignore[no-redef]
 
 from .chunk import Chunk, chunk_document
 from .concepts.loader import ConceptRecord, load_seed
@@ -36,21 +44,117 @@ log = logging.getLogger("fractal_rag.ingest")
 # ---------------------------------------------------------------------------
 # Source discovery
 
+# Generated per-site 3DEP notebook copies are excluded from the site and from the index.
+_DOCS_NOTEBOOK_EXCLUDES = ("notebooks/3dep/modified/sites/",)
+# Canonical OKF bundles (committed at the repo root; docs/okf/<bundle>/ holds build-time copies
+# of exactly these two directories -- docs/okf/index.md itself is a hand-written page).
+_OKF_BUNDLE_DIRS = ("okf/concepts", "okf/proofs")
+_DOCS_OKF_COPY_PREFIXES = tuple(f"{bundle}/" for bundle in _OKF_BUNDLE_DIRS)
+# Change logs (docs/log.md, okf/*/log.md) are history, not knowledge: never indexed.
+_LOG_NAME = "log.md"
 
-def discover_notebooks(corpus_root: Path) -> list[Path]:
-    return sorted(
-        p
-        for p in corpus_root.rglob("*.ipynb")
-        if ".ipynb_checkpoints" not in p.parts
-    )
+
+def _hidden(parts: tuple[str, ...]) -> bool:
+    return any(part.startswith(".") for part in parts)
+
+
+def discover_notebooks(corpus_root: Path, repo_root: Path | None = None) -> list[Path]:
+    """Notebooks under ``repo_root/docs`` plus ``corpus_root``, de-duplicated by content.
+
+    ``.ipynb_checkpoints`` (and any other dot-prefixed path part under ``docs``) are
+    skipped, as are the generated per-site 3DEP notebooks. Scanning the repo as well
+    keeps notebook text indexed even when the iRODS corpus mirror lacks it. Duplicates
+    are detected by the SHA-256 of the file bytes, so a mirrored copy (or a symlink) of a
+    repo notebook in the corpus is indexed once; the repo is scanned first so its copy wins.
+    """
+    seen: set[str] = set()
+    found: list[Path] = []
+
+    def add(path: Path) -> None:
+        if not path.is_file():  # e.g. a dangling symlink
+            return
+        key = hashlib.sha256(path.read_bytes()).hexdigest()
+        if key not in seen:
+            seen.add(key)
+            found.append(path)
+
+    if repo_root is not None:
+        docs = repo_root / "docs"
+        for p in sorted(docs.rglob("*.ipynb")):
+            rel = p.relative_to(docs)
+            if _hidden(rel.parts) or rel.as_posix().startswith(_DOCS_NOTEBOOK_EXCLUDES):
+                continue
+            add(p)
+    for p in sorted(corpus_root.rglob("*.ipynb")):
+        if ".ipynb_checkpoints" not in p.parts:
+            add(p)
+    return sorted(found)
+
+
+def site_exclude_spec(repo_root: Path) -> pathspec.PathSpec | None:
+    """gitwildmatch spec from ``[project].exclude_docs`` / ``draft_docs`` in ``zensical.toml``.
+
+    Patterns are relative to ``docs/`` (as Zensical interprets them). Returns ``None``
+    when the file is absent or lists no patterns.
+    """
+    config = repo_root / "zensical.toml"
+    if not config.is_file():
+        return None
+    try:
+        with config.open("rb") as fh:
+            data = tomllib.load(fh)
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        log.warning("ignoring unreadable %s: %s", config, exc)
+        return None
+    project = data.get("project") if isinstance(data, dict) else None
+    lines: list[str] = []
+    for key in ("exclude_docs", "draft_docs"):
+        value = (project or {}).get(key)
+        if isinstance(value, str):
+            lines.extend(value.splitlines())
+        elif isinstance(value, list):
+            lines.extend(str(v) for v in value)
+    patterns = [ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")]
+    return pathspec.GitIgnoreSpec.from_lines(patterns) if patterns else None
 
 
 def discover_markdown(repo_root: Path) -> list[Path]:
-    return sorted(
-        p
-        for p in (repo_root / "docs").rglob("*.md")
-        if p.stat().st_size > 0
-    )
+    """Markdown pages of the documentation site plus the canonical OKF bundles.
+
+    Under ``docs/`` the following are skipped: dot-prefixed path parts, anything inside
+    a ``*_files`` directory (extracted notebook outputs), ``docs/okf/concepts/**`` and
+    ``docs/okf/proofs/**`` (build-time copies of the bundles; the hand-written
+    ``docs/okf/index.md`` is a real page and is indexed), files matched by
+    ``exclude_docs`` / ``draft_docs`` in ``<repo_root>/zensical.toml`` when it exists,
+    rendered notebook pages (a ``.md`` whose sibling ``.ipynb`` with the same stem exists),
+    any ``log.md`` (change logs, at any depth) and empty files. The canonical bundles
+    ``okf/concepts`` and ``okf/proofs`` are scanned with the same hygiene rules.
+    A missing ``repo_root`` is not an error: ``rglob`` on it yields nothing.
+    """
+    docs = repo_root / "docs"
+    spec = site_exclude_spec(repo_root)
+    found: list[Path] = []
+    for p in docs.rglob("*.md"):
+        rel = p.relative_to(docs)
+        if _hidden(rel.parts) or any(part.endswith("_files") for part in rel.parts[:-1]):
+            continue
+        if rel.as_posix().startswith(_DOCS_OKF_COPY_PREFIXES) or p.name == _LOG_NAME:
+            continue
+        if spec is not None and spec.match_file(rel.as_posix()):
+            continue
+        if p.with_suffix(".ipynb").exists():
+            continue
+        if p.stat().st_size == 0:
+            continue
+        found.append(p)
+    for bundle in _OKF_BUNDLE_DIRS:
+        root = repo_root / bundle
+        for p in root.rglob("*.md"):
+            rel = p.relative_to(root)
+            if _hidden(rel.parts) or p.name == _LOG_NAME or p.stat().st_size == 0:
+                continue
+            found.append(p)
+    return sorted(found)
 
 
 def discover_pdfs(corpus_root: Path) -> list[Path]:
@@ -81,7 +185,7 @@ def parse_source(
     elif source == "notebooks":
         from .parsers.notebook import parse_notebook
 
-        for path in discover_notebooks(settings.corpus_root):
+        for path in discover_notebooks(settings.corpus_root, settings.repo_root):
             yield from parse_notebook(path)
 
     elif source == "docs":
@@ -117,6 +221,7 @@ class IngestStats:
     emitted_chunks: int = 0
     inserted_chunks: int = 0
     failed_chunks: int = 0
+    failed_docs: int = 0  # documents skipped whole because chunking/enrichment raised
     concepts_upserted: int = 0
     started_at: str = ""
     finished_at: str = ""
@@ -169,7 +274,7 @@ def run_ingest(
             cuid = writer.upsert_concept(rec)
             concept_uuid_by_name[rec.name] = cuid
             concept_stats.concepts_upserted += 1
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             log.error("concept upsert failed for %s: %s", rec.name, exc)
             _record_failure(
                 s.failed_objects_path,
@@ -197,42 +302,58 @@ def run_ingest(
 
         for doc in doc_iter:
             stats.parsed_docs += 1
-            chunks = chunk_document(doc, settings=s)
-            for c in chunks:
-                enrich(c, index)
-            doc_concepts = aggregate_doc_concepts(chunks)
-            # Attach the doc-level concept union to the anchor (chunk_index=-1)
-            if chunks and chunks[0].chunk_index == -1:
-                chunks[0].metadata["concepts"] = doc_concepts
+            # One bad document (chunker/enricher bug, malformed content) is recorded and
+            # skipped; it must not abort the rest of the source.
+            try:
+                chunks = chunk_document(doc, settings=s)
+                for c in chunks:
+                    enrich(c, index)
+                doc_concepts = aggregate_doc_concepts(chunks)
+                # Attach the doc-level concept union to the anchor (chunk_index=-1)
+                if chunks and chunks[0].chunk_index == -1:
+                    chunks[0].metadata["concepts"] = doc_concepts
 
-            for c in chunks:
-                stats.emitted_chunks += 1
-                names = c.metadata.get("concepts") or []
-                concept_uuids = [
-                    concept_uuid_by_name[n] for n in names if n in concept_uuid_by_name
-                ]
-                try:
-                    writer.insert_artifact(c, concept_uuids)
-                    stats.inserted_chunks += 1
-                except Exception as exc:  # noqa: BLE001
-                    log.error(
-                        "artifact insert failed for %s chunk=%d: %s",
-                        c.parent_uri,
-                        c.chunk_index,
-                        exc,
-                    )
-                    stats.failed_chunks += 1
-                    _record_failure(
-                        s.failed_objects_path,
-                        {
-                            "kind": "artifact",
-                            "parent_uri": c.parent_uri,
-                            "chunk_index": c.chunk_index,
-                            "source_type": c.source_type,
-                            "error": str(exc),
-                            "at": _now(),
-                        },
-                    )
+                for c in chunks:
+                    stats.emitted_chunks += 1
+                    names = c.metadata.get("concepts") or []
+                    concept_uuids = [
+                        concept_uuid_by_name[n] for n in names if n in concept_uuid_by_name
+                    ]
+                    try:
+                        writer.insert_artifact(c, concept_uuids)
+                        stats.inserted_chunks += 1
+                    except Exception as exc:
+                        log.error(
+                            "artifact insert failed for %s chunk=%d: %s",
+                            c.parent_uri,
+                            c.chunk_index,
+                            exc,
+                        )
+                        stats.failed_chunks += 1
+                        _record_failure(
+                            s.failed_objects_path,
+                            {
+                                "kind": "artifact",
+                                "parent_uri": c.parent_uri,
+                                "chunk_index": c.chunk_index,
+                                "source_type": c.source_type,
+                                "error": str(exc),
+                                "at": _now(),
+                            },
+                        )
+            except Exception as exc:
+                log.error("document failed for %s: %s", doc.source_uri, exc)
+                stats.failed_docs += 1
+                _record_failure(
+                    s.failed_objects_path,
+                    {
+                        "kind": "document",
+                        "source_uri": doc.source_uri,
+                        "source_type": doc.source_type,
+                        "error": str(exc),
+                        "at": _now(),
+                    },
+                )
 
         stats.finished_at = _now()
         report.add(stats)
@@ -291,6 +412,7 @@ class WeaviateWriter:
         properties = {
             "source_type": chunk.source_type,
             "source_uri": chunk.parent_uri,
+            "resource": chunk.metadata.get("resource"),
             "parent_id": chunk.parent_uri,
             "chunk_index": chunk.chunk_index,
             "title": chunk.title,

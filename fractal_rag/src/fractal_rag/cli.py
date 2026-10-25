@@ -31,7 +31,11 @@ def schema() -> None:
 @schema.command("bootstrap")
 @click.option("--drop", is_flag=True, help="Delete existing collections first (destructive).")
 def schema_bootstrap(drop: bool) -> None:
-    """Create FractalArtifact and Concept collections if missing."""
+    """Create FractalArtifact and Concept collections if missing.
+
+    Existing collections are kept and gain any property the current schema declares
+    that they lack (e.g. `resource`); re-run `fractal-rag ingest` afterwards to fill it.
+    """
     from .client import client_session
     from .schema import bootstrap
 
@@ -40,6 +44,7 @@ def schema_bootstrap(drop: bool) -> None:
     click.echo(json.dumps({
         "created": result.created,
         "already_present": result.already_present,
+        "properties_added": result.properties_added,
     }, indent=2))
 
 
@@ -66,29 +71,69 @@ def concepts_validate() -> None:
 
 @main.group()
 def okf() -> None:
-    """Open Knowledge Format (OKF v0.1) bundle commands."""
+    """Open Knowledge Format (OKF v0.2) bundle commands."""
 
 
 @okf.command("export")
 @click.option(
+    "--seed",
+    type=click.Path(path_type=Path, dir_okay=False),
+    default=None,
+    help="Concept seed YAML (default: the packaged concepts/seed.yaml).",
+)
+@click.option(
     "--out",
     type=click.Path(path_type=Path),
     default=Path("okf/concepts"),
-    help="Output directory for the generated bundle.",
+    help="Bundle directory (default: okf/concepts, relative to the current directory).",
 )
-@click.option("--date", default=None, help="ISO date to stamp (default: today).")
-def okf_export(out: Path, date: str | None) -> None:
-    """Generate an OKF v0.1 concept bundle from concepts/seed.yaml.
+@click.option(
+    "--date", default=None, help="ISO date stamped on new or changed concepts (default: today)."
+)
+@click.option(
+    "--site-url",
+    default=None,
+    help="Published site root used for `resource` and source URLs.",
+)
+@click.option(
+    "--check",
+    is_flag=True,
+    help="Write nothing; exit 1 if the bundle on disk differs from the seed.",
+)
+@click.option(
+    "--prune-unknown",
+    is_flag=True,
+    help=(
+        "Also delete Markdown files under --out that the exporter did not generate "
+        "(by default their presence makes the run refuse with exit code 2; log.md files "
+        "are never deleted)."
+    ),
+)
+def okf_export(
+    seed: Path | None,
+    out: Path,
+    date: str | None,
+    site_url: str | None,
+    check: bool,
+    prune_unknown: bool,
+) -> None:
+    """Generate the OKF v0.2 concept bundle from concepts/seed.yaml.
 
-    The seed YAML is the authoring source of truth; the bundle is a generated
-    artifact. Re-run after editing the seed to keep them in sync.
+    The seed YAML is the authoring source of truth; the bundle under okf/concepts
+    is a generated, committed artifact. Re-run after editing the seed and commit
+    the result (CI runs --check and fails on drift). Only files the exporter
+    generated are ever deleted; any other Markdown file under --out makes the run
+    refuse unless --prune-unknown is given. Behaves exactly like
+    `python -m fractal_rag.okf_export`.
     """
-    from .okf_export import DEFAULT_SEED, export
+    from .okf_export import DEFAULT_SEED, SITE_URL, run
 
-    stats = export(DEFAULT_SEED, out, date)
-    click.echo(
-        f"Wrote {stats['concepts']} concepts across {stats['groups']} groups to {out}"
+    code, message = run(
+        seed or DEFAULT_SEED, out, date, site_url or SITE_URL, check, prune_unknown=prune_unknown
     )
+    click.echo(message)
+    if code:
+        sys.exit(code)
 
 
 @main.command()

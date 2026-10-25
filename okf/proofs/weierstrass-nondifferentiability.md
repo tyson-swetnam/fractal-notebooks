@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: Weierstrass Function - Continuous Everywhere, Differentiable Nowhere
-description: The Weierstrass function converges uniformly (so is continuous) yet is nowhere differentiable when $ab>1+\tfrac{3\pi}{2}$, later relaxed by Hardy to $ab\ge1$.
-tags: [analysis, non-differentiability, weierstrass, continuity]
-timestamp: '2026-07-13T00:00:00Z'
+description: The Weierstrass function converges uniformly (so is continuous) yet is nowhere differentiable when ab exceeds 1 + 3 pi / 2, a condition later relaxed by Hardy to ab at least 1.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/weierstrass-nondifferentiability/
+tags: [foundations, classics, geometry]
 result: "Continuous everywhere; nowhere differentiable for ab > 1 + 3pi/2 (Hardy: ab >= 1)"
 concept: ../concepts/geometry/fractal.md
 historical_source: Karl Weierstrass, presented to the Berlin Academy 1872; G. H. Hardy, "Weierstrass's non-differentiable function" (1916).
 verification_status: partially-verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

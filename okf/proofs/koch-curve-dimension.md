@@ -2,12 +2,23 @@
 type: Fractal Proof
 title: Koch Curve — Dimension, Perimeter, and Area
 description: The Koch curve has Hausdorff dimension log 4 / log 3, infinite length, and the Koch snowflake encloses finite area equal to 8/5 of the seed triangle.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/koch-curve-dimension/
 tags: [classics, dimension-theory]
-timestamp: '2026-07-13T00:00:00Z'
 result: "D = log 4 / log 3 ≈ 1.2619; perimeter → ∞; snowflake area = (8/5) A0"
 concept: ../concepts/classics/koch-curve.md
 historical_source: Helge von Koch, "Sur une courbe continue sans tangente, obtenue par une construction géométrique élémentaire", Arkiv för Matematik 1 (1904)
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement

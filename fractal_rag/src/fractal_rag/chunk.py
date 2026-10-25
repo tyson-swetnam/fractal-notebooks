@@ -20,7 +20,6 @@ from typing import Any
 from .config import Settings, get_settings
 from .parsers import RawDocument
 
-
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z(\[\"'$])")
 _WS = re.compile(r"\s+")
 

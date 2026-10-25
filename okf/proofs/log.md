@@ -1,5 +1,11 @@
 # Proof Bundle Change Log
 
+## 2026-10-24
+
+* **Update**: Upgraded the bundle to OKF v0.2. Every proof now carries the trust fields `resource` (its public page URL under `/okf/proofs/`), `sources` (Chapter 1: History of Fractal Mathematics, the page whose quantitative claims the proofs back), a `generated` event (`human:tswetnam`, 2026-07-13) and `status: stable`; the v0.1 `timestamp` key was dropped and `result`, `concept`, `historical_source` and `verification_status` were kept unchanged. `index.md` now declares `okf_version: "0.2"` and links the concept bundle root as `../concepts/index.md` (was the directory `../concepts/`). Proof bodies are unchanged.
+* **Update**: The `verified` event (`human:tswetnam`, 2026-07-13) is carried only by proofs whose steps were actually checked (`verification_status: verified` or `partially-verified`, 11 proofs); `mandelbrot-boundary-dimension.md` is `unverified` by design (it rests entirely on Shishikura's theorem) and no longer claims a review stamp.
+* **Update**: Retagged six proofs with the site's controlled tag vocabulary (`scripts/validate_okf.py`): `complex-dimensions-cantor.md` (dimension-theory, complex-dimensions, spectral-geometry, classics, complex-analysis), `julia-connectedness.md` (complex-dynamics, topology, complex-analysis), `mandelbrot-escape.md` (complex-dynamics, complex-analysis, methods), `self-affine-spectral.md` (stochastic, self-affinity, hurst, signal-processing, scaling), `wbe-quarter-power.md` (biological, allometry, metabolic-scaling, scaling, branching) and `weierstrass-nondifferentiability.md` (foundations, classics, geometry). Bodies are unchanged.
+
 ## 2026-07-13
 
 * **Update**: Added 3 proof documents while addressing the gaps memo — `menger-sponge-dimension.md` ($\log 20/\log 3 \approx 2.7268$, verified), `barnsley-fern-dimension.md` (box-counting $\approx 1.83$ from 2M chaos-game points, partially-verified — no closed form as the OSC fails), and `mandelbrot-boundary-dimension.md` (Shishikura's $\dim_H\partial\mathcal{M}=2$, deliberately `unverified` as a template for cited-but-uncomputable results). Bundle now holds 12 proofs.

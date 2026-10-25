@@ -35,7 +35,17 @@ class Settings(BaseSettings):
     # Filesystem paths
     corpus_root: Path = Path("/opt/tswetnam/fractal-notebooks")
     irods_root: str = "/iplant/home/tswetnam/fractal-notebooks/"
-    repo_root: Path = Path("/opt/tswetnam/github/fractal-notebooks")
+    repo_root: Path = Field(
+        default=Path("/opt/tswetnam/github/fractal-notebooks"),
+        description=(
+            "Checkout of the fractal-notebooks repository. The `docs` source indexes "
+            "<repo_root>/docs/**/*.md plus the canonical OKF bundles <repo_root>/okf/concepts "
+            "and okf/proofs, and the `notebooks` source also scans <repo_root>/docs/**/*.ipynb. "
+            "Override with FRACTAL_RAG_REPO_ROOT (for a local checkout: "
+            "`export FRACTAL_RAG_REPO_ROOT=$PWD`). A missing path is not an error: Path.rglob "
+            "on it yields nothing, so the docs source then reports 0 documents."
+        ),
+    )
     cache_dir: Path = Path.home() / ".cache" / "fractal-rag"
 
     # Chunking

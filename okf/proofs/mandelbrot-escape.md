@@ -1,13 +1,24 @@
 ---
 type: Fractal Proof
 title: Mandelbrot Escape-Radius Criterion
-description: Any orbit of $f_c(z)=z^2+c$ that exceeds modulus 2 (with $|z|\ge|c|$) diverges to infinity, making radius 2 an exact bailout.
-tags: [complex-dynamics, escape-criterion, mandelbrot]
-timestamp: '2026-07-13T00:00:00Z'
+description: Any orbit of f_c(z) = z^2 + c that exceeds modulus 2 (with |z| at least |c|) diverges to infinity, making radius 2 an exact bailout.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/okf/proofs/mandelbrot-escape/
+tags: [complex-dynamics, complex-analysis, methods]
 result: "|z|>2 and |z|>=|c| implies |f_c^n(0)| -> infinity; bailout radius = 2"
 concept: ../concepts/complex-dynamics/mandelbrot-set.md
 historical_source: Benoit B. Mandelbrot, "Fractal aspects of the iteration of z -> lambda z(1-z)" (1980); set popularized 1978-1980.
 verification_status: verified
+sources:
+  - id: history-chapter
+    resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/history/
+    title: "Chapter 1: History of Fractal Mathematics"
+generated:
+  by: human:tswetnam
+  at: "2026-07-13T00:00:00Z"
+verified:
+  - by: human:tswetnam
+    at: "2026-07-13T00:00:00Z"
+status: stable
 ---
 
 # Statement
