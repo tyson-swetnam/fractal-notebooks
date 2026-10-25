@@ -1,3 +1,40 @@
+---
+type: Paper Section
+title: Spectral Geometry — Results
+description: >-
+  Results for Part III: limits of the Master Theorem, Flajolet's Mellin transform
+  method and the periodic wobble in divide-and-conquer runtimes, the Apollonian gasket
+  with Hausdorff dimension 1.30568, Zagier's theorem tying packing density to the
+  Riemann Hypothesis, and spectral zeta factorisation.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/results/
+tags: [paper, part-iii, spectral-geometry, riemann-zeta, complex-dimensions, geometry]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: drmota-szpankowski2011
+    resource: https://www.cs.purdue.edu/homes/spa/papers/soda11.pdf
+    title: A master theorem for discrete divide and conquer recurrences (Drmota and Szpankowski 2011, SODA)
+  - id: flajolet1995
+    resource: https://doi.org/10.1016/0304-3975(95)00002-E
+    title: "Mellin transforms and asymptotics: harmonic sums (Flajolet, Gourdon and Dumas 1995, Theoretical Computer Science)"
+  - id: wiki-apollonian
+    resource: https://en.wikipedia.org/wiki/Apollonian_gasket
+    title: Apollonian gasket (Wikipedia)
+  - id: hempstead2015
+    resource: https://scholar.rose-hulman.edu/rhumj/vol16/iss2/13/
+    title: Apollonian circle packings and the Riemann Hypothesis (Hempstead 2015, Rose-Hulman Undergraduate Mathematics Journal)
+  - id: teplyaev2007
+    resource: https://doi.org/10.1090/S0002-9947-07-04150-5
+    title: Spectral zeta functions of fractals and the complex dynamics of polynomials (Teplyaev 2007, Transactions of the AMS)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Results: Algorithmic Oscillations and 2D Packing
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

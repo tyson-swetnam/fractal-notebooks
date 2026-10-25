@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Spectral Geometry — Introduction
+description: >-
+  Introduction to Part III: spectral duality and Kac's drum, why uniformity
+  assumptions fail for Zipfian and fractal data, resonance between recursive
+  algorithms and clustered inputs, the Lapidus-van Frankenhuijsen theory of complex
+  dimensions, and six research objectives.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/introduction/
+tags: [paper, part-iii, spectral-geometry, complex-dimensions, self-affinity]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: kac1966
+    resource: https://doi.org/10.2307/2313748
+    title: Can one hear the shape of a drum? (Kac 1966, The American Mathematical Monthly)
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: flajolet1995
+    resource: https://doi.org/10.1016/0304-3975(95)00002-E
+    title: "Mellin transforms and asymptotics: harmonic sums (Flajolet, Gourdon and Dumas 1995, Theoretical Computer Science)"
+  - id: piantadosi2014
+    resource: https://pmc.ncbi.nlm.nih.gov/articles/PMC4176592/
+    title: "Zipf's word frequency law in natural language: a critical review and future directions (Piantadosi 2014, Psychonomic Bulletin and Review, PMC)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Introduction: The Geometry of Complexity
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

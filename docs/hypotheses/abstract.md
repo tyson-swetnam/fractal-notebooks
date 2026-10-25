@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Research Hypotheses — Abstract
+description: >-
+  Abstract of the Part V preregistration: five primary hypotheses (optimal filling,
+  scale invariance, zeta gap distribution, universal repulsion, biotic decoupling) and
+  four fractal-string spatial hypotheses for old-growth canopies, with the LiDAR, DBC
+  and statistical methods to test them.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/abstract/
+tags: [paper, part-v, preregistration, forest-ecology, canopy-height-model, spectral-geometry]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+  - id: sarkar-chaudhuri1994
+    resource: https://doi.org/10.1109/21.259692
+    title: An efficient differential box-counting approach to compute fractal dimension of image (Sarkar and Chaudhuri 1994, IEEE Transactions on Systems, Man, and Cybernetics)
+  - id: odlyzko1987
+    resource: https://doi.org/10.1090/S0025-5718-1987-0866115-0
+    title: On the distribution of spacings between zeros of the zeta function (Odlyzko 1987, Mathematics of Computation)
+  - id: bak1987
+    resource: https://doi.org/10.1103/PhysRevLett.59.381
+    title: "Self-organized criticality: an explanation of 1/f noise (Bak, Tang and Wiesenfeld 1987, Physical Review Letters)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Abstract
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

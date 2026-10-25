@@ -2,7 +2,7 @@
 
 - **Date:** 2026-05-23
 - **Status:** Approved for implementation planning
-- **Author:** Tyson Swetnam (tswetnam@arizona.edu) with Claude Code (Opus 4.7)
+- **Author:** Tyson Swetnam (@tyson-swetnam) with Claude Code (Opus 4.7)
 - **Sibling specs (future):**
   - Spec #2 — AVU Metadata Layer (mesa-mcp + mesa-ducklake integration)
   - Spec #3 — CAISP Hypothesis-Test Integration (AI co-scientist)
@@ -390,7 +390,7 @@ rather than guessing.
 
 ### 10.3 Manual verification checklist (run before declaring v1 done)
 
-Documented in `docs/superpowers/specs/2026-05-23-fractal-rag-agent-verification.md` (created during execution). Eight prompts the user runs through Claude Code with expected qualitative behavior:
+Documented in `specs/2026-05-23-fractal-rag-agent-verification.md` (created during execution). Eight prompts the user runs through Claude Code with expected qualitative behavior:
 
 1. *"What's the predicted mass dimension for vascular plants under WBE?"* → cites `docs/metabolic-scaling/methods.md` or `2_mst_equations.ipynb`; value matches WBE prediction.
 2. *"What does Lapidus mean by 'complex dimensions'?"* → cites `docs/spectral-geometry/` content.

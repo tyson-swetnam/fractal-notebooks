@@ -1,3 +1,29 @@
+---
+type: Guide
+title: "Differential Box-Counting Tool"
+description: >-
+  How differential box-counting extends box-counting to grayscale images, with
+  FracLac (ImageJ) steps, a NumPy implementation, expected dimensions for canopy
+  height models, tissues and terrain, best practices, and the MST prediction of
+  a 3/2 mass dimension.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/applications/dbc/
+tags: [app, methods, image-analysis, canopy-height-model, lidar]
+sources:
+  - id: sarkar-chaudhuri1994
+    resource: https://doi.org/10.1109/21.259692
+    title: "Sarkar and Chaudhuri (1994) An efficient differential box-counting approach to compute fractal dimension of image, IEEE Transactions on Systems, Man, and Cybernetics 24"
+  - id: west1999science
+    resource: https://doi.org/10.1126/science.284.5420.1677
+    title: "West, Brown and Enquist (1999) The fourth dimension of life: fractal geometry and allometric scaling of organisms, Science 284"
+  - id: fraclac
+    resource: https://imagej.net/ij/plugins/fraclac/fraclac.html
+    title: "FracLac for ImageJ (plugin manual)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # Differential Box-Counting Tool
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -40,7 +66,7 @@ N_r = \sum_{i,j} n_r(i,j)
 
 ### With FracLac (ImageJ)
 
-1. **Install FracLac**: Download from [FracLac website](https://imagej.nih.gov/ij/plugins/fraclac/fraclac.html)
+1. **Install FracLac**: Download from [FracLac website](https://imagej.net/ij/plugins/fraclac/fraclac.html)
 
 2. **Prepare Image**:
    - Convert to 8-bit or 16-bit grayscale

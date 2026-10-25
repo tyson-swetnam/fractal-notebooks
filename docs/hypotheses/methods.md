@@ -1,3 +1,40 @@
+---
+type: Paper Section
+title: Research Hypotheses — Methods
+description: >-
+  Methods for Part V: LiDAR CHM requirements and nCHM normalisation, three forest
+  groups, differential box-counting, gliding-box lacunarity, gap-size power-law
+  fitting, nearest-neighbour spacing against Wigner-Dyson and Poisson, geographically
+  weighted regression, and the analysis plan.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/methods/
+tags: [paper, part-v, preregistration, lidar, canopy-height-model, statistics]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: sarkar-chaudhuri1994
+    resource: https://doi.org/10.1109/21.259692
+    title: An efficient differential box-counting approach to compute fractal dimension of image (Sarkar and Chaudhuri 1994, IEEE Transactions on Systems, Man, and Cybernetics)
+  - id: plotnick1996
+    resource: https://doi.org/10.1103/PhysRevE.53.5461
+    title: "Lacunarity analysis: a general technique for the analysis of spatial patterns (Plotnick et al. 1996, Physical Review E)"
+  - id: allain-cloitre1991
+    resource: https://doi.org/10.1103/PhysRevA.44.3552
+    title: Characterizing the lacunarity of random and deterministic fractal sets (Allain and Cloitre 1991, Physical Review A)
+  - id: clauset2009
+    resource: https://doi.org/10.1137/070710111
+    title: Power-law distributions in empirical data (Clauset, Shalizi and Newman 2009, SIAM Review)
+  - id: odlyzko1987
+    resource: https://doi.org/10.1090/S0025-5718-1987-0866115-0
+    title: On the distribution of spacings between zeros of the zeta function (Odlyzko 1987, Mathematics of Computation)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Methods
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

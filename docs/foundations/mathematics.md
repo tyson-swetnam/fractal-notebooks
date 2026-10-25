@@ -1,3 +1,27 @@
+---
+type: Chapter
+title: "Chapter 2: Mathematical Foundations of Fractals"
+description: >-
+  Develops the tools for measuring fractals: topological versus fractal
+  dimension, Hausdorff-Besicovitch and box-counting dimensions, differential
+  box-counting for grayscale and 3D data, power laws and log-log regression, the
+  Hurst exponent and fractional Brownian motion, and lacunarity.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/mathematics/
+tags: [foundations, part-i, dimension-theory, measure-theory, methods, hurst]
+companion_page: https://tyson-swetnam.github.io/fractal-notebooks/notebooks/foundations/2_mathematics/
+sources:
+  - id: plotnick1996
+    resource: https://doi.org/10.1103/PhysRevE.53.5461
+    title: "Plotnick et al. (1996) Lacunarity analysis: a general technique for the analysis of spatial patterns, Physical Review E 53"
+  - id: hurst-1951
+    resource: https://doi.org/10.1061/TACEAT.0006518
+    title: "Hurst (1951) Long-term storage capacity of reservoirs, Transactions of the American Society of Civil Engineers 116"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # Chapter 2: Mathematical Foundations of Fractals
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

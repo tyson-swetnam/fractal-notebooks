@@ -1,3 +1,43 @@
+---
+type: Paper Section
+title: Research Hypotheses — Discussion
+description: >-
+  Discussion for Part V: the forest as an energy field under maximum entropy
+  production, biomass as exergy, the WBE hydraulic connection, implications for
+  ecological theory, hearing the forest spectrally, topography and multifractality,
+  thermodynamic condition metrics, limitations and future work.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/discussion/
+tags: [paper, part-v, preregistration, forest-ecology, statistical-physics, metabolic-scaling]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: martyushev2006
+    resource: https://doi.org/10.1016/j.physrep.2005.12.001
+    title: Maximum entropy production principle in physics, chemistry and biology (Martyushev and Seleznev 2006, Physics Reports)
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: kac1966
+    resource: https://doi.org/10.2307/2313748
+    title: Can one hear the shape of a drum? (Kac 1966, The American Mathematical Monthly)
+  - id: bak1987
+    resource: https://doi.org/10.1103/PhysRevLett.59.381
+    title: "Self-organized criticality: an explanation of 1/f noise (Bak, Tang and Wiesenfeld 1987, Physical Review Letters)"
+  - id: pascual-guichard2005
+    resource: https://doi.org/10.1016/j.tree.2004.11.012
+    title: Criticality and disturbance in spatial ecological systems (Pascual and Guichard 2005, Trends in Ecology and Evolution)
+  - id: chhabra-jensen1989
+    resource: https://doi.org/10.1103/PhysRevLett.62.1327
+    title: Direct determination of the f(alpha) singularity spectrum (Chhabra and Jensen 1989, Physical Review Letters)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Discussion
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

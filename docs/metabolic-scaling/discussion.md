@@ -1,3 +1,58 @@
+---
+type: Paper Section
+title: Metabolic Scaling — Discussion
+description: >-
+  Discussion for Part II: asymmetric branching in Bentley et al. and Smith et al. as
+  unrecognised self-affinity, lacunarity, Seely and Macklem's entropy-production
+  hypotheses, Kleiber's 3/4 law, DLA growth of non-vascular organisms, and steps
+  toward a unified fractal theory of ecology.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/discussion/
+tags: [paper, part-ii, metabolic-scaling, self-affinity, dla, statistical-physics]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: bentley2013
+    resource: https://doi.org/10.1111/ele.12127
+    title: An empirical assessment of tree branching networks and implications for plant allometric scaling models (Bentley et al. 2013, Ecology Letters)
+  - id: smith2014
+    resource: https://doi.org/10.1111/nph.12487
+    title: Deviation from symmetrically self-similar branching in trees predicts altered hydraulics, mechanics, light interception and metabolic scaling (Smith et al. 2014, New Phytologist)
+  - id: plotnick1996
+    resource: https://doi.org/10.1103/PhysRevE.53.5461
+    title: "Lacunarity analysis: a general technique for the analysis of spatial patterns (Plotnick et al. 1996, Physical Review E)"
+  - id: seely-macklem2012
+    resource: https://doi.org/10.1063/1.3675622
+    title: "Fractal variability: an emergent property of complex dissipative systems (Seely and Macklem 2012, Chaos)"
+  - id: kleiber1932
+    resource: https://doi.org/10.3733/hilg.v06n11p315
+    title: Body size and metabolism (Kleiber 1932, Hilgardia)
+  - id: sernetz1985
+    resource: https://doi.org/10.1016/S0022-5193(85)80218-6
+    title: "The organism as bioreactor: interpretation of the reduction law of metabolism in terms of heterogeneous catalysis and fractal structure (Sernetz, Gelleri and Hofmann 1985, Journal of Theoretical Biology)"
+generated:
+  by: human:tswetnam
+  at: "2024-09-22T00:00:00Z"
+status: draft
+---
+
 # Discussion
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

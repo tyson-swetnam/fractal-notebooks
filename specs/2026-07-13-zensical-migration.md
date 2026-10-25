@@ -2,10 +2,10 @@
 
 - **Date:** 2026-07-13
 - **Status:** Draft — for review
-- **Author:** Tyson Swetnam (tswetnam@arizona.edu) with Claude Science
+- **Author:** Tyson Swetnam (@tyson-swetnam) with Claude Science
 - **Related specs:**
   - `2026-05-23-fractal-rag-agent-design.md` (Fractal RAG Stack)
-- **Related docs:** `../../../SPECIALIST_READINESS.md`, `../../../okf/README.md`
+- **Related docs:** `../SPECIALIST_READINESS.md`, `../okf/README.md`
 
 ---
 

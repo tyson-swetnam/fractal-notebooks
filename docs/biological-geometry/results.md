@@ -1,3 +1,43 @@
+---
+type: Paper Section
+title: Biological Geometry — Results
+description: >-
+  Results for Part IV: log-periodic wiggles as complex-dimension signatures, lichen
+  DLA morphology, hydrodynamic DLA in kelp forests, crown shyness as weighted Voronoi
+  tessellation with zeta-distributed gaps, Apollonian canopy packing, preferential
+  attachment and root spectral dimensions.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/results/
+tags: [paper, part-iv, biological, dla, branching, forest-ecology]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: de-marchi-cassi1993
+    resource: https://doi.org/10.1142/S0218348X9300037X
+    title: Fractal geometry and ecology of lichens (De Marchi and Cassi 1993, Fractals)
+  - id: kelp-map2020
+    resource: https://doi.org/10.3390/rs12040694
+    title: A high-resolution global map of giant kelp (Macrocystis pyrifera) forests and intertidal green algae with Sentinel-2 imagery (Mora-Soto et al. 2020, Remote Sensing)
+  - id: vanderzee2021
+    resource: https://pmc.ncbi.nlm.nih.gov/articles/PMC8557382/
+    title: Understanding crown shyness from a 3-D perspective (van der Zee, Lau and Shenkin 2021, Annals of Botany)
+  - id: wiki-apollonian
+    resource: https://en.wikipedia.org/wiki/Apollonian_gasket
+    title: Apollonian gasket (Wikipedia)
+  - id: root-foraging2016
+    resource: https://pmc.ncbi.nlm.nih.gov/articles/PMC5048097/
+    title: Hybrid artificial root foraging optimizer based multilevel threshold for image segmentation (2016, PMC)
+  - id: gwynne-miller2021
+    resource: https://doi.org/10.1214/20-AOP1471
+    title: "Random walk on random planar maps: spectral dimension, resistance and displacement (Gwynne and Miller 2021, Annals of Probability)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Results: Fractal Signatures in Biological Systems
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

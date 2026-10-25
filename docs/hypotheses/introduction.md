@@ -1,3 +1,37 @@
+---
+type: Paper Section
+title: Research Hypotheses — Introduction
+description: >-
+  Introduction to Part V: canopy height models as stochastic surfaces, the zeta(2)
+  harmonic packing connection, fractal dimension versus lacunarity, the
+  Montgomery-Odlyzko law and GUE repulsion, statements of the five primary and four
+  fractal-string hypotheses, and chapter organisation.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/introduction/
+tags: [paper, part-v, preregistration, riemann-zeta, forest-ecology, statistical-physics]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: odlyzko1987
+    resource: https://doi.org/10.1090/S0025-5718-1987-0866115-0
+    title: On the distribution of spacings between zeros of the zeta function (Odlyzko 1987, Mathematics of Computation)
+  - id: bak1987
+    resource: https://doi.org/10.1103/PhysRevLett.59.381
+    title: "Self-organized criticality: an explanation of 1/f noise (Bak, Tang and Wiesenfeld 1987, Physical Review Letters)"
+  - id: plotnick1996
+    resource: https://doi.org/10.1103/PhysRevE.53.5461
+    title: "Lacunarity analysis: a general technique for the analysis of spatial patterns (Plotnick et al. 1996, Physical Review E)"
+  - id: lapidus-vanfrankenhuijsen2013
+    resource: https://doi.org/10.1007/978-1-4614-2176-4
+    title: "Fractal Geometry, Complex Dimensions and Zeta Functions: Geometry and Spectra of Fractal Strings (Lapidus and van Frankenhuijsen, 2nd ed. 2013, Springer)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # Introduction
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

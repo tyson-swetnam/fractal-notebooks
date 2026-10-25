@@ -1,3 +1,64 @@
+---
+type: Paper Section
+title: Metabolic Scaling — Introduction
+description: >-
+  Introduction to the Part II manuscript: allometry versus isometry, Mandelbrot's
+  self-affine fractals and 1/f noises, why self-similar dimension estimates misreport
+  vascular plants, and Table 1 surveying fractal dimensions reported for plants and
+  forests since Rubner 1883.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/introduction/
+tags: [paper, part-ii, metabolic-scaling, allometry, self-affinity, self-similarity]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: huxley1950
+    resource: https://doi.org/10.1098/rspb.1950.0055
+    title: Relative growth and form transformation (Huxley 1950, Proceedings of the Royal Society B)
+  - id: huxley-teissier1936
+    resource: https://doi.org/10.1038/137780b0
+    title: Terminology of relative growth (Huxley and Teissier 1936, Nature)
+  - id: mandelbrot1985
+    resource: https://doi.org/10.1088/0031-8949/32/4/001
+    title: Self-affine fractals and fractal dimension (Mandelbrot 1985, Physica Scripta)
+  - id: west1999science
+    resource: https://doi.org/10.1126/science.284.5420.1677
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, Science)"
+  - id: west1997science
+    resource: https://doi.org/10.1126/science.276.5309.122
+    title: A general model for the origin of allometric scaling laws in biology (West, Brown and Enquist 1997, Science)
+  - id: sernetz1985
+    resource: https://doi.org/10.1016/S0022-5193(85)80218-6
+    title: "The organism as bioreactor: interpretation of the reduction law of metabolism in terms of heterogeneous catalysis and fractal structure (Sernetz, Gelleri and Hofmann 1985, Journal of Theoretical Biology)"
+  - id: sugihara-may1990
+    resource: https://doi.org/10.1016/0169-5347(90)90235-6
+    title: Applications of fractals in ecology (Sugihara and May 1990, Trends in Ecology and Evolution)
+  - id: plotnick1993
+    resource: https://doi.org/10.1007/BF00125351
+    title: Lacunarity indices as measures of landscape texture (Plotnick, Gardner and O'Neill 1993, Landscape Ecology)
+generated:
+  by: human:tswetnam
+  at: "2024-09-28T00:00:00Z"
+status: draft
+---
+
 # Introduction
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -8,7 +69,7 @@ In 1975, Benoit Mandelbrot introduced the word 'fractal' to describe self-simila
 
 ![The Julia Set](../assets/julia_set.png){ width="500" }
 
-Plate 1: [Gaston Julia]([Wikipedia](https://en.wikipedia.org/wiki/Gaston_Julia)) created so-called [Julia sets](https://en.wikipedia.org/wiki/Julia_set) using iterative functions over 100 years ago. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/julia.py){target=_blank} written in Python.
+Plate 1: [Gaston Julia](https://en.wikipedia.org/wiki/Gaston_Julia) created so-called [Julia sets](https://en.wikipedia.org/wiki/Julia_set) using iterative functions over 100 years ago. [code](https://raw.githubusercontent.com/tyson-swetnam/fractal-notebooks/refs/heads/main/apps/julia.py){target=_blank} written in Python.
 
 ![The Mandelbrot Set](../assets/mandelbrot_set.png){ width="500" }
 
@@ -62,9 +123,9 @@ m(\delta \varepsilon) = \delta^{\beta} m(\varepsilon)
 
 | **Author(s) by Date** | **Self-similarity** | **Self-affinity** | **Allometric** | **Review (meta-analysis)** | **Characteristic Measured** | **Fractal Dimension(s)** | **DOI/URL** |
 |-----------------------|---------------------|-------------------|----------------|----------------------------|----------------------------|--------------------------|-------------|
-| **Rubner 1883** | | | ✓ | | Ueber den Einfluss der Körpergröße auf Stoffwechsel  | | [DOI: ]() |
-| **Kleiber 1932** |  | | ✓ | | Body size and metabolism |  | [DOI: ]() |
-| **Hemmingsen 1960** |  | | ✓ | | Energy metabolism as related to body size and respiratory surface, and its evolution | | [DOI:XX](https://pdodds.w3.uvm.edu/research/papers/others/1960/hemmingsen1960a.pdf) |
+| **Rubner 1883** | | | ✓ | | Ueber den Einfluss der Körpergröße auf Stoffwechsel  | | (DOI pending) |
+| **Kleiber 1932** |  | | ✓ | | Body size and metabolism |  | (DOI pending) |
+| **Hemmingsen 1960** |  | | ✓ | | Energy metabolism as related to body size and respiratory surface, and its evolution | | [URL](https://pdodds.w3.uvm.edu/research/papers/others/1960/hemmingsen1960a.pdf) (DOI pending) |
 | **Ultsch 1974** | | | ✓ | | Metabolism and Skeleton size | | [DOI:10.2307/2424317](https://doi.org/10.2307/2424317) |
 | **Taylor et al. 1981** | | | | | Maximum aerobic capacity | | [DOI:10.1016/0034-5687(81)90075-X](https://doi.org/10.1016/0034-5687(81)90075-X) |
 | **Mandelbrot 1982** | ✓ |  |  | ✓  | Multiple | Multiple | [DOI:10.7560/703544-005](https://doi.org/10.7560/703544-005){target=_blank} |
@@ -90,24 +151,24 @@ m(\delta \varepsilon) = \delta^{\beta} m(\varepsilon)
 | **Solé and Manrubia 1995** | ✓ | | | Canopy | Box Count | [DOI:10.1006/jtbi.1995.0040](https://doi.org/10.1006/jtbi.1995.0040) |
 | **Tatsumi et al. 1995** | | | | | | [DOI:10.1626/jcs.64.50](https://doi.org/10.1626/jcs.64.50) |
 | **Plotnick 1995** | | | | | | [DOI:10.2110/scn.95.36.0001](https://doi.org/10.2110/scn.95.36.0001) |
-| **Calder 1996** | | | | | Size and life history | [DOI:]() |
+| **Calder 1996** | | | | | Size and life history | | (DOI pending) |
 | **Loehle and Li 1996** | ✓ | ✓ |  | | Information |  | [DOI:10.1016/0304-3800(94)00177-4](https://doi.org/10.1016/0304-3800(94)00177-4) |
 | **Halley 1996**  | ✓ | |  | | 1/f noises  | Power Spectral | [DOI:10.1016/0169-5347(96)81067-6](https://doi.org/10.1016/0169-5347(96)81067-6) |
 | **Plotnick et al. 1996** | | |  | | Canopy | Gliding Box (lacunarity) | [DOI:10.2307/2265712](https://doi.org/10.2307/2265712) |
 | **Weishampel et al. 1998** | ✓ | |  | | Canopy | Lacunarity  | [DOI:10.1016/S0303-2647(97)00092-8](https://doi.org/10.1016/S0303-2647(97)00092-8) |
 | **Zeide 1998** | ✓ | |  | | Canopy | Length | [DOI:10.1139/x98-139](https://doi.org/10.1139/x98-139) |
-| **West et al. 1998** | | | | | | [DOI:xx](https://pdodds.w3.uvm.edu/files/papers/others/1998/west1998a.pdf) |
-| **Banavar, Maritan, & Rinaldo 1999** | | | | | Transportation networks | [DOI:]() |
+| **West et al. 1998** | | | | | | [URL](https://pdodds.w3.uvm.edu/files/papers/others/1998/west1998a.pdf) (DOI pending) |
+| **Banavar, Maritan, & Rinaldo 1999** | | | | | Transportation networks | | (DOI pending) |
 | **West 1999** | ✓ | | ✓ | | Branching | Box Count | [DOI:10.1126/science.284.5420.1677](https://doi.org/10.1126/science.284.5420.1677) |
 | **West et al. 1999**  | ✓ | | ✓ | | Branching |  | [DOI:10.1126/science.276.5309.122](https://doi.org/10.1126/science.276.5309.122) |
 | **Brown et al. 2000** | ✓ | | ✓ | ✓  | Multiple |  | [DOI:10.1073/pnas.97.11.6242](https://doi.org/10.1073/pnas.97.11.6242) |
 | **Li 2000** | ✓ | ✓ |  | | Patch  | Information, Box Count | [DOI:10.1006/jtbi.2000.2070](https://doi.org/10.1006/jtbi.2000.2070) |
 | **Dale 2000** | | | | | Lacunarity | | [DOI:10.1023/A:1008176601940](https://doi.org/10.1023/A:1008176601940) |
-| **Zhu & Bunn 2001** | | | | | Cell oxygen sensing | | [DOI: ]() |
+| **Zhu & Bunn 2001** | | | | | Cell oxygen sensing | | (DOI pending) |
 | **Darveau et al. 2002** | | | X | | Metabolism | | [DOI:10.1038/417166a](https://doi.org/10.1038/417166a) |
 | **Hochachka et al. 2003** | | | X | X | Body mass effects on metabolism | | [DOI:10.1016/S1095-6433(02)00364-1](https://doi.org/10.1016/S1095-6433(02)00364-1) |
 | **Enquist et al. 2002**  | ✓ | |  | | Canopy, Roots  |  | [DOI:10.1038/nature01269](https://doi.org/10.1038/nature01269) |
-| **Fitter 2002** | | | | | | [DOI:xx](https://www.taylorfrancis.com/chapters/edit/10.1201/9780203909423-11/characteristics-functions-root-systems-alastair-fitter) |
+| **Fitter 2002** | | | | | | [URL](https://www.taylorfrancis.com/chapters/edit/10.1201/9780203909423-11/characteristics-functions-root-systems-alastair-fitter) (DOI pending) |
 | **Halley et al. 2004** | | | ✓ | | |  | [DOI:10.1098/rspa.2004.1384](https://doi.org/10.1098/rspa.2004.1384) |
 | **Drake and Weishampel 2000** | ✓ | |  | | Canopy | Multifractals | [DOI:10.1007/s004420050009](https://doi.org/10.1007/s004420050009) |
 | **Eamus et al. 2002** | | |  | | Roots  | --  | [DOI:10.1071/FP02118](https://doi.org/10.1071/FP02118) |

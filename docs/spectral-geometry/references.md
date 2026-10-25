@@ -1,3 +1,49 @@
+---
+type: Paper Section
+title: Spectral Geometry — References
+description: >-
+  Works cited for the Part III chapter: Lapidus's fractal strings and complex
+  dimensions, Flajolet's Mellin transform asymptotics, Faloutsos-Kamel R-tree
+  analysis, Apollonian gaskets and the Riemann Hypothesis, and Zipf's law, with web
+  sources accessed in December 2025.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/references/
+tags: [paper, part-iii, reference, spectral-geometry]
+paper:
+  title: "Spectral Geometry of Fractal Information: Complex Dimensions, the Riemann Zeta Distribution, and Algorithmic Oscillations in Sorting and 2D Packing"
+  part_title: Complex Dimensions and Spectral Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/spectral-geometry/
+  stage: chapter-draft
+sources:
+  - id: drmota-szpankowski2011
+    resource: https://www.cs.purdue.edu/homes/spa/papers/soda11.pdf
+    title: A master theorem for discrete divide and conquer recurrences (Drmota and Szpankowski 2011, SODA)
+  - id: mackenzie2010
+    resource: https://www.americanscientist.org/article/a-tisket-a-tasket-an-apollonian-gasket
+    title: A tisket, a tasket, an Apollonian gasket (Mackenzie 2010, American Scientist)
+  - id: hempstead2015
+    resource: https://scholar.rose-hulman.edu/rhumj/vol16/iss2/13/
+    title: Apollonian circle packings and the Riemann Hypothesis (Hempstead 2015, Rose-Hulman Undergraduate Mathematics Journal)
+  - id: wiki-apollonian
+    resource: https://en.wikipedia.org/wiki/Apollonian_gasket
+    title: Apollonian gasket (Wikipedia)
+  - id: mathworld-apollonian
+    resource: https://mathworld.wolfram.com/ApollonianGasket.html
+    title: Apollonian gasket (Wolfram MathWorld)
+  - id: faloutsos-kamel1994-pdf
+    resource: https://www-db.disi.unibo.it/courses/SI-M/papers/FK94.pdf
+    title: "Beyond uniformity and independence: analysis of R-trees using the concept of fractal dimension (Faloutsos and Kamel 1994, PDF)"
+  - id: mathoverflow-rh
+    resource: https://mathoverflow.net/questions/17209/consequences-of-the-riemann-hypothesis
+    title: Consequences of the Riemann Hypothesis (MathOverflow)
+  - id: counterfractal
+    resource: https://math.dartmouth.edu/~carlp/counterfractal.pdf
+    title: Counterexamples to the modified Weyl-Berry conjecture on fractal drums (Lapidus and Pomerance, PDF)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # References
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

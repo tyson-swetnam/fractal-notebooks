@@ -1,3 +1,19 @@
+---
+type: Guide
+title: "Fractal RAG: Hosted VM (K3s + GPU)"
+description: >-
+  Production deployment of the Fractal RAG stack on a single GPU VM with K3s:
+  NVIDIA device plugin, Weaviate 1.35 and the arctic-embed sidecar manifests,
+  iRODS corpus pull, full ingest, remote MCP over SSH and an operations
+  playbook.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/fractal-rag/hosted-vm/
+tags: [knowledge, rag, weaviate, cuda, mcp]
+generated:
+  by: human:tswetnam
+  at: "2026-05-24T00:00:00Z"
+status: stable
+---
+
 # Hosted VM (K3s + GPU)
 
 This page covers the production-grade deployment: a single VM (CyVerse
@@ -91,7 +107,7 @@ kubectl -n ai-workloads exec deploy/weaviate -- \
 ```bash
 cd /opt/tswetnam/github/fractal-notebooks/fractal_rag
 pip install -e ".[dev,parsers]"
-fractal-rag concepts validate            # OK: 31 concepts validated
+fractal-rag concepts validate            # OK: 32 concepts validated
 ```
 
 The default `config.py` already targets the NodePort `30080`/`30051` exposed
@@ -187,8 +203,8 @@ will break the connection.
 
 ## 8. Walk the verification checklist
 
-The eight-prompt checklist lives at
-`docs/superpowers/specs/2026-05-23-fractal-rag-agent-verification.md`. Target
+The eight-prompt checklist lives in the repository's
+[verification spec](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-verification.md). Target
 ≥7/8 prompts producing well-cited answers via the `fractal-explorer` agent.
 Iteration tips (parser tweaks, swapping the embedding model) are at the
 bottom of that doc.

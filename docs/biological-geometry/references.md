@@ -1,3 +1,43 @@
+---
+type: Paper Section
+title: Biological Geometry — References
+description: >-
+  Works cited and additional resources for the Part IV chapter: WBE allometric
+  scaling, the Barnsley fern, diffusion-limited aggregation in lichens and
+  stromatolites, crown shyness, kelp forest remote sensing, Lapidus's fractal strings,
+  and log-periodic phenomena.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/references/
+tags: [paper, part-iv, reference, biological]
+paper:
+  title: "Architectures of the Infinite: Self-Affine Fractals, Complex Dimensions, and the Thermodynamic Geometries of Biological Space-Filling"
+  part_title: Biological Space-Filling and Thermodynamic Geometry
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/biological-geometry/
+  stage: chapter-draft
+sources:
+  - id: santini2023
+    resource: https://doi.org/10.3390/a16030129
+    title: Apollonian packing of circles within ellipses (Santini, Mangini and Frezza 2023, Algorithms)
+  - id: gwynne-miller2021
+    resource: https://doi.org/10.1214/20-AOP1471
+    title: "Random walk on random planar maps: spectral dimension, resistance and displacement (Gwynne and Miller 2021, Annals of Probability)"
+  - id: arkema-samhouri2019
+    resource: https://doi.org/10.3390/d11080120
+    title: "Living on the edge: variation in the abundance and demography of a kelp forest epibiont (Arkema and Samhouri 2019, Diversity)"
+  - id: altes-chirplets2021
+    resource: https://doi.org/10.3390/sym13101922
+    title: The Altes family of log-periodic chirplets and the hyperbolic chirplet transform (Symmetry, 2021)
+  - id: de-marchi-cassi1993
+    resource: https://doi.org/10.1142/S0218348X9300037X
+    title: Fractal geometry and ecology of lichens (De Marchi and Cassi 1993, Fractals)
+  - id: dewey1997
+    resource: https://doi.org/10.1142/S0218348X97000565
+    title: Algorithmic complexity and thermodynamics of fractal growth processes (Dewey 1997, Fractals)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # References
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

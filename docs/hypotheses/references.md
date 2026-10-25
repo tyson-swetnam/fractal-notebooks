@@ -1,3 +1,43 @@
+---
+type: Paper Section
+title: Research Hypotheses — References
+description: >-
+  Reference list for the Part V preregistration framework, grouped from foundational
+  fractal geometry and diffusion-limited aggregation through metabolic scaling, LiDAR
+  canopy structure, self-organized criticality, zeta distributions, random matrix
+  theory, fractal strings and lacunarity.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/references/
+tags: [paper, part-v, reference, preregistration]
+paper:
+  title: "Spectral Geometry and Metabolic Scaling in Forest Canopy Architecture: A Preregistration Framework"
+  part_title: Research Framework and Testable Hypotheses
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/hypotheses/
+  stage: preregistration
+sources:
+  - id: witten-sander-1981
+    resource: https://doi.org/10.1103/PhysRevLett.47.1400
+    title: Diffusion-limited aggregation, a kinetic critical phenomenon (Witten and Sander 1981, Physical Review Letters)
+  - id: witten-sander1983
+    resource: https://doi.org/10.1103/PhysRevB.27.5686
+    title: Diffusion-limited aggregation (Witten and Sander 1983, Physical Review B)
+  - id: meakin1983
+    resource: https://doi.org/10.1103/PhysRevA.27.1495
+    title: Diffusion-controlled cluster formation in 2-6-dimensional space (Meakin 1983, Physical Review A)
+  - id: halsey2000
+    resource: https://doi.org/10.1063/1.1333284
+    title: "Diffusion-limited aggregation: a model for pattern formation (Halsey 2000, Physics Today)"
+  - id: tel1989
+    resource: https://doi.org/10.1016/0378-4371(89)90563-3
+    title: Determination of fractal dimensions for geometrical multifractals (Tel, Fulop and Vicsek 1989, Physica A)
+  - id: voss1986
+    resource: https://doi.org/10.1088/0031-8949/1986/T13/004
+    title: Characterization and measurement of random fractals (Voss 1986, Physica Scripta)
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: draft
+---
+
 # References
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

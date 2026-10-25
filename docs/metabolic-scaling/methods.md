@@ -1,13 +1,74 @@
+---
+type: Paper Section
+title: Metabolic Scaling — Methods
+description: >-
+  Methods for Part II: metabolic scaling theory (WBE), the power-law allometric form,
+  radius and length branching ratios n^(-1/2) and n^(-1/3), volume and mass dimension
+  predictions (Equations 9-17) giving d = 3/2, and the FracLac differential
+  box-counting procedure.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/methods/
+tags: [paper, part-ii, metabolic-scaling, branching, methods, image-analysis]
+paper:
+  title: "Fractal Patterns in Nature: Self-Affinity vs Self-Similarity"
+  part_title: Metabolic Scaling Theory and Biological Fractals
+  landing: https://tyson-swetnam.github.io/fractal-notebooks/metabolic-scaling/
+  stage: manuscript-draft
+authors:
+  - name: Tyson Lee Swetnam
+    orcid: https://orcid.org/0000-0002-6639-7181
+    affiliation: Institute for Computation and Data-enabled Insight, University of Arizona
+  - name: Jon D Pelletier
+    orcid: https://orcid.org/0000-0002-0702-2646
+    affiliation: Department of Geosciences, University of Arizona
+  - name: Brian J. Enquist
+    orcid: https://orcid.org/0000-0002-6124-7096
+    affiliation: Department of Ecology and Evolutionary Biology, University of Arizona
+citation:
+  key: swetnam2026fractals
+  year: 2026
+  publisher: GitHub
+  url: https://github.com/tyson-swetnam/fractal-notebooks
+sources:
+  - id: west1999science
+    resource: https://doi.org/10.1126/science.284.5420.1677
+    title: "The fourth dimension of life: fractal geometry and allometric scaling of organisms (West, Brown and Enquist 1999, Science)"
+  - id: west1999nature
+    resource: https://doi.org/10.1038/23251
+    title: A general model for the structure and allometry of plant vascular systems (West, Brown and Enquist 1999, Nature)
+  - id: west2009pnas
+    resource: https://doi.org/10.1073/pnas.0812294106
+    title: A general quantitative theory of forest structure and dynamics (West, Enquist and Brown 2009, PNAS)
+  - id: enquist1998
+    resource: https://doi.org/10.1038/25977
+    title: Allometric scaling of plant energetics and population density (Enquist, Brown and West 1998, Nature)
+  - id: enquist1999
+    resource: https://doi.org/10.1038/44819
+    title: Allometric scaling of production and life-history variation in vascular plants (Enquist et al. 1999, Nature)
+  - id: brown2004
+    resource: https://doi.org/10.1890/03-9000
+    title: Toward a metabolic theory of ecology (Brown et al. 2004, Ecology)
+  - id: smith2014
+    resource: https://doi.org/10.1111/nph.12487
+    title: Deviation from symmetrically self-similar branching in trees predicts altered hydraulics, mechanics, light interception and metabolic scaling (Smith et al. 2014, New Phytologist)
+  - id: fraclac
+    resource: https://imagej.net/ij/plugins/fraclac/FLHelp/Introduction.htm
+    title: "FracLac for ImageJ: box-counting, differential box-counting and lacunarity (Karperien, user guide)"
+generated:
+  by: human:tswetnam
+  at: "2024-09-22T00:00:00Z"
+status: draft
+---
+
 # Methods
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 
 !!! note "Supporting notebooks"
     Every equation and procedure in this section is reproduced in executable Jupyter notebooks:
-    [MST & Allometric Relationships](../notebooks/metabolic-scaling/methods/1_mst_allometry.ipynb),
-    [Branching Ratios](../notebooks/metabolic-scaling/methods/2_branching_ratios.ipynb),
-    [Volume & Mass Dimension](../notebooks/metabolic-scaling/methods/3_volume_mass_dimension.ipynb), and
-    [DBC & FracLac](../notebooks/metabolic-scaling/methods/4_dbc_fraclac.ipynb).
+    [MST & Allometric Relationships](../notebooks/metabolic-scaling/methods/1_mst_allometry.md),
+    [Branching Ratios](../notebooks/metabolic-scaling/methods/2_branching_ratios.md),
+    [Volume & Mass Dimension](../notebooks/metabolic-scaling/methods/3_volume_mass_dimension.md), and
+    [DBC & FracLac](../notebooks/metabolic-scaling/methods/4_dbc_fraclac.md).
 
 Today, there are numerous numerical and analytical tools for evaluating fractal dimensions. Fractal dimension can be evaluated in binary (e.g., presence vs. absence) or continuous values (e.g., grayscale). An important implication of evaluating organisms, specifically their hierarchical branching networks, is that their distribution of mass is expected to scale anisotropically across their various branching orders.
 

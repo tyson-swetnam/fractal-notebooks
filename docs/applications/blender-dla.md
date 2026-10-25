@@ -1,3 +1,29 @@
+---
+type: Guide
+title: "Blender DLA Point Cloud Generator"
+description: >-
+  3D diffusion-limited aggregation in Blender 4.2 with Geometry Nodes and
+  Cycles: setup script, flow-field and particle presets, GPU rendering,
+  point-cloud export to NumPy, PLY, OBJ and CSV, batch rendering and the
+  companion analysis notebook.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/applications/blender-dla/
+tags: [app, blender, dla, 3d-fractals, generative]
+sources:
+  - id: witten-sander-1981
+    resource: https://doi.org/10.1103/PhysRevLett.47.1400
+    title: "Witten and Sander (1981) Diffusion-limited aggregation, a kinetic critical phenomenon, Physical Review Letters 47"
+  - id: blender-geometry-nodes
+    resource: https://docs.blender.org/manual/en/latest/modeling/geometry_nodes/index.html
+    title: "Blender Manual: Geometry Nodes"
+  - id: bourke-dla
+    resource: https://paulbourke.net/fractals/dla/
+    title: "Paul Bourke: Diffusion-limited aggregation"
+generated:
+  by: human:tswetnam
+  at: "2025-12-21T00:00:00Z"
+status: stable
+---
+
 # Blender DLA Point Cloud Generator
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -14,7 +40,7 @@ This tool provides a complete DLA simulation environment in Blender, featuring:
 - **Publication-quality rendering** with Cycles GPU acceleration
 - **Export tools** for Python analysis (NumPy, PLY, CSV formats)
 
-![DLA Concept](https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/DLA_Cluster.JPG/220px-DLA_Cluster.JPG)
+![DLA Concept](https://upload.wikimedia.org/wikipedia/commons/b/b8/DLA_Cluster.JPG){ width="220" }
 
 ## Requirements
 

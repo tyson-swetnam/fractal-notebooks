@@ -1,3 +1,30 @@
+---
+type: Chapter
+title: "Chapter 3: Fractal Dimensionality (1D through 4D)"
+description: >-
+  Surveys fractals by embedding dimension: 1/f noise, fractional Brownian motion
+  and Cantor sets in 1D; Brownian surfaces, Mandelbrot and Julia sets,
+  Sierpinski and Koch constructions in 2D with terrain and image applications;
+  Menger sponge, DLA and branching networks in 3D; growth dynamics in 4D.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/foundations/dimensionality/
+tags: [foundations, part-i, dimension-theory, signal-processing, hurst, texture]
+companion_page: https://tyson-swetnam.github.io/fractal-notebooks/notebooks/foundations/3_dimensionality/
+sources:
+  - id: mandelbrot-van-ness-1968
+    resource: https://doi.org/10.1137/1010093
+    title: "Mandelbrot and Van Ness (1968) Fractional Brownian motions, fractional noises and applications, SIAM Review 10"
+  - id: family-vicsek-1985
+    resource: https://doi.org/10.1088/0305-4470/18/2/005
+    title: "Family and Vicsek (1985) Scaling of the active zone in the Eden process on percolation networks and the ballistic deposition model, Journal of Physics A 18"
+  - id: fbs-image
+    resource: https://commons.wikimedia.org/wiki/File:Fractional_Brownian_surfaces_for_different_Hurst_parameter.jpg
+    title: "Fractional Brownian surfaces for different Hurst parameter (Adamalgorithm, Wikimedia Commons, CC BY-SA 3.0)"
+generated:
+  by: human:tswetnam
+  at: "2025-12-14T00:00:00Z"
+status: stable
+---
+
 # Chapter 3: Fractal Dimensionality (1D through 4D)
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -162,6 +189,32 @@ The Cantor set possesses remarkable topological properties:
 
 - **Totally disconnected**: The only connected subsets are single points.
 
+### 3.1.4 Why Signals Are Fractal
+
+The three objects above look nothing alike—a noisy time series, a random walk with memory, and a dust of points—yet they share the property that makes a one-dimensional object fractal: their structure is **statistically self-similar** (or, for fractional Brownian motion, self-affine) across scales of observation. Two consequences follow.
+
+- **Scaling behavior**: The statistical properties of the signal (variance of increments, power spectrum, number of level crossings) transform by a power law under rescaling of the time axis, rather than being tied to one characteristic duration.
+
+- **Complexity**: The fractal dimension quantifies the irregularity of the trace. A smooth, differentiable signal has dimension 1; a 1/f signal or an fBm trace with Hurst exponent \( H \) has dimension \( 2 - H > 1 \), filling the plane more completely than a line does.
+
+#### A Thought Experiment: Ocean Waves
+
+Imagine recording the sound of ocean waves at the shore.
+
+- **Long observation**: Over several minutes you hear the rise and fall of individual breakers.
+
+- **Short observation**: Zoom into a few seconds of the recording and the smaller ripples and splashes mimic the larger wave pattern.
+
+- **Signal analysis**: Plotting the amplitude against time reveals a waveform with similar-looking fluctuations at every time scale you examine; its power spectrum falls off as a power of frequency instead of showing a single dominant tone.
+
+#### Practical Implications
+
+- **Engineering**: Understanding 1/f noise is essential for designing low-noise electronic circuits and for signal-processing methods that must separate a fractal background from the signal of interest.
+
+- **Medicine**: Fractal analysis of physiological signals such as heart rate variability and EEG can aid diagnosis, because disease often appears as a loss of healthy fractal variability—a shift in \( H \) or in the spectral exponent.
+
+- **Music production**: Pink noise is used to test and calibrate audio equipment because it distributes equal power per octave, matching how the ear perceives loudness across frequency bands.
+
 ---
 
 ## 3.2 Two-Dimensional Fractals
@@ -306,6 +359,59 @@ D = \frac{\log 4}{\log 3} \approx 1.262
 \]
 
 The Koch snowflake, formed by applying the Koch construction to each side of an equilateral triangle, encloses a finite area with an infinite perimeter.
+
+### 3.2.5 Applications of 2D Fractal Analysis
+
+The surfaces and curves above are idealised. Most two-dimensional fractal analysis in practice is applied to **images**—digital elevation models, satellite scenes, medical scans, textures—whose fractal character is statistical rather than exact, and the fractional Brownian surface of §3.2.1 is the workhorse model.
+
+#### A Thought Experiment: Generating a Digital Elevation Model
+
+Imagine synthesising a landscape:
+
+1. **Initial grid**: Start with a flat grid of elevation values.
+2. **Apply fractional Brownian scaling**: Assign elevations with an fBs algorithm (spectral synthesis or midpoint displacement), choosing the Hurst exponent \( H \) to control roughness.
+3. **Resulting surface**: The generated terrain shows hills and valleys whose statistical character looks the same regardless of the scale at which you view them—exactly the property that makes real topography fractal over a range of scales.
+
+![Fractional Brownian surfaces for four Hurst parameters](https://upload.wikimedia.org/wikipedia/commons/c/c4/Fractional_Brownian_surfaces_for_different_Hurst_parameter.jpg)
+
+*Fractional Brownian surfaces generated for different Hurst parameters; roughness decreases as \( H \) increases. Image: Adamalgorithm, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Fractional_Brownian_surfaces_for_different_Hurst_parameter.jpg), CC BY-SA 3.0.*
+
+Natural terrains are **self-affine** rather than self-similar: the vertical scale (elevation) and the horizontal scales (easting and northing) must be rescaled by different factors to preserve the surface's statistics, which is why their dimension is \( 3 - H \) rather than a similarity dimension. Exactly self-similar 2D fractals such as the Sierpinski carpet repeat identically under isotropic scaling.
+
+#### Application Areas
+
+- **Computer graphics**: Procedural terrain for games and simulations, and texture synthesis that produces natural-looking surfaces for objects and environments.
+
+- **Geographical analysis**: Fractal dimensions of landforms and geological structures measured from satellite imagery and elevation data; environmental monitoring of vegetation, deforestation and urban growth through changes in texture.
+
+- **Medical imaging**: Characterising complex tissue structures and the fractal nature of trabecular bone, as introduced in §3.2.1.
+
+- **Engineering and design**: Surface roughness in material design and coatings; fractal-shaped antennas that operate efficiently over multiple frequency bands.
+
+- **Environmental science**: Erosion patterns and river networks modelled with fractal geometry; cloud patterns and atmospheric turbulence in climate studies.
+
+- **Art and aesthetics**: Fractal art generated algorithmically, and texture mapping that adds visual realism to digital art and animation.
+
+#### Measuring the Dimension of an Image
+
+Two families of methods are in routine use; Chapter 2 develops both ([§2.3](mathematics.md#23-box-counting-minkowski-bouligand-dimension) and [§2.4](mathematics.md#24-differential-box-counting-for-grayscale-and-continuous-data)).
+
+- **Box-counting methods**: Overlay a grid of boxes on the image, count the boxes that contain part of the structure (or, for grayscale data, the number of intensity boxes each cell spans—differential box-counting), repeat for a range of box sizes, and read the dimension from the slope of the log-log count.
+
+- **Power spectral density**: Transform the image into the frequency domain. For a fractal surface the radially averaged spectrum follows a power law, \( \text{PSD}(k) \propto k^{-\beta} \), and the exponent \( \beta \) determines the dimension.
+
+#### Worked Example: Analysing Satellite Images
+
+1. **Data acquisition**: Obtain high-resolution satellite images of a geographical area.
+2. **Preprocessing**: Convert to grayscale and normalise the intensity range.
+3. **Fractal analysis**: Apply box-counting or the power-spectral method to estimate the fractal dimension.
+4. **Interpretation**: Relate the dimension to terrain roughness or vegetation density.
+
+Two insights typically emerge:
+
+- **Urban versus natural areas**: Urban regions have different fractal dimensions from natural landscapes because of the regular geometry of human-made structures.
+
+- **Environmental change**: A change in fractal dimension over time can indicate deforestation, desertification or urban expansion, making the dimension a compact monitoring statistic.
 
 ---
 

@@ -1,3 +1,19 @@
+---
+type: Guide
+title: "Fractal RAG: Using the fractal-explorer Agent"
+description: >-
+  End-user guide to the read-only fractal-explorer retrieval subagent: the
+  FractalArtifact and Concept collections, how to invoke it from Claude Code,
+  the eight MCP tools, example transcripts, citation discipline, known limits
+  and how to iterate on answer quality.
+resource: https://tyson-swetnam.github.io/fractal-notebooks/fractal-rag/using-the-agent/
+tags: [knowledge, rag, mcp, agents]
+generated:
+  by: human:tswetnam
+  at: "2026-05-24T00:00:00Z"
+status: stable
+---
+
 # Using the fractal-explorer Agent
 
 You have a running Weaviate, the corpus is ingested, and Claude Code shows
@@ -145,7 +161,7 @@ When you spot a weak answer:
 
 2. If the CLI returns junk too, the problem is upstream — parser, chunking,
    or embedding choice. Walk
-   [verification.md](../superpowers/specs/2026-05-23-fractal-rag-agent-verification.md#iteration)
+   [verification.md](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-verification.md#iteration)
    for fix triage.
 
 3. If the CLI returns good hits but the agent still produces a thin answer,
@@ -163,7 +179,6 @@ When you spot a weak answer:
 
 ## Where to go next
 
-- Prototype new query patterns in Python first → [Notebooks](notebooks/01_quickstart.ipynb)
+- Prototype new query patterns in Python first → [Notebooks](notebooks/01_quickstart.md)
 - Agent isn't picking up the MCP server → [Troubleshooting](troubleshooting.md)
-- Look under the hood → design spec at
-  `docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md`
+- Look under the hood → the [design spec](https://github.com/tyson-swetnam/fractal-notebooks/blob/main/specs/2026-05-23-fractal-rag-agent-design.md) on GitHub

@@ -6,7 +6,7 @@ deploy.
 
 ## Environment
 
-- **Host:** `r01c01u30-gpu07.cyverse.org` (AMD EPYC 7713, 4× NVIDIA A100 80GB,
+- **Host:** `<gpu-node>` (AMD EPYC 7713, 4× NVIDIA A100 80GB,
   503 GB RAM, Ubuntu 24.04)
 - **K3s:** v1.35.5+k3s1, single-node
 - **Weaviate:** 1.35.0 on NodePort `:30080`
@@ -79,7 +79,7 @@ kubectl -n ai-workloads logs deploy/t2v-transformers --tail=500 | grep -iE 'erro
 | No notebook exists for Barnsley fern / IFS or for Riemann zeta + complex dimensions, despite the verification spec naming `ferns.ipynb` and `ch1_complex_dimensions` as expected hits. Either author those notebooks, or update the spec to reflect the actual notebook inventory. | `docs/notebooks/foundations/` (author) or `2026-05-23-fractal-rag-agent-verification.md` (update spec) | medium — current PASS-honest behavior is correct, but the spec misleads |
 | Pre-1990 articles often lack Concept cross-refs even when keyphrases are obvious (Brownian motion, Hurst exponent). | `fractal_rag/src/fractal_rag/enrich.py` — broaden alias matching, or expand `seed.yaml` aliases for `Brownian Motion`, `Fractional Brownian Motion`, `Hurst Exponent` | low — falls back to BM25/keyphrase ranking which still finds the right articles |
 | Weaviate logs the empty-string HNSW quantization warning at every bootstrap. | `fractal_rag/src/fractal_rag/schema.py` — set explicit `quantizer=Configure.VectorIndex.Quantizer.none()` or pick PQ/BQ | low — cosmetic; recall is unaffected |
-| The Arctic-embed-l v2.0 tag in the design spec was never published. Updated manifest uses v1 L (`snowflake-snowflake-arctic-embed-l-latest`). | `docs/superpowers/specs/2026-05-23-fractal-rag-agent-design.md` mentions v2.0 — update to v1 or remove the version qualifier | low — already fixed in `k3s-deployment/t2v-transformers-deployment.yaml` |
+| The Arctic-embed-l v2.0 tag in the design spec was never published. Updated manifest uses v1 L (`snowflake-snowflake-arctic-embed-l-latest`). | `specs/2026-05-23-fractal-rag-agent-design.md` mentions v2.0 — update to v1 or remove the version qualifier | low — already fixed in `k3s-deployment/t2v-transformers-deployment.yaml` |
 
 ## Done criteria — final check
 
