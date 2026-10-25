@@ -33,7 +33,9 @@ when `nvidia-container-runtime` is on K3s's PATH) and the default `local-path` S
    write-kubeconfig-group: "docker" # or a dedicated k3s-admins group
    ```
 
-3. If `ufw` is enabled, allow the cluster CIDRs (nothing else needs opening: `kubectl` talks to
+3. If `ufw` is enforcing, allow the cluster CIDRs. Check with `sudo ufw status`: only `Status: active`
+   counts (an active `ufw.service` with `ENABLED=no` in `/etc/ufw/ufw.conf` enforces nothing, and
+   `ufw status` then lists no rules). Nothing else needs opening: `kubectl` talks to
    `127.0.0.1:6443` and the RAG client to `localhost`; Weaviate runs with anonymous access, so do
    not expose 30080/30051 to the network):
 
@@ -90,7 +92,7 @@ into K3s's containerd (K3s does not read the Docker image store), and apply the 
 
 ```bash
 bash docker/t2v-transformers-cuda-arm64/build.sh                 # -> fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 (~8 GB)
-docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr images import -
+docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr -n k8s.io images import -
 kubectl apply -k k3s-deployment/overlays/dgx-spark
 ```
 

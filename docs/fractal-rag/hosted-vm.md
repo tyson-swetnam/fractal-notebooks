@@ -42,7 +42,7 @@ You can run on far less. Minimum: 1 modern NVIDIA GPU with ≥16 GB VRAM,
 
 | Need | Notes |
 |---|---|
-| K3s | `curl -sfL https://get.k3s.io \| sudo env INSTALL_K3S_VERSION=v1.36.5+k3s1 sh -s - server`, with `/etc/rancher/k3s/config.yaml` written first (no Traefik, kubeconfig mode and group) and the two `ufw` cluster-CIDR rules; embedded containerd, not `--docker`. Details in `k3s-deployment/README.md` |
+| K3s | `curl -sfL https://get.k3s.io \| sudo env INSTALL_K3S_VERSION=v1.36.5+k3s1 sh -s - server`, with `/etc/rancher/k3s/config.yaml` written first (no Traefik, kubeconfig mode and group) and, only if `ufw` is enforcing, the two cluster-CIDR rules; embedded containerd, not `--docker`. Details in `k3s-deployment/README.md` |
 | NVIDIA driver + container toolkit | `nvidia-smi` must work and the NVIDIA Container Toolkit must be installed; K3s detects `nvidia-container-runtime` at start-up and creates the `nvidia` RuntimeClass the GPU pods request |
 | `kubectl` | installed by K3s into `/usr/local/bin`; `export KUBECONFIG=/etc/rancher/k3s/k3s.yaml` |
 | `gocmd` v0.11.5+ | for the iRODS pull; `~/.irods/` must already be authenticated |
@@ -264,7 +264,7 @@ imported into K3s's containerd and selected through the `dgx-spark` overlay:
 
 ```bash
 bash docker/t2v-transformers-cuda-arm64/build.sh
-docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr images import -
+docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo k3s ctr -n k8s.io images import -
 kubectl apply -k k3s-deployment/overlays/dgx-spark
 ```
 
