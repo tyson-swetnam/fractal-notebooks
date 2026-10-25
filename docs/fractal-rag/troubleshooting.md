@@ -178,16 +178,34 @@ Common causes:
   `uuid5(...)` scheme; if it does, rerun pass 1 (`fractal-rag schema
   bootstrap` + reseed).
 
-### `status` shows fewer objects than `inserted_chunks`
+### `status` shows fewer json objects than `inserted_chunks`
 
-The json parser names each record `doi:<doi>` (falling back to the Constellate
-id only when the DOI is empty) and object UUIDs derive from that name plus the
-chunk index, so records that share a DOI overwrite each other and the loop still
-counts them as inserted. In the 2026-10-25 export 1,125 of the 50,000 records
-repeat an earlier DOI (48,875 distinct), which is why the run reported 100,012
-inserted chunks and `status` shows 97,762 json objects. Nothing is lost from the
-other sources; if every record must survive, key the parser on the Constellate
-id (unique across the export) and re-ingest the json source.
+Object UUIDs derive from `source_uri` plus the chunk index, so two records with
+the same `source_uri` overwrite each other while the loop counts both as
+inserted. The json parser keys records on the Constellate `id` (a Portico
+`ark://` identifier or a JSTOR stable URL), which is unique across the export;
+before 2026-10-25 it keyed them on the DOI, and DOIs are shared by book
+chapters, reprints and corrigenda: 1,125 of the 50,000
+records repeated an earlier DOI (48,875 distinct), so that run reported 100,012
+inserted chunks and `status` showed 97,762 json objects. An index built with the
+old parser is fixed by deleting its json objects and re-ingesting the source,
+because every json UUID changes:
+
+```bash
+python -c "
+from fractal_rag.client import client_session
+from weaviate.classes.query import Filter
+with client_session() as c:
+    art = c.collections.get('FractalArtifact')
+    while art.data.delete_many(where=Filter.by_property('source_type').equal('json_corpus')).matches:
+        pass   # the server deletes at most 10,000 objects per call
+"
+fractal-rag ingest --source json
+```
+
+On the DGX Spark the re-ingest took two hours and left exactly 100,012 json
+objects for 100,012 inserted chunks: an anchor chunk and one content chunk for
+each of the 50,000 records (12 long records get a second content chunk).
 
 ### Ingest takes forever on the JSONL corpus
 

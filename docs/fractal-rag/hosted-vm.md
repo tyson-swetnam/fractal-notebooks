@@ -159,15 +159,14 @@ kubectl -n ai-workloads logs -f deploy/t2v-transformers
 fractal-rag status                       # repeat to see counts climbing
 ```
 
-When it finishes, sanity-check that all four source types landed. Expect fewer
-json objects than the `inserted_chunks` the run reports: on 2026-10-25 the run
-wrote 100,012 chunks but 97,762 remain, because 1,125 of the 50,000 records
-share a DOI with an earlier record and the json parser derives the object UUID
-from the DOI, so the later record overwrites the earlier one.
+When it finishes, sanity-check that all four source types landed. The json
+object count should equal the `inserted_chunks` of the json report; if it is
+smaller, the index was built by the pre-2026-10-25 parser that keyed records on
+the DOI (see [Troubleshooting](troubleshooting.md#status-shows-fewer-json-objects-than-inserted_chunks)).
 
 ```bash
 fractal-rag status
-# { "FractalArtifact": 101811, "Concept": 32 }   # 2026-10-25: 512 docs + 3,537 notebook + 97,762 json chunks
+# { "FractalArtifact": 104061, "Concept": 32 }   # 2026-10-25: 512 docs + 3,537 notebook + 100,012 json chunks
 
 # Inspect by source_type:
 python -c "

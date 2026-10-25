@@ -5,10 +5,14 @@ Source shape (from ``embeddings/constellate_fractals.jsonl`` on iRODS):
 keyphrases, and unigram/bigram/trigram frequency dicts. **No full text**, so
 we synthesize a content blob from title + keyphrases + top n-grams.
 
-Records are keyed on the Constellate ``id`` (an ``ark://`` identifier that is
-unique across the export); the DOI stays in ``metadata["doi"]`` and, as a
+Records are keyed on the Constellate ``id``, which is unique across the export
+(in the 2026-10-25 export a Portico ``ark://27927/`` identifier for 40,525 of the
+50,000 records, a JSTOR stable URL for 9,409, a Chronicling America page for 61
+and a CORD-19 id for 5); the DOI stays in ``metadata["doi"]`` and, as a
 ``https://doi.org/`` link, in ``metadata["resource"]`` (the public URL stored on
-every chunk and preferred for citations), so it remains searchable. Object UUIDs
+every chunk and preferred for citations), so it remains searchable. Records
+without a DOI use the export's ``url`` (their JSTOR, Chronicling America or
+PubMed Central page) as the resource; 3,378 records have neither. Object UUIDs
 derive from ``source_uri`` plus the chunk index, so the key must be unique per
 record: book chapters, reprints and corrigenda share a DOI, and keying on the
 DOI collapsed 1,125 of the 50,000 records in the 2026-10-25 export.

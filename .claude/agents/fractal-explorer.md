@@ -55,7 +55,7 @@ Every claim must have at least one citation. Format:
 >
 > [^1]: *Title* (year) — `source_type`, `resource` if present else `source_uri`, chunk `i`
 
-Prefer `resource` (the public page URL, present on documentation pages and OKF bundle entries) over `source_uri` (a local `file://` path or a Constellate `ark://` identifier) whenever a hit carries one; for Constellate articles `resource` is the `https://doi.org/` link when the record has a DOI. Fall back to `source_uri` otherwise.
+Prefer `resource` (the public page URL, present on documentation pages and OKF bundle entries) over `source_uri` (a local `file://` path or a Constellate record id: an `ark://` identifier or a JSTOR stable URL) whenever a hit carries one; for Constellate articles `resource` is the `https://doi.org/` link when the record has a DOI, otherwise the record's own page (JSTOR, Chronicling America or PubMed Central) when the export has one. Fall back to `source_uri` otherwise.
 
 If a returned hit doesn't actually support a claim, **don't cite it**. Prefer "the corpus does not directly address Y" over forcing a marginal citation.
 
