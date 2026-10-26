@@ -31,13 +31,17 @@ when `nvidia-container-runtime` is on K3s's PATH) and the default `local-path` S
      - traefik                      # no ingress needed; keeps host ports 80/443 free
    write-kubeconfig-mode: "0640"    # root-owned kubeconfig, readable by one group
    write-kubeconfig-group: "docker" # or a dedicated k3s-admins group
+   kube-proxy-arg:
+     - nodeport-addresses=127.0.0.0/8  # Weaviate's NodePorts answer on loopback only (it runs with anonymous access)
    ```
 
 3. If `ufw` is enforcing, allow the cluster CIDRs. Check with `sudo ufw status`: only `Status: active`
    counts (an active `ufw.service` with `ENABLED=no` in `/etc/ufw/ufw.conf` enforces nothing, and
    `ufw status` then lists no rules). Nothing else needs opening: `kubectl` talks to
    `127.0.0.1:6443` and the RAG client to `localhost`; Weaviate runs with anonymous access, so do
-   not expose 30080/30051 to the network):
+   not expose 30080/30051 to the network). The `kube-proxy-arg` above is what enforces that: without
+   it a NodePort answers on every address of the host, firewall or not. An existing cluster takes the
+   same lines followed by `sudo systemctl restart k3s` (running pods are kept):
 
    ```bash
    sudo ufw allow from 10.42.0.0/16 to any comment 'k3s pod CIDR'
@@ -96,11 +100,12 @@ docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo 
 kubectl apply -k k3s-deployment/overlays/dgx-spark
 ```
 
-Measured on a GB10: the model takes about 2.3 GB of GPU memory and embeds roughly 16 long
-(350-word) or 50 short texts per second. Platform notes: `nvidia-smi` reports memory as `N/A`
-(unified memory, expected); a container's `resources.limits.memory` also caps its GPU allocations,
-so raise the sidecar's 24 Gi limit before adding replicas; PyTorch 2.9 warns that compute
-capability 12.1 is newer than its tested range and runs through PTX, which works.
+Measured on a GB10: the model takes about 2.3 GB of GPU memory (about 3 GB per running replica)
+and embeds roughly 16 long (350-word) or 50 short texts per second. Platform notes: `nvidia-smi`
+reports memory as `N/A` (unified memory, expected); a container's `resources.limits.memory` also
+caps its GPU allocations (the sidecar's 24 Gi limit is per pod and ample for one model, so a second
+replica needs no manifest change); PyTorch 2.9 warns that compute capability 12.1 is newer than its
+tested range and runs through PTX, which works.
 
 ## Operations
 

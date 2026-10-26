@@ -22,7 +22,7 @@ reserved-file convention. The two knowledge bundles keep their own logs:
 
 ## 2026-10-26
 
-- **Update**: [Hosted VM (K3s)](fractal-rag/hosted-vm.md) is host-agnostic and carries the user guide: a "Where it runs" table (the DGX Spark reference deployment, the retired A100 server, Jetstream2 as an option), path-neutral install steps, a new "Use the index" half (shell queries, Claude Code on the host or from a workstation, Claude Code on local vLLM models through a LiteLLM gateway, and a Python loop for any OpenAI-compatible endpoint) and Jetstream2 flavor notes. [Troubleshooting](fractal-rag/troubleshooting.md) gained two entries for local models, and the [overview](fractal-rag/index.md) a path for researchers who want the agent on local models.
+- **Update**: [Hosted VM (K3s)](fractal-rag/hosted-vm.md) is host-agnostic and carries the user guide: a "Where it runs" table (the DGX Spark reference deployment, the retired A100 server, Jetstream2 as an option), path-neutral install steps, a new "Use the index" half (shell queries, Claude Code on the host or from a workstation, Claude Code on local vLLM models through a LiteLLM gateway, and a Python loop for any OpenAI-compatible endpoint) and Jetstream2 flavor notes. [Troubleshooting](fractal-rag/troubleshooting.md) gained two entries for local models, and the [overview](fractal-rag/index.md) a path for researchers who want the agent on local models. The guide also warns that the anonymous Weaviate NodePorts answer on every host address and shows the `kube-proxy-arg` that pins them to loopback (added to the `k3s-deployment/README.md` configuration example as well).
 
 ## 2026-10-25
 

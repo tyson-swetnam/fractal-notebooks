@@ -286,6 +286,9 @@ The 50K-article JSONL is ~17 GB and dominates wall clock. Options:
 - Or `fractal-rag` isn't on PATH for the Claude Code process. In a fresh
   terminal: `which fractal-rag`. If empty, re-run `pip install -e .` and
   reopen Claude Code so it picks up your shell's PATH.
+- Or you declined the one-time approval for the project server: `claude mcp
+  list` shows `⏸ Pending approval` or `Rejected`; run `claude mcp
+  reset-project-choices` and reopen Claude Code.
 
 ### MCP server starts but returns `weaviate_error: connection refused`
 
@@ -314,37 +317,64 @@ this manually from the CLI, the same rule applies.
 ### Claude Code on a local model fails with `Cannot connect to host`
 
 Every turn ends in `API Error: 500 litellm.InternalServerError: ...
-Hosted_vllmException - Cannot connect to host 127.0.0.1:8012` (or another port)
-while `ANTHROPIC_BASE_URL` points at the LiteLLM gateway.
+Hosted_vllmException - Cannot connect to host 127.0.0.1:<port>` while
+`ANTHROPIC_BASE_URL` points at the LiteLLM gateway.
 
 - The gateway accepted the model name and tried to reach the vLLM backend
   registered for it, and that backend is not listening. The address in the
   message is on the inference host, not on the RAG host, so nothing on the K3s
-  side is wrong.
-- Start (or wait for) the backend on the inference host; vLLM engines take
-  minutes to load. `curl -s -H "Authorization: Bearer $GATEWAY_KEY"
-  http://127.0.0.1:8000/v1/models` lists the registered names, and a one-token
-  chat completion against a name tells you whether its backend is up before you
-  open Claude Code.
-- A `400 Invalid model name passed in model=...` means the name is not
-  registered with the gateway at all: pick one from that list.
-- A `401 Authentication Error` means the key was rejected or arrived in a header
-  the gateway does not read; `ANTHROPIC_AUTH_TOKEN` sets `Authorization: Bearer`,
-  which LiteLLM reads.
+  side is wrong. Start (or wait for) the backend on the inference host; vLLM
+  engines take minutes to load.
+- Probe before opening Claude Code. The registered names:
+  `curl -s -H "Authorization: Bearer $GATEWAY_KEY" http://127.0.0.1:8000/v1/models | jq -r '.data[].id'`.
+  Whether a backend answers, on the path Claude Code uses:
+
+    ```bash
+    curl -sS -w '\n%{http_code}\n' -X POST http://127.0.0.1:8000/v1/messages \
+      -H "Authorization: Bearer $GATEWAY_KEY" -H 'anthropic-version: 2023-06-01' \
+      -H 'content-type: application/json' \
+      -d '{"model":"<name>","max_tokens":1,"messages":[{"role":"user","content":"."}]}'
+    ```
+
+  A body starting `{"id":"msg_` means the backend answered; `500 ... Cannot
+  connect to host` means registered but down; `400 Invalid model name passed in
+  model=...` means the name is not registered with the gateway, so pick one
+  from the list.
+- A `401 Authentication Error, No api key passed in` means no credential
+  reached the gateway: export `ANTHROPIC_AUTH_TOKEN` in the shell that starts
+  Claude Code. LiteLLM reads it from `Authorization: Bearer`; it also reads
+  `x-api-key` (which `ANTHROPIC_API_KEY` would set) and prefers `Authorization`
+  when both arrive. A wrong key on a LiteLLM gateway that runs without a
+  database comes back as `400 No connected db.`, because LiteLLM can only
+  validate its master key locally: check the key file, not a database.
+- Other `400`s naming `context_management`, `Extra inputs are not permitted`,
+  `defer_loading` or `thinking` come from fields Claude Code sends that the
+  gateway-to-vLLM translation does not accept: start Claude Code with
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`, and see the [official gateway
+  troubleshooting table](https://code.claude.com/docs/en/llm-gateway-connect#troubleshoot-gateway-errors)
+  for the rest.
 
 ### Local model never calls the fractal-rag tools
 
 The answer comes from the model's memory, or the tool call appears as text in
 the reply.
 
+- Claude Code defers MCP tools behind its `ToolSearch` tool by default, since
+  v2.1.304 also through a gateway: the first request offers no
+  `mcp__fractal-rag__*` tool at all, and a small model that never calls
+  `ToolSearch` never sees them. Start Claude Code with
+  `ENABLE_TOOL_SEARCH=false` so the eight schemas are sent directly.
 - The vLLM server must be started with `--enable-auto-tool-choice` and a
   `--tool-call-parser` for its model family (for example `hermes` for Qwen3,
   `qwen3_coder` for the Qwen3.6 and Qwen3.8 models). Without them vLLM returns
   tool calls as plain text, and through the gateway Claude Code sees no tool use.
 - Small models handle a short tool catalogue better than Claude Code's full
-  one. For scripted runs pass `--mcp-config .mcp.json --strict-mcp-config` so
-  only the eight RAG tools are offered, and name the tool in the prompt ("use
-  search_artifacts for ...").
+  one. For scripted runs pass `--tools "" --mcp-config .mcp.json
+  --strict-mcp-config` with `ENABLE_TOOL_SEARCH=false`, so the request carries
+  only the eight RAG tools: `--strict-mcp-config` by itself only keeps other MCP
+  servers out, the built-in tools stay in the catalogue, and `--allowedTools`
+  only pre-approves calls and removes nothing. Name the tool in the prompt
+  ("use search_artifacts for ...").
 - Check retrieval separately with `fractal-rag query "<question>"`: if the CLI
   returns good hits, the problem is the model or its tool-calling setup, not
   the index.
