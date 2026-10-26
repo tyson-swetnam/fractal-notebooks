@@ -43,6 +43,64 @@ Look for:
   check the deployment manifest has both
   `ENABLE_MODULES=text2vec-transformers` and `DEFAULT_VECTORIZER_MODULE`.
 
+### Weaviate pod stays `0/1 Running` and exits every ten minutes
+
+`kubectl -n ai-workloads logs deploy/weaviate --previous` ends with `could not
+join raft join list: context deadline exceeded. Weaviate detected this node to
+have state stored` after `RAFT_BOOTSTRAP_TIMEOUT` (600 s), and the readiness
+probe returns 503 the whole time. Weaviate names its Raft node after the pod
+unless `CLUSTER_HOSTNAME` is set, so a re-created pod (image change, node
+reboot, `rollout restart`) cannot rejoin the single-voter cluster its
+predecessor left on the volume. The hint in the message about raising the
+timeout does not apply: the database is not loading, the node identity changed.
+
+The base manifest pins `CLUSTER_HOSTNAME=node1` and sets
+`RAFT_ENABLE_ONE_NODE_RECOVERY=true`, which lets a node whose name changed
+rewrite the stored configuration to itself. Apply it and watch for the recovery
+line:
+
+```bash
+kubectl apply -f k3s-deployment/base/weaviate-deployment.yaml
+kubectl -n ai-workloads logs deploy/weaviate | grep -m1 'perform cluster recovery'
+# ... "old_single_cluster_node_name":"weaviate-<old pod>","new_single_cluster_node_name":"node1" ...
+```
+
+On 2026-10-25 the pod was ready eleven seconds after the apply; the data on the
+volume is untouched by the recovery.
+
+### Keyword (BM25) scores are 0 and hybrid ranking looks arbitrary
+
+Exact-title pages fall out of the top ten, every `search_artifacts` hit carries
+the same score, and a direct probe returns matches whose score is exactly 0 on
+the word-tokenized properties while the explanation still shows a term
+frequency:
+
+```bash
+python -c "
+from fractal_rag.client import client_session
+from weaviate.classes.query import MetadataQuery
+with client_session() as c:
+    res = c.collections.get('FractalArtifact').query.bm25(
+        query='lacunarity', query_properties=['content'], limit=3,
+        return_metadata=MetadataQuery(score=True, explain_score=True))
+    for o in res.objects: print(o.metadata.score, o.metadata.explain_score)
+"
+```
+
+Weaviate before 1.35.3 writes a NaN average property length for a segment flush
+that contains only deletions (weaviate/weaviate#10102); compaction spreads it
+through the collection, and on arm64 the NaN becomes an average of 0, so the
+BM25 term weight is 0 for every match in `title`, `summary`, `content` and
+`authors` (`tags`, `source_type` and the other FIELD-tokenized properties keep
+scoring). A `delete_many` of 97,762 objects on 2026-10-25 triggered it: the
+keyword leg of every hybrid query became a flat bonus and the `Hurst Exponent`
+concept page ranked 26th for its own title. The base manifest pins 1.35.23:
+applying it restarted Weaviate on the patched release, whose loader recomputes
+the averages from the stored per-document lengths, and the scores were back
+without a rebuild (the concept page ranks first). On a version that cannot be
+upgraded, `schema bootstrap --drop` plus a full re-ingest also clears the NaN
+segments.
+
 ### `t2v-transformers` pod is `Pending` forever
 
 ```bash
@@ -157,8 +215,9 @@ deleted page should then return no hits.
 
 ### Ingest is dropping a lot of objects
 
-Watch `failed_chunks` per source in `fractal-rag status` and tail the
-failures file:
+Watch `failed_chunks` per source in the JSON report that `fractal-rag ingest`
+prints (the last run is also saved to `~/.cache/fractal-rag/state.json`;
+`fractal-rag status` only prints collection counts) and tail the failures file:
 
 ```bash
 tail -f ~/.cache/fractal-rag/failed_objects.jsonl
@@ -166,8 +225,10 @@ tail -f ~/.cache/fractal-rag/failed_objects.jsonl
 
 Common causes:
 
-- **Embedding sidecar saturated:** GPU OOM or 429 backoff. Reduce
-  concurrency by lowering `FRACTAL_RAG_BATCH_CONCURRENCY` (default 4).
+- **Embedding sidecar saturated:** GPU OOM or 429 backoff in the sidecar log.
+  The ingest sends one chunk at a time, so this points at an undersized pod
+  memory limit rather than at load (`FRACTAL_RAG_BATCH_CONCURRENCY` is read
+  but not used by the current loop).
 - **Property too large:** a single chunk above ~64 KiB will fail with a
   Weaviate validation error. Reduce `chunk_max_tokens` or fix the upstream
   parser that's emitting a giant blob.
@@ -176,13 +237,43 @@ Common causes:
   `uuid5(...)` scheme; if it does, rerun pass 1 (`fractal-rag schema
   bootstrap` + reseed).
 
+### `status` shows fewer json objects than `inserted_chunks`
+
+Object UUIDs derive from `source_uri` plus the chunk index, so two records with
+the same `source_uri` overwrite each other while the loop counts both as
+inserted. The json parser keys records on the Constellate `id` (a Portico
+`ark://` identifier or a JSTOR stable URL), which is unique across the export;
+before 2026-10-25 it keyed them on the DOI, and DOIs are shared by book
+chapters, reprints and corrigenda: 1,125 of the 50,000
+records repeated an earlier DOI (48,875 distinct), so that run reported 100,012
+inserted chunks and `status` showed 97,762 json objects. An index built with the
+old parser must be rebuilt, because every json UUID changes:
+
+```bash
+fractal-rag schema bootstrap --drop      # destructive: drops and recreates both collections
+fractal-rag ingest --source all
+```
+
+Deleting only the json objects (`delete_many` filtered on `source_type ==
+json_corpus`, repeated until `matches` is 0 because the server deletes at most
+10,000 objects per call) and re-running `ingest --source json` saves the ten
+minutes the docs and notebooks take, but only on Weaviate 1.35.3 or newer: on
+1.35.0 the bulk delete zeroed every keyword score (see [Keyword scores are
+0](#keyword-bm25-scores-are-0-and-hybrid-ranking-looks-arbitrary)). On the DGX
+Spark the json re-ingest took two hours and left exactly 100,012 json objects
+for 100,012 inserted chunks: an anchor chunk and one content chunk for each of
+the 50,000 records (12 long records get a second content chunk).
+
 ### Ingest takes forever on the JSONL corpus
 
 The 50K-article JSONL is ~17 GB and dominates wall clock. Options:
 
 - Ingest a slice first: `fractal-rag ingest --source json --limit 5000`.
-- Bump `FRACTAL_RAG_BATCH_SIZE` from 100 → 256 (Weaviate handles it; the
-  bottleneck is the GPU embed call).
+- Run two sidecar replicas: `kubectl -n ai-workloads scale deploy/t2v-transformers
+  --replicas=2` took a DGX Spark from 8 to 14 chunks per second (the full
+  corpus then takes about two hours). `FRACTAL_RAG_BATCH_SIZE` is not
+  consulted by the current one-chunk-at-a-time loop, so raising it changes
+  nothing.
 - Run the ingest in `screen`/`tmux`; it's resumable because the deterministic
   UUID scheme upserts rather than appends.
 

@@ -108,6 +108,7 @@ capability 12.1 is newer than its tested range and runs through PTX, which works
 kubectl -n ai-workloads get pods -o wide
 kubectl -n ai-workloads logs -f deploy/weaviate
 kubectl -n ai-workloads rollout restart deploy/t2v-transformers
+kubectl -n ai-workloads scale deploy/t2v-transformers --replicas=2   # one pod per GPU time slice; ~14 vs ~8 chunks/s on a GB10
 sudo ls /var/lib/rancher/k3s/storage/                    # Weaviate data (PVC)
 sudo /usr/local/bin/k3s-uninstall.sh                     # remove K3s (data under /var/lib/rancher is deleted too)
 ```
@@ -115,3 +116,10 @@ sudo /usr/local/bin/k3s-uninstall.sh                     # remove K3s (data unde
 Swapping the embedding model: change the image (base manifest or an overlay `images:` entry), roll
 the deployment, then `fractal-rag schema bootstrap --drop` and re-ingest, because vectors are
 model-specific.
+
+Upgrading Weaviate: change the tag in `base/weaviate-deployment.yaml` (1.35.3 or newer; 1.35.0
+zeroes every BM25 score after a bulk delete, weaviate/weaviate#10102) and `kubectl apply -f` that
+file. The deployment's `Recreate` strategy stops the old pod before the new one mounts the volume,
+and the pinned `CLUSTER_HOSTNAME=node1` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created
+pod rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
+after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`.

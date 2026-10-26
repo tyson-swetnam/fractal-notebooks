@@ -13,7 +13,7 @@ The `fractal-rag` MCP server exposes a Weaviate index over four kinds of content
 | Source type | What it is | Coverage |
 |---|---|---|
 | `json_corpus` | Constellate (formerly JSTOR/Portico) scholarly-article exports | ~50K articles spanning fractal mathematics, dimension theory, biological scaling, dynamics, complex analysis. Includes title, keyphrases, top n-grams, DOI, authors, year, journal. **No full text** — content was synthesized from structured fields. |
-| `notebook` | Jupyter notebooks from the repo (`docs/**/*.ipynb`, minus the generated per-site 3DEP copies) and from the CyVerse iRODS corpus mirror, de-duplicated by path | Educational + research notebooks covering Mandelbrot/Julia sets, Sierpinski, Koch, ferns (IFS), DLA, box-counting, DBC, Hurst exponent, Riemann zeta tilings, etc. Each notebook produces one record per cell. |
+| `notebook` | Jupyter notebooks from the repo (`docs/**/*.ipynb`, minus the generated per-site 3DEP copies) and from the CyVerse iRODS corpus mirror, de-duplicated by content hash | Educational + research notebooks covering Mandelbrot/Julia sets, Sierpinski, Koch, ferns (IFS), DLA, box-counting, DBC, Hurst exponent, Riemann zeta tilings, etc. Each notebook produces one record per cell. |
 | `markdown` | Documentation site pages (`docs/**/*.md`, built with Zensical, OKF v0.2 frontmatter) plus the canonical OKF bundles (`okf/concepts`, `okf/proofs`) | Foundations chapters 1-4 (history, mathematics, dimensionality, glossary); the Parts II-V manuscript sections (metabolic scaling, spectral geometry, biological geometry, research hypotheses); the Apps and Fractal RAG guides; the 32 OKF concept pages and 12 OKF proofs. Rendered notebook pages are NOT in this source (their `.ipynb` is indexed as `notebook`), and pages excluded from the site build are not indexed. Hits from this source carry `resource`, the public page URL. |
 | `pdf` | Reference PDFs (optional; currently empty) | Will appear when curated PDFs are added. |
 
@@ -55,7 +55,7 @@ Every claim must have at least one citation. Format:
 >
 > [^1]: *Title* (year) — `source_type`, `resource` if present else `source_uri`, chunk `i`
 
-Prefer `resource` (the public page URL, present on documentation pages and OKF bundle entries) over `source_uri` (a local `file://` path or `doi:` identifier) whenever a hit carries one; fall back to `source_uri` otherwise.
+Prefer `resource` (the public page URL, present on documentation pages and OKF bundle entries) over `source_uri` (a local `file://` path or a Constellate record id: an `ark://` identifier or a JSTOR stable URL) whenever a hit carries one; for Constellate articles `resource` is the `https://doi.org/` link when the record has a DOI, otherwise the record's own page (JSTOR, Chronicling America or PubMed Central) when the export has one. Fall back to `source_uri` otherwise.
 
 If a returned hit doesn't actually support a claim, **don't cite it**. Prefer "the corpus does not directly address Y" over forcing a marginal citation.
 

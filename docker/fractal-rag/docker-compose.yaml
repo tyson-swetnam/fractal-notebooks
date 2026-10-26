@@ -15,7 +15,7 @@ version: "3.8"
 
 services:
   weaviate:
-    image: semitechnologies/weaviate:1.35.0
+    image: semitechnologies/weaviate:1.35.23
     restart: unless-stopped
     ports:
       - "8080:8080"

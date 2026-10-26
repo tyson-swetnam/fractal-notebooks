@@ -41,6 +41,32 @@ def _make_constellate_record(idx: int) -> dict:
     }
 
 
+def test_parse_jsonl_keys_records_on_constellate_id(tmp_path: Path) -> None:
+    """Records sharing a DOI stay distinct; the DOI is only a fallback key."""
+    a = _make_constellate_record(0)
+    b = _make_constellate_record(1)
+    b["doi"] = a["doi"]  # a book chapter or reprint that shares the DOI
+    c = _make_constellate_record(2)
+    c["id"] = ""  # no Constellate id: fall back to the DOI
+    d = _make_constellate_record(3)
+    del d["id"]
+    del d["doi"]
+    p = tmp_path / "corpus.jsonl"
+    p.write_text("".join(json.dumps(r) + "\n" for r in (a, b, c, d)))
+
+    docs = list(parse_jsonl(p))
+    uris = [doc.source_uri for doc in docs]
+    assert uris == ["ark://27927/record0", "ark://27927/record1", "doi:10.1234/test.2", "<unknown>"]
+    assert len(set(uris)) == 4
+    # The DOI stays reachable as the public resource URL; a record without a DOI
+    # falls back to the export's url, and to None when there is neither.
+    assert docs[1].metadata["resource"] == "https://doi.org/10.1234/test.0"
+    assert docs[3].metadata["resource"] == "http://doi.org/10.1234/test.3"
+    del d["url"]
+    p.write_text(json.dumps(d) + "\n")
+    assert next(parse_jsonl(p)).metadata["resource"] is None
+
+
 def test_parse_jsonl_yields_one_doc_per_record(tmp_path: Path) -> None:
     p = tmp_path / "corpus.jsonl"
     with p.open("w") as f:
@@ -52,7 +78,10 @@ def test_parse_jsonl_yields_one_doc_per_record(tmp_path: Path) -> None:
     assert all(isinstance(d, RawDocument) for d in docs)
     assert docs[0].title == "Fractal study 0"
     assert docs[0].source_type == "json_corpus"
-    assert docs[0].source_uri == "doi:10.1234/test.0"
+    assert docs[0].source_uri == "ark://27927/record0"
+    assert docs[0].metadata["doi"] == "10.1234/test.0"
+    assert docs[0].metadata["constellate_id"] == "ark://27927/record0"
+    assert docs[0].metadata["resource"] == "https://doi.org/10.1234/test.0"
     assert docs[0].year == 2020
     assert docs[0].authors == ["Alice", "Bob"]
     assert "fractal dimension" in docs[0].content

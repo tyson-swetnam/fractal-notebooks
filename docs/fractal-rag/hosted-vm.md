@@ -142,20 +142,34 @@ fractal-rag pull
 fractal-rag ingest --source all 2>&1 | tee ~/fractal-rag-ingest.log
 ```
 
-A full ingest on the reference hardware takes ~30-90 minutes — most of the
-wall clock is spent waiting on the GPU sidecar to embed the 50K JSONL records
-(the markdown + notebooks finish in seconds). Watch progress with:
+Measured on the DGX Spark (2026-10-25): the docs finish in about a minute, the
+notebooks in about five, and the 50,000 JSONL records take about two hours at
+14 chunks per second with two sidecar replicas (every chunk is three vectors).
+The ingest inserts one chunk at a time, so the GPU is not the bottleneck; the
+second replica, which uses the second GPU time slice, is the only cheap lever:
+
+```bash
+kubectl -n ai-workloads scale deploy/t2v-transformers --replicas=2
+```
+
+The manifests declare one replica, so any later `kubectl apply -k` scales the
+sidecar back to one; repeat the command before the next long ingest.
+
+Watch progress with:
 
 ```bash
 kubectl -n ai-workloads logs -f deploy/t2v-transformers
 fractal-rag status                       # repeat to see counts climbing
 ```
 
-When it finishes, sanity-check that all four source types landed:
+When it finishes, sanity-check that all four source types landed. The json
+object count should equal the `inserted_chunks` of the json report; if it is
+smaller, the index was built by the pre-2026-10-25 parser that keyed records on
+the DOI (see [Troubleshooting](troubleshooting.md#status-shows-fewer-json-objects-than-inserted_chunks)).
 
 ```bash
 fractal-rag status
-# { "FractalArtifact": 75000+, "Concept": 31 }
+# { "FractalArtifact": 104061, "Concept": 32 }   # 2026-10-25: 512 docs + 3,537 notebook + 100,012 json chunks
 
 # Inspect by source_type:
 python -c "
@@ -234,6 +248,29 @@ kubectl -n ai-workloads rollout restart deploy/weaviate
 kubectl -n ai-workloads rollout restart deploy/t2v-transformers
 ```
 
+The manifest pins Weaviate's Raft node name (`CLUSTER_HOSTNAME=node1`), so a
+re-created pod rejoins its own single-node cluster; a pod created before that
+setting existed recovers through `RAFT_ENABLE_ONE_NODE_RECOVERY` (see
+[Troubleshooting](troubleshooting.md#weaviate-pod-stays-01-running-and-exits-every-ten-minutes)).
+
+### Upgrade Weaviate
+
+Change the image tag in `k3s-deployment/base/weaviate-deployment.yaml` and apply
+that file alone: the deployment uses the `Recreate` strategy, so the old pod
+releases the volume before the new one mounts it, and a full `kubectl apply -k`
+would also reset the sidecar to one replica.
+
+```bash
+kubectl apply -f k3s-deployment/base/weaviate-deployment.yaml
+kubectl -n ai-workloads rollout status deploy/weaviate
+curl -s localhost:30080/v1/meta | python -c "import json, sys; print(json.load(sys.stdin)['version'])"
+```
+
+Stay at 1.35.3 or newer: 1.35.0 zeroes every keyword score after a bulk delete
+(see [Troubleshooting](troubleshooting.md#keyword-bm25-scores-are-0-and-hybrid-ranking-looks-arbitrary)).
+The 2026-10-25 move from 1.35.0 to 1.35.23 kept the 104,061 objects and repaired
+the scores on restart.
+
 ### Re-ingest after a schema change
 
 ```bash
@@ -271,7 +308,8 @@ kubectl apply -k k3s-deployment/overlays/dgx-spark
 The device plugin must be v0.17.4 or newer on the GB10 (the base ships v0.20.1),
 `nvidia-smi` reports memory as `N/A` on this unified-memory platform, and a pod's
 memory limit also caps its GPU allocations. On a GB10 the sidecar embeds about 16
-long or 50 short texts per second. See `k3s-deployment/README.md` for the full recipe.
+long or 50 short texts per second; a full ingest ran at about 8 chunks per second
+with one replica and 14 with two. See `k3s-deployment/README.md` for the full recipe.
 
 ## Where to go next
 
