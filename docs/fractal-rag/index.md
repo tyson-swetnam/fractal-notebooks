@@ -52,6 +52,7 @@ flowchart LR
 | A developer who wants to try the stack on a laptop without GPUs | **[Local setup](local-setup.md)** |
 | An operator deploying to a CyVerse / Jetstream-2 / on-prem GPU node | **[Hosted VM (K3s)](hosted-vm.md)** |
 | A researcher who already has it running and just wants to use it | **[Using the fractal-explorer agent](using-the-agent.md)** |
+| A researcher who wants the agent on local (vLLM) models instead of the Anthropic API | **[Hosted VM (K3s): local models](hosted-vm.md#use-local-vllm-models-through-a-gateway)** |
 | Hitting an error | **[Troubleshooting](troubleshooting.md)** |
 
 ## What's in the box

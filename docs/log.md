@@ -20,6 +20,10 @@ Newest first. Bullets are tagged **Creation**, **Update** or **Deprecation**, fo
 reserved-file convention. The two knowledge bundles keep their own logs:
 [concepts](okf/concepts/log.md) and [proofs](okf/proofs/log.md).
 
+## 2026-10-26
+
+- **Update**: [Hosted VM (K3s)](fractal-rag/hosted-vm.md) is host-agnostic and carries the user guide: a "Where it runs" table (the DGX Spark reference deployment, the retired A100 server, Jetstream2 as an option), path-neutral install steps, a new "Use the index" half (shell queries, Claude Code on the host or from a workstation, Claude Code on local vLLM models through a LiteLLM gateway, and a Python loop for any OpenAI-compatible endpoint) and Jetstream2 flavor notes. [Troubleshooting](fractal-rag/troubleshooting.md) gained two entries for local models, and the [overview](fractal-rag/index.md) a path for researchers who want the agent on local models.
+
 ## 2026-10-25
 
 - **Update**: [Troubleshooting](fractal-rag/troubleshooting.md) gained two infrastructure entries from the verification of the DGX Spark index: a Weaviate pod that exits every ten minutes with `could not join raft join list` (the Raft node name was the pod name; the manifests now pin `CLUSTER_HOSTNAME=node1` with single-node recovery and a `Recreate` strategy), and keyword (BM25) scores of exactly 0 after a bulk delete on Weaviate 1.35.0 (upstream bug #10102; the manifests pin 1.35.23, which repaired the scores on restart). [Hosted VM (K3s)](fractal-rag/hosted-vm.md) gained an "Upgrade Weaviate" playbook entry, and the re-key recipe rebuilds the index instead of bulk-deleting.

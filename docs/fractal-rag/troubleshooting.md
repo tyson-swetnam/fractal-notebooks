@@ -311,6 +311,44 @@ this manually from the CLI, the same rule applies.
   cold start, which Claude Code may flag as a startup timeout. Bumping the
   MCP server start timeout (in Claude Code settings) helps.
 
+### Claude Code on a local model fails with `Cannot connect to host`
+
+Every turn ends in `API Error: 500 litellm.InternalServerError: ...
+Hosted_vllmException - Cannot connect to host 127.0.0.1:8012` (or another port)
+while `ANTHROPIC_BASE_URL` points at the LiteLLM gateway.
+
+- The gateway accepted the model name and tried to reach the vLLM backend
+  registered for it, and that backend is not listening. The address in the
+  message is on the inference host, not on the RAG host, so nothing on the K3s
+  side is wrong.
+- Start (or wait for) the backend on the inference host; vLLM engines take
+  minutes to load. `curl -s -H "Authorization: Bearer $GATEWAY_KEY"
+  http://127.0.0.1:8000/v1/models` lists the registered names, and a one-token
+  chat completion against a name tells you whether its backend is up before you
+  open Claude Code.
+- A `400 Invalid model name passed in model=...` means the name is not
+  registered with the gateway at all: pick one from that list.
+- A `401 Authentication Error` means the key was rejected or arrived in a header
+  the gateway does not read; `ANTHROPIC_AUTH_TOKEN` sets `Authorization: Bearer`,
+  which LiteLLM reads.
+
+### Local model never calls the fractal-rag tools
+
+The answer comes from the model's memory, or the tool call appears as text in
+the reply.
+
+- The vLLM server must be started with `--enable-auto-tool-choice` and a
+  `--tool-call-parser` for its model family (for example `hermes` for Qwen3,
+  `qwen3_coder` for the Qwen3.6 and Qwen3.8 models). Without them vLLM returns
+  tool calls as plain text, and through the gateway Claude Code sees no tool use.
+- Small models handle a short tool catalogue better than Claude Code's full
+  one. For scripted runs pass `--mcp-config .mcp.json --strict-mcp-config` so
+  only the eight RAG tools are offered, and name the tool in the prompt ("use
+  search_artifacts for ...").
+- Check retrieval separately with `fractal-rag query "<question>"`: if the CLI
+  returns good hits, the problem is the model or its tool-calling setup, not
+  the index.
+
 ## Agent quality
 
 ### Agent says "I couldn't find anything" but the topic obviously exists
