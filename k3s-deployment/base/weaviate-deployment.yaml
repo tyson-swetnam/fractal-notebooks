@@ -34,7 +34,11 @@ spec:
             # re-created pod (new name) can never rejoin its own single-node cluster: it retries
             # for RAFT_BOOTSTRAP_TIMEOUT seconds and exits. The recovery flag lets a node whose
             # name changed (a pod created before this setting existed) rewrite the stored
-            # single-voter configuration to itself.
+            # single-voter configuration to itself. Choose the name before the first ingest and
+            # never change it: Weaviate also records the owning node name in each shard's
+            # metadata, and the recovery renames only the Raft member, so a changed name makes
+            # every read fail with "no read replica found" after a restart. The dgx-spark overlay
+            # patches in the reference cluster's original name.
             - name: CLUSTER_HOSTNAME
               value: node1
             - name: RAFT_ENABLE_ONE_NODE_RECOVERY

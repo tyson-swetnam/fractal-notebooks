@@ -31,13 +31,17 @@ when `nvidia-container-runtime` is on K3s's PATH) and the default `local-path` S
      - traefik                      # no ingress needed; keeps host ports 80/443 free
    write-kubeconfig-mode: "0640"    # root-owned kubeconfig, readable by one group
    write-kubeconfig-group: "docker" # or a dedicated k3s-admins group
+   kube-proxy-arg:
+     - nodeport-addresses=127.0.0.0/8  # Weaviate's NodePorts answer on loopback only (it runs with anonymous access)
    ```
 
 3. If `ufw` is enforcing, allow the cluster CIDRs. Check with `sudo ufw status`: only `Status: active`
    counts (an active `ufw.service` with `ENABLED=no` in `/etc/ufw/ufw.conf` enforces nothing, and
    `ufw status` then lists no rules). Nothing else needs opening: `kubectl` talks to
    `127.0.0.1:6443` and the RAG client to `localhost`; Weaviate runs with anonymous access, so do
-   not expose 30080/30051 to the network):
+   not expose 30080/30051 to the network). The `kube-proxy-arg` above is what enforces that: without
+   it a NodePort answers on every address of the host, firewall or not. An existing cluster takes the
+   same lines followed by `sudo systemctl restart k3s` (running pods are kept):
 
    ```bash
    sudo ufw allow from 10.42.0.0/16 to any comment 'k3s pod CIDR'
@@ -96,11 +100,12 @@ docker save fractal-rag/t2v-transformers:arctic-embed-l-v2.0-cu130-arm64 | sudo 
 kubectl apply -k k3s-deployment/overlays/dgx-spark
 ```
 
-Measured on a GB10: the model takes about 2.3 GB of GPU memory and embeds roughly 16 long
-(350-word) or 50 short texts per second. Platform notes: `nvidia-smi` reports memory as `N/A`
-(unified memory, expected); a container's `resources.limits.memory` also caps its GPU allocations,
-so raise the sidecar's 24 Gi limit before adding replicas; PyTorch 2.9 warns that compute
-capability 12.1 is newer than its tested range and runs through PTX, which works.
+Measured on a GB10: the model takes about 2.3 GB of GPU memory (about 3 GB per running replica)
+and embeds roughly 16 long (350-word) or 50 short texts per second. Platform notes: `nvidia-smi`
+reports memory as `N/A` (unified memory, expected); a container's `resources.limits.memory` also
+caps its GPU allocations (the sidecar's 24 Gi limit is per pod and ample for one model, so a second
+replica needs no manifest change); PyTorch 2.9 warns that compute capability 12.1 is newer than its
+tested range and runs through PTX, which works.
 
 ## Operations
 
@@ -120,6 +125,10 @@ model-specific.
 Upgrading Weaviate: change the tag in `base/weaviate-deployment.yaml` (1.35.3 or newer; 1.35.0
 zeroes every BM25 score after a bulk delete, weaviate/weaviate#10102) and `kubectl apply -f` that
 file. The deployment's `Recreate` strategy stops the old pod before the new one mounts the volume,
-and the pinned `CLUSTER_HOSTNAME=node1` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created
-pod rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
-after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`.
+and the pinned `CLUSTER_HOSTNAME` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created pod
+rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
+after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`. The name must equal the one the
+data was written under (it is recorded in each shard's metadata; the recovery renames only the Raft
+member): the base says `node1`, and `overlays/dgx-spark/weaviate-node-name.yaml` patches the
+reference cluster's original name. Never change it once data exists, or every read fails with
+`no read replica found` (`curl localhost:30080/v1/schema/FractalArtifact/shards` names the expected node).

@@ -36,7 +36,7 @@ flowchart LR
     Agent[fractal-explorer<br/>subagent]
   end
 
-  iRODS -->|gocmd pull| Local["/opt/tswetnam/fractal-notebooks/"]
+  iRODS -->|gocmd pull| Local["FRACTAL_RAG_CORPUS_ROOT<br/>(31 GB mirror)"]
   Local -->|fractal-rag ingest| Weaviate
   Weaviate <-->|vectorize| T2V
   MCP -->|weaviate-client v4| Weaviate
@@ -50,8 +50,9 @@ flowchart LR
 | If you are… | Read |
 |---|---|
 | A developer who wants to try the stack on a laptop without GPUs | **[Local setup](local-setup.md)** |
-| An operator deploying to a CyVerse / Jetstream-2 / on-prem GPU node | **[Hosted VM (K3s)](hosted-vm.md)** |
+| An operator deploying to a CyVerse / Jetstream2 / on-prem GPU node | **[Hosted VM (K3s)](hosted-vm.md)** |
 | A researcher who already has it running and just wants to use it | **[Using the fractal-explorer agent](using-the-agent.md)** |
+| A researcher who wants the agent on local (vLLM) models instead of the Anthropic API | **[Hosted VM (K3s): local models](hosted-vm.md#use-local-vllm-models-through-a-gateway)** |
 | Hitting an error | **[Troubleshooting](troubleshooting.md)** |
 
 ## What's in the box
@@ -59,7 +60,7 @@ flowchart LR
 | Component | Source | Purpose |
 |---|---|---|
 | `fractal_rag/` Python package | this repo | parsing, chunking, concept enrichment, ingest, MCP server |
-| `k3s-deployment/*.yaml` | this repo | Weaviate 1.35 + GPU embedding sidecar manifests |
+| `k3s-deployment/base/` + `overlays/dgx-spark/` | this repo | Weaviate 1.35 + GPU embedding sidecar manifests (kustomize) |
 | `docker/fractal-rag/docker-compose.yaml` | this repo | Single-node local stack (CPU-only) |
 | `.claude/agents/fractal-explorer.md` | this repo | Custom retrieval subagent definition |
 | `.mcp.json` | this repo | Repo-local MCP server wiring |
