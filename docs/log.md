@@ -22,7 +22,7 @@ reserved-file convention. The two knowledge bundles keep their own logs:
 
 ## 2026-10-28
 
-- **Update**: [Troubleshooting](fractal-rag/troubleshooting.md) gained "Every query fails with `no read replica found`": after the 2026-10-27 reboot the reference index was unreadable because Weaviate's shard metadata still named the original pod while the Raft node had been renamed to `node1` on 2026-10-25. The node name is now pinned to the data's original name through the `dgx-spark` overlay, and [Hosted VM (K3s)](fractal-rag/hosted-vm.md) explains that the name must never change once data exists.
+- **Update**: [Troubleshooting](fractal-rag/troubleshooting.md) gained "Every query fails with `no read replica found`": after the 2026-10-27 reboot the reference index was unreadable because Weaviate's shard metadata still named the original pod while the Raft node had been renamed to `node1` on 2026-10-25. The node name is now pinned to the data's original name through the `dgx-spark` overlay, and [Hosted VM (K3s)](fractal-rag/hosted-vm.md) explains that the name must never change once data exists. The local-model recipe in Hosted VM (K3s) was run end to end on a Qwen3-8B backend; Troubleshooting records the `System message must be at the beginning.` rejection by the Qwen3.6 and Qwen3.8 chat templates.
 
 ## 2026-10-26
 

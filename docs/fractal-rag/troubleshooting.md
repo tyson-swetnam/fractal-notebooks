@@ -379,6 +379,13 @@ Hosted_vllmException - Cannot connect to host 127.0.0.1:<port>` while
   when both arrive. A wrong key on a LiteLLM gateway that runs without a
   database comes back as `400 No connected db.`, because LiteLLM can only
   validate its master key locally: check the key file, not a database.
+- `400 ... System message must be at the beginning.` is the model's chat
+  template refusing a `system`-role entry that Claude Code 2.1.310 places after
+  the user turn ([anthropics/claude-code#77698](https://github.com/anthropics/claude-code/issues/77698)).
+  The Qwen3.6 and Qwen3.8 templates refuse it, Qwen3-8B accepted it (verified
+  2026-10-28). Pick a model whose template allows it, or use the Python loop in
+  the [Hosted VM guide](hosted-vm.md#from-python-or-any-openai-compatible-agent),
+  which sends one leading system message and worked on every backend.
 - Other `400`s naming `context_management`, `Extra inputs are not permitted`,
   `defer_loading` or `thinking` come from fields Claude Code sends that the
   gateway-to-vLLM translation does not accept: start Claude Code with

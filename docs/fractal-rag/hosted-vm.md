@@ -383,10 +383,15 @@ claude --model <gateway model name>
 Inside the session, `/status` shows an `Anthropic base URL` line pointing at the
 gateway and `/mcp` lists `fractal-rag` as connected; from there the
 `fractal-explorer` agent should behave as in [Using the
-agent](using-the-agent.md). As of 2026-10-26 this recipe was verified up to the
-gateway (Claude Code accepted the configuration, connected `fractal-rag` and
-reached LiteLLM) but not through a model turn, because the vLLM backends were
-down at the time. The subagent declares no `model`, so by Claude Code's
+agent](using-the-agent.md). On 2026-10-28 this recipe ran end to end on a
+Qwen3-8B backend: Claude Code called `search_artifacts` through the gateway
+and answered with cited titles in 18 seconds. The Qwen3.6 and Qwen3.8 backends
+rejected every request with `400 System message must be at the beginning.`:
+Claude Code 2.1.310 places a `system`-role entry after the user turn (upstream
+issue [#77698](https://github.com/anthropics/claude-code/issues/77698)) and
+those models' chat templates refuse it, so pick a model whose template accepts
+it or use the [Python loop below](#from-python-or-any-openai-compatible-agent),
+which worked on every backend. The subagent declares no `model`, so by Claude Code's
 [subagent model order](https://code.claude.com/docs/en/sub-agents) it runs on
 the session's model (set `CLAUDE_CODE_SUBAGENT_MODEL` to pick another gateway
 model for it). An interactive session shows the banner `Model "<name>" isn't
