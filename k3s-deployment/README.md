@@ -125,6 +125,10 @@ model-specific.
 Upgrading Weaviate: change the tag in `base/weaviate-deployment.yaml` (1.35.3 or newer; 1.35.0
 zeroes every BM25 score after a bulk delete, weaviate/weaviate#10102) and `kubectl apply -f` that
 file. The deployment's `Recreate` strategy stops the old pod before the new one mounts the volume,
-and the pinned `CLUSTER_HOSTNAME=node1` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created
-pod rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
-after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`.
+and the pinned `CLUSTER_HOSTNAME` plus `RAFT_ENABLE_ONE_NODE_RECOVERY=true` let a re-created pod
+rejoin, or recover, its single-node Raft cluster; without the pinned name a re-created pod exits
+after `RAFT_BOOTSTRAP_TIMEOUT` with `could not join raft join list`. The name must equal the one the
+data was written under (it is recorded in each shard's metadata; the recovery renames only the Raft
+member): the base says `node1`, and `overlays/dgx-spark/weaviate-node-name.yaml` patches the
+reference cluster's original name. Never change it once data exists, or every read fails with
+`no read replica found` (`curl localhost:30080/v1/schema/FractalArtifact/shards` names the expected node).

@@ -10,3 +10,5 @@ images:
   - name: docker.io/semitechnologies/transformers-inference
     newName: fractal-rag/t2v-transformers
     newTag: arctic-embed-l-v2.0-cu130-arm64
+patches:
+  - path: weaviate-node-name.yaml   # this cluster's Weaviate node name (see the file)

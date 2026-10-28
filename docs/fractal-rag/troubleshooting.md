@@ -66,7 +66,39 @@ kubectl -n ai-workloads logs deploy/weaviate | grep -m1 'perform cluster recover
 ```
 
 On 2026-10-25 the pod was ready eleven seconds after the apply; the data on the
-volume is untouched by the recovery.
+volume is untouched by the recovery. The name must then never change again:
+Weaviate records the node that owns each shard in the schema metadata, and the
+recovery renames only the Raft member. Renaming an existing cluster to `node1`
+worked only until the next cold restart (next entry).
+
+### Every query fails with `no read replica found`
+
+`fractal-rag status` and the MCP tools fail with `aggregate: no read replica
+found` (or `search index fractalartifact ... no read replica found`) while
+`/v1/.well-known/ready` returns 200 and `/v1/nodes` shows the node `HEALTHY`
+with zero shards. The shards endpoint names the problem:
+
+```bash
+curl -s localhost:30080/v1/schema/FractalArtifact/shards
+# {"error":[{"message":"shard cWfwu30XY1Jf: resolve node name \"weaviate-58885945f5-c9b5w\" to host"}]}
+```
+
+The shard metadata still belongs to the node name the data was written under,
+and the running node has a different `CLUSTER_HOSTNAME`. The data on the volume
+is intact. Set the name back to the recorded one and let the one-node recovery
+rename the Raft member (about fifteen seconds):
+
+```bash
+kubectl -n ai-workloads set env deploy/weaviate CLUSTER_HOSTNAME=<name from the shards error>
+kubectl -n ai-workloads rollout status deploy/weaviate
+curl -s localhost:30080/v1/schema/FractalArtifact/shards      # [{"name":"...","status":"READY",...}]
+fractal-rag status
+```
+
+Then put the same value in your overlay so `kubectl apply -k` keeps it: the
+`dgx-spark` overlay patches `weaviate-58885945f5-c9b5w` for the reference
+cluster (2026-10-28). Pick a fixed name before the first ingest and never
+change it; Weaviate has no supported rename.
 
 ### Keyword (BM25) scores are 0 and hybrid ranking looks arbitrary
 

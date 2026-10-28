@@ -20,6 +20,10 @@ Newest first. Bullets are tagged **Creation**, **Update** or **Deprecation**, fo
 reserved-file convention. The two knowledge bundles keep their own logs:
 [concepts](okf/concepts/log.md) and [proofs](okf/proofs/log.md).
 
+## 2026-10-28
+
+- **Update**: [Troubleshooting](fractal-rag/troubleshooting.md) gained "Every query fails with `no read replica found`": after the 2026-10-27 reboot the reference index was unreadable because Weaviate's shard metadata still named the original pod while the Raft node had been renamed to `node1` on 2026-10-25. The node name is now pinned to the data's original name through the `dgx-spark` overlay, and [Hosted VM (K3s)](fractal-rag/hosted-vm.md) explains that the name must never change once data exists.
+
 ## 2026-10-26
 
 - **Update**: [Hosted VM (K3s)](fractal-rag/hosted-vm.md) is host-agnostic and carries the user guide: a "Where it runs" table (the DGX Spark reference deployment, the retired A100 server, Jetstream2 as an option), path-neutral install steps, a new "Use the index" half (shell queries, Claude Code on the host or from a workstation, Claude Code on local vLLM models through a LiteLLM gateway, and a Python loop for any OpenAI-compatible endpoint) and Jetstream2 flavor notes. [Troubleshooting](fractal-rag/troubleshooting.md) gained two entries for local models, and the [overview](fractal-rag/index.md) a path for researchers who want the agent on local models. The guide also warns that the anonymous Weaviate NodePorts answer on every host address and shows the `kube-proxy-arg` that pins them to loopback (added to the `k3s-deployment/README.md` configuration example as well).

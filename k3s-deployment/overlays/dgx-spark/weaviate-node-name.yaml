@@ -1,0 +1,17 @@
+# The reference cluster's data was written under the first pod's name, and Weaviate records that
+# name in each shard's metadata; CLUSTER_HOSTNAME must stay equal to it or every read fails with
+# "no read replica found" after a restart (RAFT_ENABLE_ONE_NODE_RECOVERY renames only the Raft
+# member). A fresh install can keep the base's node1 but must never change it afterwards.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weaviate
+  namespace: ai-workloads
+spec:
+  template:
+    spec:
+      containers:
+        - name: weaviate
+          env:
+            - name: CLUSTER_HOSTNAME
+              value: weaviate-58885945f5-c9b5w

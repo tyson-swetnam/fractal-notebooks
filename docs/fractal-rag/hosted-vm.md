@@ -542,10 +542,15 @@ kubectl -n ai-workloads rollout restart deploy/weaviate
 kubectl -n ai-workloads rollout restart deploy/t2v-transformers
 ```
 
-The manifest pins Weaviate's Raft node name (`CLUSTER_HOSTNAME=node1`), so a
+The manifests pin Weaviate's Raft node name (`CLUSTER_HOSTNAME`), so a
 re-created pod rejoins its own single-node cluster; a pod created before that
 setting existed recovers through `RAFT_ENABLE_ONE_NODE_RECOVERY` (see
 [Troubleshooting](troubleshooting.md#weaviate-pod-stays-01-running-and-exits-every-ten-minutes)).
+The name must stay the one the data was written under: Weaviate records it in
+each shard's metadata, and a different name makes every read fail with `no read
+replica found` after a restart ([Troubleshooting](troubleshooting.md#every-query-fails-with-no-read-replica-found)).
+The base says `node1`; the `dgx-spark` overlay patches the reference cluster's
+original name.
 
 ### Upgrade Weaviate
 
